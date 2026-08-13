@@ -24,17 +24,8 @@ OSPanel Bitrix (cms/) -> GET /api/v1/home -> Zod -> next build -> out/
 - установленный чистый Bitrix в `cms/`;
 - локальный домен `paintball-bitrix.local`, document root — `cms/`.
 
-Если Node управляется встроенным NVM OSPanel, выполните команды в терминале
-OSPanel:
-
-```text
-osp node install 22.23.2
-osp node use 22.23.2
-node -v
-```
-
-Последняя команда должна вывести `v22.23.2`. После переключения перезапустите
-терминал/Codex, чтобы `npm`, Next.js и MCP использовали один Node.js.
+Node.js устанавливается системно и проверяется командой `node -v`; проект
+требует `v22.23.2`.
 
 ```powershell
 git clone <repository-url>
@@ -86,6 +77,14 @@ MCP используется для поиска текущего PHP/D7-код�
 документации. Raw SQL write запрещён. Для локального OSPanel включён
 `bitrix_tinker`; изменения выполняются только через D7/public API после
 резервного копирования.
+
+Перед изменениями через MCP сделайте backup базы одной командой; пароль вводится
+интерактивно:
+
+```powershell
+New-Item -ItemType Directory -Force backups | Out-Null
+& 'D:\OSPanel\modules\MySQL-8.0\bin\mysqldump.exe' -h 127.0.1.30 -P 3306 -u paintball -p paintball_bitrix > backups\paintball_bitrix.sql
+```
 
 ## Тестовый контент и endpoint
 

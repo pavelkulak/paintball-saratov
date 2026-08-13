@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-export const homeResponseSchema = z.object({
+export const homeResponseSchema = z.strictObject({
   title: z.string(),
   description: z.string(),
   phone: z.string(),
