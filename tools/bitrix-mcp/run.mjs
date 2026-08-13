@@ -1,41 +1,13 @@
-import { existsSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { spawnSync } from 'node:child_process'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const runtimeRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..')
-const requiredNodeVersion = '22.22.3'
-const projectNode = resolve(
-  runtimeRoot,
-  'tools',
-  'node-runtime',
-  process.platform === 'win32' ? 'node.exe' : 'node',
-)
-const legacyProjectNode = resolve(
-  runtimeRoot,
-  'node_modules',
-  'node',
-  'bin',
-  process.platform === 'win32' ? 'node.exe' : 'node',
-)
-const nodeExecutable = existsSync(projectNode)
-  ? projectNode
-  : existsSync(legacyProjectNode)
-    ? legacyProjectNode
-    : process.execPath
-const nodeCommand =
-  existsSync(projectNode) || existsSync(legacyProjectNode)
-    ? { command: nodeExecutable, prefix: [], shell: false }
-    : {
-        command: process.platform === 'win32' ? 'npx.cmd' : 'npx',
-        prefix: [
-          '--offline',
-          '--package',
-          `node@${requiredNodeVersion}`,
-          'node',
-        ],
-        shell: process.platform === 'win32',
-      }
+const nodeVersion = process.versions.node.split('.').map(Number)
+if (nodeVersion[0] < 22 || (nodeVersion[0] === 22 && nodeVersion[1] < 12)) {
+  throw new Error('Bitrix MCP requires the system Node.js 22.12 or newer.')
+}
 const cliPath = resolve(
   runtimeRoot,
   'tools',
@@ -46,26 +18,69 @@ const cliPath = resolve(
   'dist',
   'cli.js',
 )
-const snapshotRoot = resolve(runtimeRoot, 'infra', 'bitrix-site')
+
+function loadLocalEnv() {
+  const envPath = resolve(runtimeRoot, '.env.local')
+  if (!existsSync(envPath)) return {}
+
+  return Object.fromEntries(
+    readFileSync(envPath, 'utf8')
+      .split(/\r?\n/)
+      .map((line) => line.match(/^\s*([A-Z0-9_]+)=(.*)\s*$/))
+      .filter(Boolean)
+      .map((match) => [match[1], match[2].replace(/^['"]|['"]$/g, '')]),
+  )
+}
+
+function resolveConfiguredPath(value, fallback) {
+  if (!value) return fallback
+  return /^[A-Za-z]:[\\/]|^\\\\/.test(value)
+    ? value
+    : resolve(runtimeRoot, value)
+}
 
 export function mcpEnvironment() {
+  const localEnv = loadLocalEnv()
   const environment = {
+    ...localEnv,
     ...process.env,
-    BITRIX_MCP_WORKSPACE: process.env.BITRIX_MCP_WORKSPACE ?? runtimeRoot,
-    BITRIX_MCP_DATA_DIR:
-      process.env.BITRIX_MCP_DATA_DIR ?? resolve(runtimeRoot, '.bitrix-mcp'),
+    BITRIX_MCP_WORKSPACE: resolveConfiguredPath(
+      process.env.BITRIX_MCP_WORKSPACE ?? localEnv.BITRIX_MCP_WORKSPACE,
+      runtimeRoot,
+    ),
+    BITRIX_MCP_DATA_DIR: resolveConfiguredPath(
+      process.env.BITRIX_MCP_DATA_DIR ?? localEnv.BITRIX_MCP_DATA_DIR,
+      resolve(runtimeRoot, '.bitrix-mcp'),
+    ),
     BITRIX_MCP_DOCS_DIR:
-      process.env.BITRIX_MCP_DOCS_DIR ?? resolve(runtimeRoot, 'docs'),
-    BITRIX_MCP_SEMANTIC_ENABLED: process.env.BITRIX_MCP_SEMANTIC_ENABLED ?? '0',
+      process.env.BITRIX_MCP_DOCS_DIR ??
+      localEnv.BITRIX_MCP_DOCS_DIR ??
+      resolve(runtimeRoot, 'docs'),
+    BITRIX_MCP_SEMANTIC_ENABLED:
+      process.env.BITRIX_MCP_SEMANTIC_ENABLED ??
+      localEnv.BITRIX_MCP_SEMANTIC_ENABLED ??
+      '0',
     BITRIX_MCP_OFFICIAL_DOCS_ENABLED:
-      process.env.BITRIX_MCP_OFFICIAL_DOCS_ENABLED ?? '1',
-    BITRIX_MCP_DB_ENABLED: process.env.BITRIX_MCP_DB_ENABLED ?? '1',
+      process.env.BITRIX_MCP_OFFICIAL_DOCS_ENABLED ??
+      localEnv.BITRIX_MCP_OFFICIAL_DOCS_ENABLED ??
+      '1',
+    BITRIX_MCP_DB_ENABLED:
+      process.env.BITRIX_MCP_DB_ENABLED ??
+      localEnv.BITRIX_MCP_DB_ENABLED ??
+      '1',
+    BITRIX_ROOT: resolveConfiguredPath(
+      process.env.BITRIX_ROOT ?? localEnv.BITRIX_ROOT,
+      resolve(runtimeRoot, 'cms'),
+    ),
+    BITRIX_MCP_PHP_BIN: resolveConfiguredPath(
+      process.env.BITRIX_MCP_PHP_BIN ?? localEnv.BITRIX_MCP_PHP_BIN,
+      '',
+    ),
     BITRIX_MCP_DB_ALLOW_WRITE: '0',
-    BITRIX_MCP_TINKER_ENABLED: '0',
-  }
-
-  if (!environment.BITRIX_ROOT && existsSync(resolve(snapshotRoot, 'bitrix'))) {
-    environment.BITRIX_ROOT = snapshotRoot
+    BITRIX_MCP_TINKER_ENABLED:
+      process.env.BITRIX_MCP_TINKER_ENABLED ??
+      localEnv.BITRIX_MCP_TINKER_ENABLED ??
+      '0',
   }
 
   return environment
@@ -73,14 +88,14 @@ export function mcpEnvironment() {
 
 export function runMcp(args, options = {}) {
   const result = spawnSync(
-    nodeCommand.command,
-    [...nodeCommand.prefix, '--experimental-sqlite', cliPath, ...args],
+    process.execPath,
+    ['--experimental-sqlite', cliPath, ...args],
     {
       cwd: runtimeRoot,
       env: mcpEnvironment(),
       stdio: options.stdio ?? 'inherit',
       encoding: 'utf8',
-      shell: nodeCommand.shell,
+      shell: false,
     },
   )
 

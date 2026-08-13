@@ -13,13 +13,25 @@
 # local env files
 .env*
 
-# local Bitrix Docker environment (nested upstream repository with local secrets)
+# local Bitrix installation
+/cms/bitrix/
+/cms/upload/
+/cms/bitrix/cache/
+/cms/bitrix/managed_cache/
+/cms/bitrix/stack_cache/
+/cms/bitrix/html_pages/
+/cms/.settings.php
+/cms/.access.php
+/cms/.osp/
+/cms/bitrixsetup.php
+/cms/bitrix/.settings.php
+/cms/bitrix/.settings_extra.php
+/backups/
+# temporary legacy Docker data kept locally as a rollback option
 /infra/bitrix/
 /infra/bitrix-site/
 /.bitrix-mcp/
 /tools/bitrix-mcp/node_modules/
-/tools/node-runtime/
-/tools/.node-install/
 /tools/scripts/.cache/
 
 # vercel

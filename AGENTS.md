@@ -30,6 +30,6 @@
 ## Bitrix MCP
 
 - Bitrix MCP is a local development aid, not the website runtime or Bitrix admin UI.
-- Keep its access read-only: no database writes and no arbitrary PHP execution.
-- Do not commit `.bitrix-mcp`, `infra/bitrix-site`, snapshot metadata, or credentials.
+- Keep raw SQL writes disabled. Explicitly requested mutations on the local OSPanel site must run through backed-up D7/public API scripts; production and shared databases stay read-only.
+- Do not commit `.bitrix-mcp`, `cms/bitrix`, `cms/upload`, runtime configuration, or credentials.
 - Use the project skill in `.agents/skills/bitrix-mcp/SKILL.md` for the MCP workflow and fallback rules.

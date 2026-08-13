@@ -1,16 +1,28 @@
 # Paintball landing
 
-Одностраничный лендинг на Next.js App Router, React, TypeScript, Tailwind CSS v4 и static export.
+Одностраничный статический frontend на Next.js App Router, React, TypeScript,
+Tailwind CSS v4 и static export. Bitrix работает как headless CMS в OSPanel.
 
-## Быстрый старт Windows
+## Схема окружения
+
+```text
+OSPanel Bitrix (cms/) -> GET /local/api/home.php -> Zod -> next build -> out/
+                                  ^
+                                  |
+                           Bitrix MCP / D7
+```
+
+В production Node.js не нужен: Bitrix заполняет данные до сборки, а пользователю
+отдаётся папка `out/`.
+
+## Установка
 
 Требования:
 
-- Node.js `22.22.3` и npm `10+`;
-- Docker Desktop 4.30+ с Docker Compose v2.24+;
-- свободные локальные порты `80`, `8588` и `8589`.
-
-Версия Node закреплена в `.node-version`, `.nvmrc` и `package.json`. Для стандартного Windows PowerShell установите Node.js 22.22.3, затем из корня проекта:
+- Node.js `22.12+`;
+- OSPanel с PHP CLI и MySQL/MariaDB;
+- установленный чистый Bitrix в `cms/`;
+- локальный домен `paintball-bitrix.local`, document root — `cms/`.
 
 ```powershell
 git clone <repository-url>
@@ -18,44 +30,30 @@ cd Paintball
 npm run setup
 ```
 
-`npm run setup` выполняет чистую установку frontend-зависимостей и локального Bitrix MCP runtime через lock-файлы.
+`npm run setup` ставит frontend-зависимости и пакет MCP по lock-файлам. Отдельный
+Node runtime и Docker для работы проекта не используются.
 
-Если политика PowerShell блокирует `npm.ps1`, используй эквивалентные команды с `npm.cmd`, например `npm.cmd run setup`.
+## Bitrix в OSPanel
 
-## Bitrix Docker
-
-Официальное development-окружение Bitrix уже находится в `infra/bitrix` и зафиксировано коммитом в `infra/bitrix.env-docker.commit`. Локальные `.env_sql` и `.env_push` содержат секреты и не коммитятся.
-
-Запуск и проверка:
-
-```powershell
-npm run bitrix:up
-npm run bitrix:status
-```
-
-Откройте [http://localhost:8588](http://localhost:8588). После завершения мастера установки Bitrix контейнер `dev_php` должен содержать `/opt/www/bitrix`.
-
-Получение локального snapshot и автоматическая индексация:
+1. В OSPanel выберите PHP 8.2 или другую версию, совместимую с установленной
+   редакцией Bitrix.
+2. Создайте домен `paintball-bitrix.local` и направьте его document root на
+   `D:\Site-Creative\Paintball\cms`.
+3. Установите чистый Bitrix без демо-сайта. Ядро окажется в `cms/bitrix/`, а
+   проектный код — в `cms/local/`.
+4. Проверьте `http://paintball-bitrix.local/` и `/bitrix/admin`.
+5. Проверьте PHP CLI:
 
 ```powershell
-npm run bitrix:snapshot
+D:\OSPanel\modules\PHP-8.2\php.exe -v
 ```
 
-Команда копирует `/opt/www` из контейнера `dev_php` в `infra/bitrix-site`, создаёт `infra/bitrix-site/.bitrix-snapshot.json` с UTC-временем и запускает `npm run mcp:index`. Snapshot нужен только MCP и не является production-копией CMS.
+Скопируйте `.env.example` в `.env.local` и проверьте пути. `BITRIX_ROOT` должен
+указывать на `cms`, а `BITRIX_MCP_PHP_BIN` — на реальный `php.exe` OSPanel.
 
-Остановка:
+## MCP
 
-```powershell
-npm run bitrix:down
-```
-
-## MCP и Codex
-
-MCP runtime находится в `tools/bitrix-mcp`, а project skill — в [.agents/skills/bitrix-mcp/SKILL.md](.agents/skills/bitrix-mcp/SKILL.md). Конфигурация Codex использует `npm run mcp:serve`, поэтому в репозитории и командах нет абсолютного пути конкретного пользователя.
-
-После перезапуска Codex доступны MCP-инструменты для индексированного PHP/Bitrix-кода, D7 API, событий, ORM, компонентов, шаблонов и официальной документации. База подключается только read-only; запись SQL и PHP Tinker запрещены.
-
-Проверки:
+MCP индексирует живой `BITRIX_ROOT`, а не snapshot и не Docker volume.
 
 ```powershell
 npm run mcp:status
@@ -64,55 +62,82 @@ npm run mcp:doctor
 npm run mcp:index
 ```
 
-Если Bitrix root недоступен, MCP может искать только по проекту и документации. После запуска Docker повторите `npm run bitrix:snapshot`; snapshot обновится и индекс автоматически перестроится.
+Project skill находится в [.agents/skills/bitrix-mcp/SKILL.md](.agents/skills/bitrix-mcp/SKILL.md).
+После изменения MCP-конфигурации перезапустите Codex.
 
-## Build и static preview
+MCP используется для поиска текущего PHP/D7-кода, событий, ORM, компонентов и
+документации. Запись через raw SQL запрещена. Изменения локального контента
+выполняются через Bitrix D7/public API после резервного копирования.
 
-Для локальной разработки без API в `.env.local` явно установлен `BITRIX_ALLOW_EMPTY_SNAPSHOT=1`. Без этого флага `next build` требует `BITRIX_API_URL` и завершается ошибкой.
+## Тестовый контент и endpoint
 
-Для настоящей сборки:
+После чистой установки можно создать тестовую структуру через MCP/D7 либо
+запустить bootstrap-скрипт:
 
 ```powershell
-$env:BITRIX_API_URL = 'http://localhost:8588'
-npm run build
+D:\OSPanel\modules\PHP-8.2\php.exe cms/local/cli/setup-content.php
 ```
 
-Production/CI обязаны передавать `BITRIX_API_URL` и не должны включать `BITRIX_ALLOW_EMPTY_SNAPSHOT`.
+Публичный endpoint:
 
-Сборка создаёт `out/`. Preview static export:
+```text
+GET http://paintball-bitrix.local/local/api/home.php
+```
+
+Он возвращает только стабильный контракт:
+
+```json
+{
+  "title": "Пейнтбол в Саратове",
+  "description": "Тестовый текст из Bitrix",
+  "phone": "+7 000 000-00-00",
+  "address": "Саратов"
+}
+```
+
+В ответ не попадают `IBLOCK_ID`, `PROPERTY_*`, SQL-структура и внутренние
+исключения.
+
+## Static build
+
+`BITRIX_API_URL` используется только во время `next build`:
 
 ```powershell
+$env:BITRIX_API_URL = 'http://paintball-bitrix.local/local/api/home.php'
+npm run build
 npm run preview
 ```
 
-`npm run start` является алиасом static preview; `next start` не используется с `output: 'export'`.
+Ответ проверяется Zod-схемой. Если URL не задан, сборка падает; исключение для
+локального пустого макета включается только явно через
+`BITRIX_ALLOW_EMPTY_SNAPSHOT=1`.
 
-## Команды проекта
+Основные команды:
 
 ```text
-npm run setup           чистая установка frontend + MCP зависимостей
-npm run bitrix:status   состояние Docker-контейнеров Bitrix
-npm run bitrix:snapshot snapshot CMS и переиндексация MCP
-npm run mcp:index       переиндексация проекта, snapshot и документации
-npm run mcp:doctor      диагностика MCP
-npm run check           format:check + lint + build
-npm run verify          smoke-check всего окружения
+npm run setup          установка зависимостей
+npm run mcp:index      индексация живого Bitrix root
+npm run mcp:doctor     диагностика MCP
+npm run check          format:check + lint + build
+npm run verify         smoke-check окружения и сборки
+npm run preview        preview папки out/
 ```
 
-`npm run verify` проверяет Node.js, зависимости, Docker, `localhost:8588`, snapshot с timestamp, непустой Bitrix index, MCP doctor, project skill и `npm run check`.
+## Что не коммитится
 
-## Локальные данные и секреты
+- `cms/bitrix/`, `cms/upload/`, кеши и конфигурация БД;
+- `.env.local` и другие секреты;
+- `.bitrix-mcp/` — локальный индекс;
+- `node_modules/`, `.next/`, `out/` и резервные копии.
 
-- `node_modules/` и `tools/bitrix-mcp/node_modules/` — зависимости;
-- `tools/node-runtime/` — локальный Node.js `22.22.3`, созданный `npm run setup`;
-- `.bitrix-mcp/` — SQLite-индексы и скачанная документация MCP;
-- `infra/bitrix-site/` — локальный snapshot Bitrix;
-- `infra/bitrix/.env_sql` — пароли MySQL/PostgreSQL;
-- `infra/bitrix/.env_push` — ключ Push-сервера;
-- `.env.local` — локальные переменные Next.js.
+`cms/local/` и endpoint в нём являются проектным кодом и коммитятся.
 
-Эти каталоги и файлы исключены из Git. Не публикуйте `.settings.php`, database credentials или содержимое Docker env-файлов.
+## Архитектурные правила
 
-## Архитектура Bitrix
-
-Bitrix используется как headless CMS. Next.js получает `GET /api/v1/home` только во время `next build`, а формы отправляются в отдельный `POST /api/v1/leads`. Production frontend остаётся статическим и не подключается к базе Bitrix. Подробный контракт и правила находятся в [docs/bitrix-headless.md](docs/bitrix-headless.md), workflow MCP — в [docs/bitrix-mcp.md](docs/bitrix-mcp.md).
+- Next.js — единственный frontend и статический export.
+- Bitrix — headless CMS.
+- Контент читается только во время build.
+- JSON проверяется Zod.
+- Next.js не подключается к БД Bitrix.
+- Ядро `cms/bitrix/` не редактируется.
+- Сырые SQL-записи запрещены.

@@ -3,33 +3,10 @@ import 'server-only'
 import { homeResponseSchema, type HomeResponse } from './home-schema'
 
 const emptyHomeResponse: HomeResponse = {
-  common: {
-    seo: {
-      title: 'Paintball',
-      description: '',
-    },
-    sections: [],
-  },
-  modes: {
-    paintball: {
-      slug: 'paintball',
-      title: '',
-      description: '',
-      sections: [],
-    },
-    laserTag: {
-      slug: 'laserTag',
-      title: '',
-      description: '',
-      sections: [],
-    },
-    kids: {
-      slug: 'kids',
-      title: '',
-      description: '',
-      sections: [],
-    },
-  },
+  title: 'Paintball',
+  description: '',
+  phone: '',
+  address: '',
 }
 
 export async function getHomeContent(): Promise<HomeResponse> {
@@ -49,7 +26,7 @@ export async function getHomeContent(): Promise<HomeResponse> {
     return emptyHomeResponse
   }
 
-  const response = await fetch(`${apiUrl}/api/v1/home`, {
+  const response = await fetch(apiUrl, {
     cache: 'force-cache',
   })
 
