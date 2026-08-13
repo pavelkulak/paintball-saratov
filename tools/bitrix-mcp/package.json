@@ -1,7 +1,7 @@
 {
   "name": "paintball-bitrix-mcp-runtime",
   "private": true,
-  "description": "Local read-only Bitrix MCP runtime for the Paintball project",
+  "description": "Local Bitrix MCP runtime for the Paintball project",
   "scripts": {
     "mcp": "node run.mjs serve",
     "status": "node run.mjs status",

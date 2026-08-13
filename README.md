@@ -6,7 +6,7 @@ Tailwind CSS v4 и static export. Bitrix работает как headless CMS в
 ## Схема окружения
 
 ```text
-OSPanel Bitrix (cms/) -> GET /local/api/home.php -> Zod -> next build -> out/
+OSPanel Bitrix (cms/) -> GET /api/v1/home -> Zod -> next build -> out/
                                   ^
                                   |
                            Bitrix MCP / D7
@@ -19,7 +19,7 @@ OSPanel Bitrix (cms/) -> GET /local/api/home.php -> Zod -> next build -> out/
 
 Требования:
 
-- Node.js `22.22.3`;
+- Node.js `22.23.2`;
 - OSPanel с PHP CLI и MySQL/MariaDB;
 - установленный чистый Bitrix в `cms/`;
 - локальный домен `paintball-bitrix.local`, document root — `cms/`.
@@ -28,12 +28,12 @@ OSPanel Bitrix (cms/) -> GET /local/api/home.php -> Zod -> next build -> out/
 OSPanel:
 
 ```text
-osp node install 22.22.3
-osp node use 22.22.3
+osp node install 22.23.2
+osp node use 22.23.2
 node -v
 ```
 
-Последняя команда должна вывести `v22.22.3`. После переключения перезапустите
+Последняя команда должна вывести `v22.23.2`. После переключения перезапустите
 терминал/Codex, чтобы `npm`, Next.js и MCP использовали один Node.js.
 
 ```powershell
@@ -65,7 +65,7 @@ D:\OSPanel\modules\PHP-8.2\php.exe -v
 
 ## MCP
 
-MCP индексирует живой `BITRIX_ROOT`, а не snapshot и не Docker volume.
+MCP индексирует живой `BITRIX_ROOT` из OSPanel.
 
 ```powershell
 npm run mcp:status
@@ -83,8 +83,9 @@ Project skill находится в [.agents/skills/bitrix-mcp/SKILL.md](.agents
 Проектный код в `cms/local/` должен индексироваться без таких предупреждений.
 
 MCP используется для поиска текущего PHP/D7-кода, событий, ORM, компонентов и
-документации. Запись через raw SQL запрещена. Изменения локального контента
-выполняются через Bitrix D7/public API после резервного копирования.
+документации. Raw SQL write запрещён. Для локального OSPanel включён
+`bitrix_tinker`; изменения выполняются только через D7/public API после
+резервного копирования.
 
 ## Тестовый контент и endpoint
 
@@ -98,7 +99,7 @@ D:\OSPanel\modules\PHP-8.2\php.exe cms/local/cli/setup-content.php
 Публичный endpoint:
 
 ```text
-GET http://paintball-bitrix.local/local/api/home.php
+GET http://paintball-bitrix.local/api/v1/home
 ```
 
 Он возвращает только стабильный контракт:
@@ -120,14 +121,13 @@ GET http://paintball-bitrix.local/local/api/home.php
 `BITRIX_API_URL` используется только во время `next build`:
 
 ```powershell
-$env:BITRIX_API_URL = 'http://paintball-bitrix.local/local/api/home.php'
+$env:BITRIX_API_URL = 'http://paintball-bitrix.local/api/v1/home'
 npm run build
 npm run preview
 ```
 
-Ответ проверяется Zod-схемой. Если URL не задан, сборка падает; исключение для
-локального пустого макета включается только явно через
-`BITRIX_ALLOW_EMPTY_SNAPSHOT=1`.
+Ответ проверяется Zod-схемой. Если URL не задан или Bitrix недоступен, сборка
+падает.
 
 Основные команды:
 

@@ -4,7 +4,7 @@ import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const runtimeRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..')
-const requiredNodeVersion = '22.22.3'
+const requiredNodeVersion = '22.23.2'
 if (process.versions.node !== requiredNodeVersion) {
   throw new Error(
     `Bitrix MCP requires system Node.js ${requiredNodeVersion}; found ${process.version}.`,
@@ -82,7 +82,7 @@ export function mcpEnvironment() {
     BITRIX_MCP_TINKER_ENABLED:
       process.env.BITRIX_MCP_TINKER_ENABLED ??
       localEnv.BITRIX_MCP_TINKER_ENABLED ??
-      '0',
+      '1',
   }
 
   return environment

@@ -27,8 +27,8 @@ function runCaptureMcp(args) {
   return output
 }
 
-if (process.versions.node !== '22.22.3') {
-  fail(`Node.js 22.22.3 is required; found ${process.version}.`)
+if (process.versions.node !== '22.23.2') {
+  fail(`Node.js 22.23.2 is required; found ${process.version}.`)
 }
 
 const environment = mcpEnvironment()
@@ -81,7 +81,10 @@ if (apiUrl) {
   }
 }
 
-runMcp(['doctor', '--verbose'])
+const doctor = runMcp(['doctor', '--verbose'])
+if (doctor.status !== 0) {
+  fail('MCP doctor failed.')
+}
 const status = runCaptureMcp(['status'])
 if (/files\s*:\s*0|symbols\s*:\s*0/i.test(status)) {
   fail('MCP index is empty.')

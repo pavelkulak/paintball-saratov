@@ -5,7 +5,7 @@
 ```text
 OSPanel Bitrix
       ↓
-GET /local/api/home.php
+GET /api/v1/home
       ↓
 Next.js build + Zod
       ↓
@@ -38,13 +38,12 @@ bootstrap-скрипты и endpoint находятся в `cms/local/` и ко�
 ## Сборка
 
 ```powershell
-$env:BITRIX_API_URL = 'http://paintball-bitrix.local/local/api/home.php'
+$env:BITRIX_API_URL = 'http://paintball-bitrix.local/api/v1/home'
 npm run build
 ```
 
 Во время сборки `lib/bitrix/home.ts` загружает JSON и проверяет его схемой Zod.
-При отсутствии URL сборка завершается ошибкой. Только локальный пустой макет
-можно явно разрешить через `BITRIX_ALLOW_EMPTY_SNAPSHOT=1`.
+При отсутствии URL или недоступном Bitrix сборка завершается ошибкой.
 
 Формы и отдельный lead endpoint будут добавлены следующим этапом; в текущий
 контракт они не входят.

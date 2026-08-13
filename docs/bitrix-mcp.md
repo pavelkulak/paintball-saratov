@@ -14,12 +14,13 @@ BITRIX_MCP_DATA_DIR=D:\\Site-Creative\\Paintball\\.bitrix-mcp
 BITRIX_MCP_PHP_BIN=D:\\OSPanel\\modules\\PHP-8.2\\php.exe
 BITRIX_MCP_DB_ENABLED=1
 BITRIX_MCP_DB_ALLOW_WRITE=0
-BITRIX_MCP_TINKER_ENABLED=0
+BITRIX_MCP_TINKER_ENABLED=1
 ```
 
-MCP используется в read-only режиме. Сырые SQL-записи и произвольное PHP-
-выполнение отключены; изменения контента должны проходить через отдельный,
-явно запрошенный D7/public API workflow после резервной копии.
+Raw SQL write остаётся выключенным. Для доверенного локального OSPanel включён
+`bitrix_tinker`: произвольный PHP выполняется только по явному запросу, а
+изменения контента проходят через D7/public API после резервной копии. Не
+используйте tinker на production или общей базе.
 
 В пользовательской конфигурации Codex сервер запускается из корня проекта:
 
@@ -27,7 +28,9 @@ MCP используется в read-only режиме. Сырые SQL-запи�
 [mcp_servers.bitrix-mcp]
 command = 'npm.cmd'
 args = ['run', 'mcp:serve']
+cwd = 'D:\\Site-Creative\\Paintball'
 startup_timeout_sec = 120
+env = { BITRIX_MCP_TINKER_ENABLED = '1', BITRIX_MCP_DB_ALLOW_WRITE = '0' }
 ```
 
 После изменения конфигурации перезапустите Codex. Project skill коммитится в
@@ -42,12 +45,12 @@ npm run mcp:doctor
 npm run mcp:index
 ```
 
-Перед командами активируйте зафиксированный Node.js `22.22.3` через терминал
+Перед командами активируйте зафиксированный Node.js `22.23.2` через терминал
 OSPanel:
 
 ```text
-osp node install 22.22.3
-osp node use 22.22.3
+osp node install 22.23.2
+osp node use 22.23.2
 node -v
 ```
 
@@ -64,8 +67,9 @@ node -v
 ## Безопасность
 
 - `BITRIX_MCP_DB_ALLOW_WRITE=0` остаётся выключенным всегда.
+- `BITRIX_MCP_TINKER_ENABLED=1` разрешён только для этого доверенного локального OSPanel.
 - raw SQL для записи не используется; read-only запросы допустимы только при
   явном подтверждении их режима чтения.
-- Изменения контента проходят через D7/public API.
+- Изменения контента через tinker проходят через D7/public API после резервной копии.
 - Ядро `cms/bitrix/` не редактируется; проектный код находится в `cms/local/`.
 - Не показывайте `.settings.php`, пароль БД и другие секреты.

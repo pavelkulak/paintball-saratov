@@ -14,7 +14,7 @@
 - Keep the Bitrix response validated at the boundary with Zod.
 - Keep the request in a server-only module used by statically generated routes.
 - Do not add TanStack Query, Next Runtime caching, or client-side Bitrix content requests.
-- A build without `BITRIX_API_URL` must fail unless `BITRIX_ALLOW_EMPTY_SNAPSHOT=1` is explicitly set for local development. CI/production builds must provide `BITRIX_API_URL`.
+- A build without `BITRIX_API_URL` must fail. CI/production builds must provide `BITRIX_API_URL`.
 
 ## Design and styling
 
@@ -30,6 +30,6 @@
 ## Bitrix MCP
 
 - Bitrix MCP is a local development aid, not the website runtime or Bitrix admin UI.
-- Keep raw SQL writes disabled. Explicitly requested mutations on the local OSPanel site must run through backed-up D7/public API scripts; production and shared databases stay read-only.
+- Keep raw SQL writes disabled. The local OSPanel-only `bitrix_tinker` capability may execute explicitly requested D7/public API mutations after a backup; production and shared databases stay read-only.
 - Do not commit `.bitrix-mcp`, `cms/bitrix`, `cms/upload`, runtime configuration, or credentials.
 - Use the project skill in `.agents/skills/bitrix-mcp/SKILL.md` for the MCP workflow and fallback rules.
