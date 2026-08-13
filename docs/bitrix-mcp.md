@@ -1,67 +1,28 @@
-# Bitrix MCP в проекте Paintball
+# Bitrix MCP в Paintball
 
-## Что это даёт
+Bitrix MCP — локальный read-only инструмент разработки. Он индексирует проект, snapshot установленного Bitrix, PHP/D7-код, события, ORM, компоненты, шаблоны и официальную документацию. MCP не участвует в runtime сайта и не управляет `/bitrix/admin`.
 
-`@mb4it/bitrix-mcp` — локальный MCP-сервер для поиска по исходникам Bitrix, PHP-символам, событиям, ORM, компонентам, шаблонам и документации. Для нашего проекта также включён просмотр данных базы в read-only режиме.
+## Установка
 
-Он не авторизуется в `/bitrix/admin` и не заменяет браузер. MCP работает с файлами, которые ему явно переданы через `BITRIX_MCP_WORKSPACE` и `BITRIX_ROOT`; доступ к базе включается отдельным флагом и остаётся только для чтения.
-
-Архитектура проекта остаётся прежней:
-
-```text
-Bitrix Docker -> D7 JSON API -> Next.js build -> static export
-```
-
-MCP — инструмент разработки и анализа. Он не участвует в runtime сайта и не добавляет запросы к Bitrix в браузер.
-
-## Что было исправлено относительно исходного примера
-
-- Убран шаблон `local/templates/risk`: в этом проекте такого шаблона нет.
-- Пути привязаны к `D:\Site-Creative\Paintball`.
-- Runtime MCP хранится отдельно от зависимостей Next.js в `tools/bitrix-mcp`.
-- Включён `BITRIX_MCP_DB_ENABLED=1` для чтения схемы и данных через `bitrix_db_*`; `BITRIX_MCP_DB_ALLOW_WRITE=0` оставлен выключенным.
-- `BITRIX_MCP_TINKER_ENABLED=0`: произвольное выполнение PHP через MCP не разрешается.
-- Семантический поиск выключен: для первого этапа достаточно локального SQLite FTS и официальной документации.
-- Секреты Bitrix и пароли Docker не прописываются в MCP-конфигурации.
-
-## Установка runtime
-
-Из корня проекта:
+Из корня проекта в PowerShell:
 
 ```powershell
-npm install --prefix tools/bitrix-mcp
+npm run setup
 ```
 
-Проверка runtime:
+Runtime лежит в `tools/bitrix-mcp`. Во время `npm run setup` точный Node.js `22.22.3` устанавливается в локальный `tools/node-runtime`, не в `node_modules`; MCP запускает CLI через этот runtime без сетевого запроса.
 
-```powershell
-$env:BITRIX_MCP_WORKSPACE = 'D:\Site-Creative\Paintball'
-$env:BITRIX_MCP_DATA_DIR = 'D:\Site-Creative\Paintball\.bitrix-mcp'
-$env:BITRIX_MCP_DOCS_DIR = 'D:\Site-Creative\Paintball\docs'
-$env:BITRIX_MCP_SEMANTIC_ENABLED = '0'
-$env:BITRIX_MCP_OFFICIAL_DOCS_ENABLED = '1'
-$env:BITRIX_MCP_DB_ENABLED = '1'
-$env:BITRIX_MCP_DB_ALLOW_WRITE = '0'
-$env:BITRIX_MCP_TINKER_ENABLED = '0'
+## Codex
 
-npm --prefix tools/bitrix-mcp run config
-npm --prefix tools/bitrix-mcp run doctor
-```
-
-## Конфигурация Codex
-
-В файл `C:\Users\<ИМЯ_ПОЛЬЗОВАТЕЛЯ>\.codex\config.toml` добавляется проектный MCP-сервер:
+Конфигурация MCP хранится в пользовательском `C:\Users\<user>\.codex\config.toml`, но не содержит абсолютного пути проекта:
 
 ```toml
 [mcp_servers.bitrix-mcp]
-command = 'D:\\Site-Creative\\Paintball\\tools\\bitrix-mcp\\node_modules\\node\\bin\\node.exe'
-args = ['--experimental-sqlite', 'D:\\Site-Creative\\Paintball\\tools\\bitrix-mcp\\node_modules\\@mb4it\\bitrix-mcp\\dist\\cli.js', 'serve']
+command = 'npm.cmd'
+args = ['run', 'mcp:serve']
 startup_timeout_sec = 120
 
 [mcp_servers.bitrix-mcp.env]
-BITRIX_MCP_WORKSPACE = 'D:\\Site-Creative\\Paintball'
-BITRIX_MCP_DATA_DIR = 'D:\\Site-Creative\\Paintball\\.bitrix-mcp'
-BITRIX_MCP_DOCS_DIR = 'D:\\Site-Creative\\Paintball\\docs'
 BITRIX_MCP_SEMANTIC_ENABLED = '0'
 BITRIX_MCP_OFFICIAL_DOCS_ENABLED = '1'
 BITRIX_MCP_DB_ENABLED = '1'
@@ -69,68 +30,53 @@ BITRIX_MCP_DB_ALLOW_WRITE = '0'
 BITRIX_MCP_TINKER_ENABLED = '0'
 ```
 
-`BITRIX_ROOT` добавляется только после появления доступной для Windows копии установленного Bitrix-кода. До этого MCP индексирует проект Next.js и локальную документацию, но не ядро Bitrix. Для `bitrix_db_*` также нужны доступные `bitrix/.settings.php` и сетевой доступ к MySQL.
+Codex должен запускать MCP из корня проекта. После изменения конфигурации перезапусти Codex. Project skill находится в `.agents/skills/bitrix-mcp/SKILL.md` и коммитится вместе с проектом.
 
-После изменения `config.toml` нужно перезапустить Codex.
-
-## Индексация проекта
-
-Индекс Next.js и документации:
+## Команды
 
 ```powershell
-npm --prefix tools/bitrix-mcp run index
+npm run mcp:status
+npm run mcp:config
+npm run mcp:doctor
+npm run mcp:index
 ```
 
-Проверка индекса:
+`mcp:doctor` проверяет пути, SQLite, документацию и текущую конфигурацию. Warnings нельзя игнорировать: при предупреждении, пустом индексе или старом snapshot результат поиска не считается надёжным.
+
+## Bitrix snapshot
+
+Официальный Docker Compose хранит `/opt/www` в named volume, поэтому Windows MCP получает локальную копию:
 
 ```powershell
-npm --prefix tools/bitrix-mcp run status
+npm run bitrix:snapshot
 ```
 
-Индекс `.bitrix-mcp` создаётся локально и не коммитится.
+Команда:
 
-## Индексация Bitrix из Docker
+1. проверяет работающий `dev_php`;
+2. копирует `/opt/www` в `infra/bitrix-site`;
+3. создаёт `infra/bitrix-site/.bitrix-snapshot.json` с UTC-временем;
+4. автоматически запускает переиндексацию.
 
-Сейчас официальный Docker Compose хранит `/opt/www` в named volume `dev_www_data`. MCP на Windows не видит этот volume по HTTP: ему нужна файловая копия исходников.
+`tools/bitrix-mcp/run.mjs` автоматически использует `infra/bitrix-site` как `BITRIX_ROOT`, если в нём есть `bitrix/`. Ручной `BITRIX_ROOT` не нужен.
 
-После завершения установки CMS можно получить локальный снимок сайта:
+Snapshot не коммитится. Считай его устаревшим, если Bitrix-код или настройки изменились после timestamp в `.bitrix-snapshot.json`; повтори `npm run bitrix:snapshot`.
 
-```powershell
-docker cp dev_php:/opt/www/. D:\Site-Creative\Paintball\infra\bitrix-site
-```
+## Источники истины и fallback
 
-Затем временно добавить в MCP-конфигурацию:
+- MCP — для успешных результатов из текущего индексированного проекта и snapshot.
+- Официальная Bitrix-документация — для поведения Framework и публичных API.
+- Прямые файлы — fallback, если MCP пустой, содержит warnings, индекс устарел или snapshot недоступен.
 
-```toml
-BITRIX_ROOT = 'D:\\Site-Creative\\Paintball\\infra\\bitrix-site'
-```
+Если Bitrix root недоступен, сначала сообщи об ограничении и выполни `npm run bitrix:snapshot`. Если Docker недоступен, не делай выводов о live CMS: используй только имеющиеся файлы и официальную документацию.
 
-И выполнить:
+## Безопасность
 
-```powershell
-npm --prefix tools/bitrix-mcp run index
-```
+- `BITRIX_MCP_DB_ENABLED=1` даёт только чтение схемы и данных.
+- `BITRIX_MCP_DB_ALLOW_WRITE=0` всегда оставляется выключенным.
+- `BITRIX_MCP_TINKER_ENABLED=0`; произвольный PHP не выполняется.
+- Не использовать `bitrix_db_execute` и `bitrix_tinker`.
+- Не показывать `.settings.php`, пароли и секреты Docker.
+- Не редактировать ядро `bitrix/`; для проекта использовать `local/`.
 
-`infra/bitrix-site` не является рабочей копией для деплоя и не заменяет Docker volume. Это локальный read-only snapshot для поиска по ядру, модулям и `local/`.
-
-## Как просить Codex использовать MCP
-
-Примеры запросов:
-
-- «Проверь статус Bitrix MCP и найди регистрацию событий для модуля `main`».
-- «Через Bitrix MCP найди D7-класс для чтения элементов инфоблока и покажи сигнатуру».
-- «Найди все места, где используется этот обработчик, и оцени радиус изменений».
-- «Проверь индекс и найди API для `Bitrix\\Main\\Engine\\Controller`».
-
-Сначала используются результаты MCP, затем ручной поиск по файлам — только если индекс пустой или устарел.
-
-## Что MCP не делает
-
-- не входит в админку Bitrix;
-- не нажимает кнопки в `/bitrix/admin`;
-- не меняет инфоблоки, настройки или пользователей;
-- не пишет в MySQL/PostgreSQL: `bitrix_db_execute` не зарегистрирован;
-- не заменяет D7 API `/api/v1/home` и `/api/v1/leads`;
-- не используется в production runtime.
-
-Изменения контента делаем через админку Bitrix, а получение контента публичным сайтом — через стабильный D7 JSON API и build Next.js.
+Локальные индексы находятся в `.bitrix-mcp`, snapshot — в `infra/bitrix-site`. Оба каталога исключены из Git.

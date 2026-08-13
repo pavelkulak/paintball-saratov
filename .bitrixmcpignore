@@ -1,0 +1,12 @@
+# Local secrets and runtime state
+**/.env*
+**/.settings.php
+**/upload/**
+**/cache/**
+**/managed_cache/**
+**/html_pages/**
+
+# Generated frontend/build output
+.next/**
+out/**
+node_modules/**

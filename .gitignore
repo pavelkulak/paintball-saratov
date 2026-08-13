@@ -18,6 +18,9 @@
 /infra/bitrix-site/
 /.bitrix-mcp/
 /tools/bitrix-mcp/node_modules/
+/tools/node-runtime/
+/tools/.node-install/
+/tools/scripts/.cache/
 
 # vercel
 .vercel

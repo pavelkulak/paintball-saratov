@@ -1,15 +1,3 @@
 {
-  "hooks": {
-    "SessionStart": [
-      {
-        "matcher": "startup|resume",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "echo '{\"hookSpecificOutput\":{\"hookEventName\":\"SessionStart\",\"additionalContext\":\"[bitrix-mcp] This project uses the bitrix-mcp MCP server (1C-Bitrix). For any Bitrix-related request, use its tools as the primary source of truth: begin with bitrix_index_status and bitrix_project_overview, then bitrix_liveapi_search, bitrix_docs_search, bitrix_detect_changes, and bitrix_read_symbol_context. Manual grep/read is a fallback only when MCP is empty, stale, or explicitly requested.\"}}' # bitrix-mcp:auto-directive"
-          }
-        ]
-      }
-    ]
-  }
+  "hooks": {}
 }

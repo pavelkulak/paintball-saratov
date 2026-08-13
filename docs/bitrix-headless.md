@@ -124,7 +124,7 @@ https://cms.example.ru/api/v1/home
 
 Ответ проходит Zod-валидацию в `lib/bitrix/home.ts`. При неверном JSON сборка падает, чтобы битый контент не попал в static export.
 
-Локально без `BITRIX_API_URL` проект продолжает собираться на пустом типизированном snapshot. В CI переменная должна быть обязательной.
+Локально без `BITRIX_API_URL` сборка разрешается только при явном `BITRIX_ALLOW_EMPTY_SNAPSHOT=1`. В CI и production эта переменная не должна быть включена: `BITRIX_API_URL` обязателен.
 
 ## Формы
 
