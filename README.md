@@ -19,7 +19,7 @@ OSPanel Bitrix (cms/) -> GET /local/api/home.php -> Zod -> next build -> out/
 
 Требования:
 
-- Node.js `22.12+`;
+- Node.js `22.22.3`;
 - OSPanel с PHP CLI и MySQL/MariaDB;
 - установленный чистый Bitrix в `cms/`;
 - локальный домен `paintball-bitrix.local`, document root — `cms/`.

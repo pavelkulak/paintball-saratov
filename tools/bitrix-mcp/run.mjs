@@ -4,9 +4,11 @@ import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const runtimeRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..')
-const nodeVersion = process.versions.node.split('.').map(Number)
-if (nodeVersion[0] < 22 || (nodeVersion[0] === 22 && nodeVersion[1] < 12)) {
-  throw new Error('Bitrix MCP requires the system Node.js 22.12 or newer.')
+const requiredNodeVersion = '22.22.3'
+if (process.versions.node !== requiredNodeVersion) {
+  throw new Error(
+    `Bitrix MCP requires system Node.js ${requiredNodeVersion}; found ${process.versions.node}.`,
+  )
 }
 const cliPath = resolve(
   runtimeRoot,

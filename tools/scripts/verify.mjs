@@ -27,9 +27,8 @@ function runCaptureMcp(args) {
   return output
 }
 
-const [major, minor] = process.versions.node.split('.').map(Number)
-if (major < 22 || (major === 22 && minor < 12)) {
-  fail(`Node.js 22.12 or newer is required; found ${process.version}.`)
+if (process.versions.node !== '22.22.3') {
+  fail(`Node.js 22.22.3 is required; found ${process.version}.`)
 }
 
 const environment = mcpEnvironment()
