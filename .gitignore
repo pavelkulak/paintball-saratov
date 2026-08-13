@@ -15,6 +15,9 @@
 
 # local Bitrix Docker environment (nested upstream repository with local secrets)
 /infra/bitrix/
+/infra/bitrix-site/
+/.bitrix-mcp/
+/tools/bitrix-mcp/node_modules/
 
 # vercel
 .vercel
