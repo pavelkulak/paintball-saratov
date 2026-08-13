@@ -13,6 +13,9 @@
 # local env files
 .env*
 
+# local Bitrix Docker environment (nested upstream repository with local secrets)
+/infra/bitrix/
+
 # vercel
 .vercel
 
