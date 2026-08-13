@@ -7,7 +7,7 @@ const runtimeRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..')
 const requiredNodeVersion = '22.22.3'
 if (process.versions.node !== requiredNodeVersion) {
   throw new Error(
-    `Bitrix MCP requires system Node.js ${requiredNodeVersion}; found ${process.versions.node}.`,
+    `Bitrix MCP requires system Node.js ${requiredNodeVersion}; found ${process.version}.`,
   )
 }
 const cliPath = resolve(

@@ -55,10 +55,12 @@ $propertyRows = CIBlockElement::GetProperty(
     (int) $iblock['ID'],
     (int) $element['ID'],
     ['sort' => 'asc'],
-    ['CODE' => ['PHONE', 'ADDRESS']],
 );
 while ($property = $propertyRows->Fetch()) {
-    $properties[(string) $property['CODE']] = (string) $property['VALUE'];
+    $code = (string) $property['CODE'];
+    if (in_array($code, ['PHONE', 'ADDRESS'], true)) {
+        $properties[$code] = (string) $property['VALUE'];
+    }
 }
 
 respond([

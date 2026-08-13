@@ -14,6 +14,9 @@
 .env*
 
 # local Bitrix installation
+/cms/*
+!/cms/local/
+!/cms/local/**
 /cms/bitrix/
 /cms/upload/
 /cms/bitrix/cache/

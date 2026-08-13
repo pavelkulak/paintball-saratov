@@ -11,6 +11,8 @@ const eslintConfig = defineConfig([
     'node_modules/**',
     '.bitrix-mcp/**',
     'infra/**',
+    'cms/bitrix/**',
+    'cms/upload/**',
     'next-env.d.ts',
   ]),
 ])

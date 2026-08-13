@@ -24,6 +24,18 @@ OSPanel Bitrix (cms/) -> GET /local/api/home.php -> Zod -> next build -> out/
 - установленный чистый Bitrix в `cms/`;
 - локальный домен `paintball-bitrix.local`, document root — `cms/`.
 
+Если Node управляется встроенным NVM OSPanel, выполните команды в терминале
+OSPanel:
+
+```text
+osp node install 22.22.3
+osp node use 22.22.3
+node -v
+```
+
+Последняя команда должна вывести `v22.22.3`. После переключения перезапустите
+терминал/Codex, чтобы `npm`, Next.js и MCP использовали один Node.js.
+
 ```powershell
 git clone <repository-url>
 cd Paintball
@@ -64,6 +76,11 @@ npm run mcp:index
 
 Project skill находится в [.agents/skills/bitrix-mcp/SKILL.md](.agents/skills/bitrix-mcp/SKILL.md).
 После изменения MCP-конфигурации перезапустите Codex.
+
+После индексации `mcp:doctor` может показать parser-fallback для отдельных
+файлов ядра Bitrix. Такие результаты MCP не считаются полностью надёжными;
+для них используйте прямой исходник `cms/bitrix/` и официальную документацию.
+Проектный код в `cms/local/` должен индексироваться без таких предупреждений.
 
 MCP используется для поиска текущего PHP/D7-кода, событий, ORM, компонентов и
 документации. Запись через raw SQL запрещена. Изменения локального контента
