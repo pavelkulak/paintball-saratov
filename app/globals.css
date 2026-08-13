@@ -1,1 +1,50 @@
 @import 'tailwindcss';
+
+/*
+ * Runtime theme tokens.
+ * Keep semantic names here so components do not depend on raw color values.
+ * Brand values can be changed in one place when the visual direction is ready.
+ */
+:root {
+  --theme-background: oklch(0.99 0 0);
+  --theme-foreground: oklch(0.2 0.02 285);
+  --theme-surface: oklch(0.97 0.01 285);
+  --theme-surface-strong: oklch(0.93 0.015 285);
+  --theme-muted: oklch(0.52 0.02 285);
+  --theme-line: oklch(0.9 0.015 285);
+  --theme-primary: oklch(0.3 0.08 155);
+  --theme-primary-foreground: oklch(0.98 0.02 155);
+  --theme-focus: oklch(0.65 0.18 155);
+  --theme-danger: oklch(0.58 0.2 25);
+  --theme-radius-card: 1rem;
+  --theme-radius-control: 0.75rem;
+  --theme-font-sans: ui-sans-serif, system-ui, sans-serif;
+  --theme-font-display: ui-sans-serif, system-ui, sans-serif;
+}
+
+@theme inline {
+  --color-background: var(--theme-background);
+  --color-foreground: var(--theme-foreground);
+  --color-surface: var(--theme-surface);
+  --color-surface-strong: var(--theme-surface-strong);
+  --color-muted: var(--theme-muted);
+  --color-line: var(--theme-line);
+  --color-primary: var(--theme-primary);
+  --color-primary-foreground: var(--theme-primary-foreground);
+  --color-focus: var(--theme-focus);
+  --color-danger: var(--theme-danger);
+  --font-sans: var(--theme-font-sans);
+  --font-display: var(--theme-font-display);
+  --radius-card: var(--theme-radius-card);
+  --radius-control: var(--theme-radius-control);
+  --container-shell: 80rem;
+  --ease-snappy: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@layer base {
+  body {
+    background-color: var(--theme-background);
+    color: var(--theme-foreground);
+    font-family: var(--theme-font-sans);
+  }
+}
