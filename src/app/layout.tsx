@@ -10,6 +10,9 @@ import { Footer } from '@/components/layout/Footer'
 import { ScrollSmootherProvider } from '@/components/providers/ScrollSmootherProvider'
 import { SiteLoader } from '@/components/ui/SiteLoader'
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    'https://paintball-saratov-demo.kulakpavel9396083.chatgpt.site',
+  ),
   title: 'Paintball — landing page',
   description: 'Одностраничный сайт проекта Paintball.',
   openGraph: {
