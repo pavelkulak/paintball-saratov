@@ -59,46 +59,60 @@ function SupportCard({ icons, text }: SupportCardProps) {
 
 export function EventSupportSection({ className }: { className?: string }) {
   return (
-    <section
+    <div
       className={twMerge(
-        'bg-primary text-primary-foreground relative z-10 -mt-6 overflow-hidden rounded-[50px] pt-[120px] max-md:-mt-4 max-md:rounded-[28px] max-md:pt-16',
+        'bg-primary text-primary-foreground relative z-10 -mt-6 overflow-hidden rounded-[50px] max-md:-mt-4 max-md:rounded-[28px]',
         className,
       )}
     >
-      <div className="max-w-content mx-auto flex w-full flex-col items-center px-4 text-center md:px-8 xl:px-0">
-        <SectionHeading
-          title="Мы рядом — до, во время и после мероприятия"
-          description="Вы отдыхаете и наслаждаетесь праздником, а мы берём на себя организацию и заботу о деталях"
-          decor="comfort"
-        />
-      </div>
-
-      <div className="mt-[52px] mb-[52px] h-[355px] w-full overflow-hidden [mask-image:linear-gradient(to_bottom,#000_0%,#000_65%,rgba(0,0,0,0.9)_75%,rgba(0,0,0,0.45)_88%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_bottom,#000_0%,#000_65%,rgba(0,0,0,0.9)_75%,rgba(0,0,0,0.45)_88%,transparent_100%)] max-md:mt-10 max-md:h-[320px]">
-        <div className="flex w-max animate-[support-marquee_35s_linear_infinite] will-change-transform motion-reduce:animate-none">
-          {[0, 1].map((groupIndex) => (
-            <div
-              key={groupIndex}
-              aria-hidden={groupIndex === 1}
-              className="flex gap-4 pr-4"
-            >
-              {supportCards.map((card) => (
-                <SupportCard key={`${groupIndex}-${card.text}`} {...card} />
-              ))}
-            </div>
-          ))}
+      <section
+        id="event-support"
+        aria-labelledby="event-support-title"
+        className="section-anchor pt-[120px] max-md:pt-16"
+      >
+        <div className="page-container flex flex-col items-center text-center">
+          <SectionHeading
+            title="Мы рядом — до, во время и после мероприятия"
+            titleId="event-support-title"
+            description="Вы отдыхаете и наслаждаетесь праздником, а мы берём на себя организацию и заботу о деталях"
+            decor="comfort"
+          />
         </div>
-      </div>
 
-      <div className="max-w-content mx-auto flex w-full flex-col items-center px-4 text-center md:px-8 xl:px-0">
-        <SectionHeading
-          title="Безопасность и сопровождение"
-          description="До и во время мероприятия — всё под контролем наших инструкторов"
-          decor="safety"
-        />
-      </div>
+        <div className="mt-[52px] mb-[52px] h-[355px] w-full overflow-hidden [mask-image:linear-gradient(to_bottom,#000_0%,#000_65%,rgba(0,0,0,0.9)_75%,rgba(0,0,0,0.45)_88%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_bottom,#000_0%,#000_65%,rgba(0,0,0,0.9)_75%,rgba(0,0,0,0.45)_88%,transparent_100%)] max-md:mt-10 max-md:h-[320px]">
+          <div className="flex w-max animate-[support-marquee_35s_linear_infinite] will-change-transform motion-reduce:animate-none">
+            {[0, 1].map((groupIndex) => (
+              <div
+                key={groupIndex}
+                aria-hidden={groupIndex === 1}
+                className="flex gap-4 pr-4"
+              >
+                {supportCards.map((card) => (
+                  <SupportCard key={`${groupIndex}-${card.text}`} {...card} />
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
-      <SafetyShowcase />
+      <section
+        id="event-safety"
+        aria-labelledby="event-safety-title"
+        className="section-anchor"
+      >
+        <div className="page-container flex flex-col items-center text-center">
+          <SectionHeading
+            title="Безопасность и сопровождение"
+            titleId="event-safety-title"
+            description="До и во время мероприятия — всё под контролем наших инструкторов"
+            decor="safety"
+          />
+        </div>
+
+        <SafetyShowcase />
+      </section>
       <EventProcessOrbit />
-    </section>
+    </div>
   )
 }

@@ -35,10 +35,11 @@ function PlanetCard({ planet, index }: { planet: Planet; index: number }) {
 
 export function MobilePlanetSlider() {
   return (
-    <section className="bg-background text-white xl:hidden">
-      <div className="max-w-content mx-auto flex h-svh min-h-0 w-full flex-col px-4 pt-[143px] pb-[50px] md:px-8 md:pt-[148px] md:pb-[55px] [@media(max-height:700px)]:h-auto [@media(max-height:700px)]:min-h-svh">
+    <div className="bg-background text-white xl:hidden">
+      <div className="page-container stage-padding flex h-svh min-h-0 flex-col [@media(max-height:700px)]:h-auto [@media(max-height:700px)]:min-h-svh">
         <SectionHeading
           title="Что можно добавить к празднику"
+          titleId="event-additions-title-mobile"
           description="Дополните игровую программу, чтобы праздник запомнился надолго"
           decor="additions"
         />
@@ -54,6 +55,6 @@ export function MobilePlanetSlider() {
           ))}
         </EmblaCarousel>
       </div>
-    </section>
+    </div>
   )
 }

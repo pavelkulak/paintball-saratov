@@ -137,7 +137,7 @@ export function LeadFormSection() {
     <section
       id="lead-form"
       aria-labelledby="lead-form-title"
-      className="bg-primary text-primary-foreground xl:max-w-content mx-4 mt-20 overflow-hidden rounded-[3rem] px-4 pt-14 pb-14 md:mx-8 md:mt-28 md:p-12 xl:mx-auto xl:grid xl:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)] xl:gap-12"
+      className="section-anchor page-container page-section-gap bg-primary text-primary-foreground overflow-hidden rounded-[3rem] px-4 pt-14 pb-14 md:p-12 xl:grid xl:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)] xl:gap-12"
     >
       <header className="mx-auto flex max-w-md flex-col gap-6 text-center xl:mx-0 xl:pt-0 xl:text-left">
         <h2

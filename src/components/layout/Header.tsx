@@ -32,7 +32,7 @@ export function Header() {
           'border-line/40 bg-background/75 border-b backdrop-blur-md',
       )}
     >
-      <div className="max-w-content mx-auto flex w-full items-center justify-between px-4 py-[14px] md:px-8 xl:px-0">
+      <div className="page-container flex items-center justify-between py-[14px]">
         <Link href="/" aria-label="На главную" className="flex items-center">
           <Logo />
         </Link>
@@ -41,11 +41,7 @@ export function Header() {
           <a href="tel:+79214480804">+7 (921) 448-08-04</a>
           <p>г. Домодедово, Каширское ш-се д. 107-А</p>
         </div>
-        <Button
-          href="#lead-form"
-          variant="light"
-          className="hidden lg:flex"
-        >
+        <Button href="#lead-form" variant="light" className="hidden lg:flex">
           Оставить заявку
         </Button>
 

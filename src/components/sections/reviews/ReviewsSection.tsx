@@ -11,10 +11,11 @@ export function ReviewsSection({ reviews }: { reviews: Review[] }) {
 
   return (
     <section
+      id="reviews"
       aria-labelledby="reviews-title"
-      className="bg-background text-foreground w-full overflow-hidden pt-16 pb-20 md:pt-24 md:pb-28 xl:pt-32 xl:pb-36"
+      className="section-anchor page-section-gap bg-background text-foreground w-full overflow-hidden"
     >
-      <div className="max-w-content mx-auto w-full px-4 md:px-8 xl:px-0">
+      <div className="page-container">
         <SectionHeading
           decor="reviews"
           title={
@@ -30,7 +31,7 @@ export function ReviewsSection({ reviews }: { reviews: Review[] }) {
       <EmblaCarousel
         ariaLabel="Отзывы родителей"
         containerClassName="gap-4"
-        className="mt-[52px] px-4 md:px-8 xl:pr-[max(1rem,calc((100vw-1200px)/2))] xl:pl-[max(0px,calc((100vw-1200px)/2))]"
+        className="page-rail mt-[52px]"
       >
         {reviews.map((review) => (
           <ReviewCard key={review.id} review={review} />

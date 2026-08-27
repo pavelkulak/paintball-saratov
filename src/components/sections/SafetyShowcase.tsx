@@ -245,7 +245,7 @@ export function SafetyShowcase() {
         />
       </div>
 
-      <div className="max-w-content mx-auto hidden w-full px-4 pt-[52px] md:px-8 xl:block xl:px-0">
+      <div className="page-container hidden pt-[52px] xl:block">
         <div className="relative aspect-[1700/1053] w-full">
           <SafetyRings />
 

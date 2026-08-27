@@ -303,10 +303,11 @@ export function EventProcessOrbit() {
 
   return (
     <section
+      id="event-process"
       ref={sceneRef}
       data-scroll-trigger-id="event-process-orbit"
-      aria-label="Как проходит мероприятие"
-      className="relative mt-[50px] min-h-[calc(100svh+700px)] w-full motion-reduce:min-h-0 md:mt-[55px] xl:mt-32"
+      aria-labelledby="event-process-title"
+      className="section-anchor relative mt-[50px] min-h-[calc(100svh+700px)] w-full motion-reduce:min-h-0 md:mt-[55px] xl:mt-32"
     >
       {/* A CSS svh probe is stable when mobile browser chrome expands or collapses. */}
       <span
@@ -317,11 +318,12 @@ export function EventProcessOrbit() {
       {/* The pin offset is added to the stage height to preserve its clipping edge. */}
       <div
         ref={stageRef}
-        className="bg-primary text-primary-foreground relative flex h-[calc(100svh+var(--process-pin-offset,0px))] min-h-[680px] w-full flex-col overflow-hidden pt-[143px] [--process-card-half-height:252px] [--process-card-width:clamp(280px,91.111vw,328px)] [--process-orbit-shift:-32px] [--process-radius:clamp(480px,147vw,668px)] motion-reduce:h-auto motion-reduce:min-h-0 md:pt-[148px] md:[--process-card-width:clamp(344px,46vw,374px)] md:[--process-orbit-shift:50px] md:[--process-radius:clamp(580px,82vw,668px)] xl:pt-[153px] xl:[--process-card-width:390px] xl:[--process-orbit-shift:100px] xl:[--process-radius:clamp(593px,46.4vw,668px)]"
+        className="stage-padding-start bg-primary text-primary-foreground relative flex h-[calc(100svh+var(--process-pin-offset,0px))] min-h-[680px] w-full flex-col overflow-hidden [--process-card-half-height:252px] [--process-card-width:clamp(280px,91.111vw,328px)] [--process-orbit-shift:-32px] [--process-radius:clamp(480px,147vw,668px)] motion-reduce:h-auto motion-reduce:min-h-0 md:[--process-card-width:clamp(344px,46vw,374px)] md:[--process-orbit-shift:50px] md:[--process-radius:clamp(580px,82vw,668px)] xl:[--process-card-width:390px] xl:[--process-orbit-shift:100px] xl:[--process-radius:clamp(593px,46.4vw,668px)]"
       >
-        <div className="max-w-content relative z-10 mx-auto w-full shrink-0 px-4 md:px-8 xl:px-0">
+        <div className="page-container relative z-10 shrink-0">
           <SectionHeading
             title="Как проходит праздник"
+            titleId="event-process-title"
             description="Шесть простых шагов от заявки до последней эмоции"
             decor="process"
           />
@@ -378,7 +380,7 @@ export function EventProcessOrbit() {
             </ol>
           </div>
         </div>
-        <ol className="max-w-content mx-auto hidden grid-cols-1 gap-4 px-4 py-[50px] motion-reduce:grid md:grid-cols-2 md:px-8 xl:grid-cols-3 xl:px-0">
+        <ol className="page-container hidden grid-cols-1 gap-4 py-[50px] motion-reduce:grid md:grid-cols-2 xl:grid-cols-3">
           {processSteps.map((step, index) => (
             <ProcessCard
               key={step.title}

@@ -31,7 +31,11 @@ export function Hero({
   })
 
   return (
-    <section className="relative isolate min-h-dvh min-h-svh overflow-hidden">
+    <section
+      id="hero"
+      aria-labelledby="hero-title"
+      className="section-anchor relative isolate min-h-dvh min-h-svh overflow-hidden"
+    >
       <div className="bg-olive absolute inset-0 z-0" aria-hidden="true">
         <Image
           src="/images/hero-background.jpg"
@@ -52,23 +56,27 @@ export function Hero({
         aria-hidden="true"
       />
 
-      <div className="max-w-content relative z-30 mx-auto min-h-dvh min-h-svh pt-[115px] pb-4 md:px-8 xl:grid xl:grid-cols-12 xl:grid-rows-[auto_1fr] xl:gap-x-6 xl:px-0 xl:pt-[12vh] xl:pb-[8vh]">
+      <div className="page-container relative z-30 min-h-dvh min-h-svh pt-[115px] pb-4 xl:grid xl:grid-cols-12 xl:grid-rows-[auto_1fr] xl:gap-x-6 xl:pt-[12vh] xl:pb-[8vh]">
         <div className="relative z-20 mx-auto flex w-full max-w-[345px] flex-col items-center gap-[19px] xl:col-span-12 xl:row-start-1 xl:mx-0 xl:block xl:max-w-none">
-          <h1 className="w-full max-w-[345px] text-center text-[48px] leading-[0.98] font-bold tracking-[0.03em] uppercase xl:hidden">
-            Активный формат отдыха, где всем интересно
+          <h1
+            id="hero-title"
+            className="w-full max-w-[345px] text-center text-[48px] leading-[0.98] font-bold tracking-[0.03em] uppercase xl:max-w-none xl:text-[6.4vw] xl:whitespace-nowrap"
+          >
+            <span className="xl:hidden">
+              Активный формат отдыха, где всем интересно
+            </span>
+            <span className="hidden xl:block">
+              <span className="block text-center">Активный формат отдыха,</span>
+              <span className="flex justify-between">
+                <span>где всем</span>
+                <span>интересно</span>
+              </span>
+            </span>
           </h1>
 
           <Button href="#lead-form" variant="light" className="xl:hidden">
             Оставить заявку
           </Button>
-
-          <h1 className="hidden text-[6.4vw] leading-[0.98] font-bold tracking-[0.03em] whitespace-nowrap uppercase xl:block">
-            <span className="block text-center">Активный формат отдыха,</span>
-            <span className="flex justify-between">
-              <span>где всем</span>
-              <span>интересно</span>
-            </span>
-          </h1>
         </div>
 
         <div

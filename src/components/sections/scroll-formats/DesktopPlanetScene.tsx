@@ -74,7 +74,7 @@ export function DesktopPlanetScene() {
     getReducedMotionSnapshot,
     getServerReducedMotionSnapshot,
   )
-  const sceneRef = useRef<HTMLElement>(null)
+  const sceneRef = useRef<HTMLDivElement>(null)
   const stageRef = useRef<HTMLDivElement>(null)
   const titleTrackRef = useRef<HTMLDivElement>(null)
   const cardTrackRef = useRef<HTMLDivElement>(null)
@@ -303,7 +303,7 @@ export function DesktopPlanetScene() {
   const initialCardTrackOffset = -initialIndex * CARD_HEIGHT
 
   return (
-    <section
+    <div
       ref={sceneRef}
       data-scroll-trigger-id={SCENE_ID}
       style={{ '--scene-slides': planets.length + 1 } as CSSProperties}
@@ -316,11 +316,12 @@ export function DesktopPlanetScene() {
     >
       <div
         ref={stageRef}
-        className="flex min-h-svh w-full flex-col px-4 pt-[148px] pb-[55px] md:px-8 xl:px-0 xl:pt-[153px] xl:pb-[60px]"
+        className="stage-padding flex min-h-svh w-full flex-col"
       >
-        <div className="max-w-content mx-auto flex min-h-0 w-full flex-1 flex-col">
+        <div className="page-container flex min-h-0 flex-1 flex-col">
           <SectionHeading
             title="Что можно добавить к празднику"
+            titleId="event-additions-title-desktop"
             description="Дополните игровую программу, чтобы праздник запомнился надолго"
             decor="additions"
           />
@@ -440,6 +441,6 @@ export function DesktopPlanetScene() {
           </div>
         </div>
       </div>
-    </section>
+    </div>
   )
 }

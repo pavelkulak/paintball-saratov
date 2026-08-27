@@ -10,9 +10,13 @@ type ScrollFormatsSectionProps = {
 
 export function ScrollFormatsSection({ className }: ScrollFormatsSectionProps) {
   return (
-    <div className={twMerge('w-full', className)}>
+    <section
+      id="event-additions"
+      aria-label="Дополнения к празднику"
+      className={twMerge('section-anchor w-full', className)}
+    >
       <DesktopPlanetSceneGate slideCount={planets.length + 1} />
       <MobilePlanetSlider />
-    </div>
+    </section>
   )
 }

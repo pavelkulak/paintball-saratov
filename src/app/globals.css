@@ -29,6 +29,11 @@
   --type-body: 16px;
   --type-body-sm: 14px;
   --type-caption: 12px;
+  --layout-gutter: 1rem;
+  --layout-section-gap: 5rem;
+  --layout-stage-start: 143px;
+  --layout-stage-end: 50px;
+  --layout-anchor-offset: 6rem;
 }
 
 @theme inline {
@@ -58,6 +63,55 @@
   :root {
     --type-body: 14px;
   }
+}
+
+@media (min-width: 768px) {
+  :root {
+    --layout-gutter: 2rem;
+    --layout-section-gap: 7rem;
+    --layout-stage-start: 148px;
+    --layout-stage-end: 55px;
+    --layout-anchor-offset: 7rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  :root {
+    --layout-section-gap: 8rem;
+    --layout-stage-start: 153px;
+    --layout-stage-end: 60px;
+    --layout-anchor-offset: 7.5rem;
+  }
+}
+
+@utility page-container {
+  width: min(calc(100% - 2 * var(--layout-gutter)), var(--container-content));
+  margin-inline: auto;
+}
+
+@utility page-rail {
+  padding-inline-start: max(
+    var(--layout-gutter),
+    calc((100% - var(--container-content)) / 2)
+  );
+  padding-inline-end: var(--layout-gutter);
+}
+
+@utility page-section-gap {
+  margin-block-start: var(--layout-section-gap);
+}
+
+@utility section-anchor {
+  scroll-margin-block-start: var(--layout-anchor-offset);
+}
+
+@utility stage-padding {
+  padding-block-start: var(--layout-stage-start);
+  padding-block-end: var(--layout-stage-end);
+}
+
+@utility stage-padding-start {
+  padding-block-start: var(--layout-stage-start);
 }
 
 @layer base {

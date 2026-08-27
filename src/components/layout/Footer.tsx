@@ -25,9 +25,9 @@ export function Footer() {
   return (
     <footer
       id="footer"
-      className="bg-primary text-primary-foreground mt-20 overflow-hidden rounded-t-[28px] pt-14 pb-14 md:mt-28 xl:rounded-t-[3rem] xl:pt-12 xl:pb-12"
+      className="section-anchor page-section-gap bg-primary text-primary-foreground overflow-hidden rounded-t-[28px] pt-14 pb-14 xl:rounded-t-[3rem] xl:pt-12 xl:pb-12"
     >
-      <div className="max-w-content mx-auto flex w-full flex-col px-4 md:px-8 xl:grid xl:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)] xl:gap-12 xl:px-0">
+      <div className="page-container flex flex-col xl:grid xl:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)] xl:gap-12">
         <div className="flex min-w-0 flex-col">
           <Link
             href="/"

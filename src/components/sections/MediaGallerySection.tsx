@@ -39,11 +39,8 @@ function StaticMediaGallery() {
     mediaGalleryContent.photos
 
   return (
-    <section
-      aria-labelledby="media-gallery-title-static"
-      className="bg-background text-foreground w-full overflow-hidden xl:hidden xl:motion-reduce:block"
-    >
-      <div className="max-w-content mx-auto w-full px-4 pt-[50px] pb-6 md:px-8 md:pt-[55px] md:pb-[55px]">
+    <div className="bg-background text-foreground w-full overflow-hidden xl:hidden xl:motion-reduce:block">
+      <div className="page-container pt-[50px] pb-6 md:pt-[55px] md:pb-[55px]">
         <GalleryVideo
           src={mediaGalleryContent.video}
           className="aspect-[328/176] w-full rounded-[24px] md:aspect-[16/7]"
@@ -90,15 +87,19 @@ function StaticMediaGallery() {
           </div>
         </div>
       </div>
-    </section>
+    </div>
   )
 }
 
 export function MediaGallerySection() {
   return (
-    <>
+    <section
+      id="media-gallery"
+      aria-label="Обзор площадки и игр"
+      className="section-anchor"
+    >
       <StaticMediaGallery />
       <DesktopMediaGallery content={mediaGalleryContent} />
-    </>
+    </section>
   )
 }

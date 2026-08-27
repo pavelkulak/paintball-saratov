@@ -64,15 +64,17 @@ const faqColumns = [
 function FAQItem({
   item,
   index,
+  layout,
   isOpen,
   onToggle,
 }: {
   item: (typeof faqItems)[number]
   index: number
+  layout: 'mobile' | 'desktop'
   isOpen: boolean
   onToggle: () => void
 }) {
-  const answerId = `faq-answer-${index}`
+  const answerId = `faq-answer-${layout}-${index}`
 
   return (
     <li className="bg-surface text-ink overflow-hidden rounded-3xl">
@@ -116,10 +118,11 @@ export function FAQSection() {
 
   return (
     <section
+      id="faq"
       aria-labelledby="faq-title"
-      className="bg-background text-foreground w-full overflow-hidden"
+      className="section-anchor page-section-gap bg-background text-foreground w-full overflow-hidden"
     >
-      <div className="max-w-content mx-auto w-full px-4 md:px-8 xl:px-0">
+      <div className="page-container">
         <SectionHeading
           className="gap-7"
           decor="faq"
@@ -142,6 +145,7 @@ export function FAQSection() {
               <FAQItem
                 key={item.question}
                 index={index}
+                layout="mobile"
                 isOpen={openIndex === index}
                 item={item}
                 onToggle={() => {
@@ -163,6 +167,7 @@ export function FAQSection() {
                     <FAQItem
                       key={item.question}
                       index={index}
+                      layout="desktop"
                       isOpen={openIndex === index}
                       item={item}
                       onToggle={() => {

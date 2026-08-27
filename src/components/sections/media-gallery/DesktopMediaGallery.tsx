@@ -24,7 +24,7 @@ type DesktopMediaGalleryProps = {
 }
 
 export function DesktopMediaGallery({ content }: DesktopMediaGalleryProps) {
-  const sceneRef = useRef<HTMLElement>(null)
+  const sceneRef = useRef<HTMLDivElement>(null)
   const stageRef = useRef<HTMLDivElement>(null)
   const videoRef = useRef<HTMLDivElement>(null)
   const headingRef = useRef<HTMLDivElement>(null)
@@ -129,15 +129,14 @@ export function DesktopMediaGallery({ content }: DesktopMediaGalleryProps) {
   }, [])
 
   return (
-    <section
+    <div
       ref={sceneRef}
       data-scroll-trigger-id={SCENE_ID}
-      aria-labelledby="media-gallery-title-desktop"
       className="bg-background text-foreground relative hidden h-[300svh] w-full xl:block xl:motion-reduce:hidden"
     >
       <div
         ref={stageRef}
-        className="pointer-events-none relative z-30 h-svh w-full overflow-hidden pt-[153px]"
+        className="stage-padding-start pointer-events-none relative z-30 h-svh w-full overflow-hidden"
       >
         <div className="mx-auto w-full max-w-[1680px]">
           <div
@@ -167,6 +166,6 @@ export function DesktopMediaGallery({ content }: DesktopMediaGalleryProps) {
           </div>
         ))}
       </div>
-    </section>
+    </div>
   )
 }

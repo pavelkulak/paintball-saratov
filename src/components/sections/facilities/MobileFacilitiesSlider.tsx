@@ -7,12 +7,9 @@ import { FACILITY_CARD_HEIGHT, FacilityCard } from './FacilityCard'
 
 export function MobileFacilitiesSlider() {
   return (
-    <section
-      aria-labelledby="facilities-mobile-title"
-      className="bg-background text-foreground overflow-hidden xl:hidden"
-    >
-      <div className="max-w-content mx-auto w-full pt-[9px]">
-        <div className="px-4">
+    <div className="bg-background text-foreground overflow-hidden xl:hidden">
+      <div className="pt-[9px]">
+        <div className="page-container">
           <SectionHeading
             className="mx-auto max-w-[328px]"
             title={facilitiesSectionContent.title}
@@ -26,11 +23,11 @@ export function MobileFacilitiesSlider() {
           ariaLabel="Удобства площадки"
           containerClassName="gap-3"
           options={MOBILE_ONLY_EMBLA_OPTIONS}
-          className="mt-10 px-4"
+          className="page-rail mt-10"
         >
           {facilities.map((facility) => (
             <li
-              className="w-[calc(100vw-32px)] max-w-[420px]"
+              className="w-[min(calc(100vw-2*var(--layout-gutter)),420px)]"
               key={facility.title}
               style={{ height: FACILITY_CARD_HEIGHT }}
             >
@@ -39,6 +36,6 @@ export function MobileFacilitiesSlider() {
           ))}
         </EmblaCarousel>
       </div>
-    </section>
+    </div>
   )
 }

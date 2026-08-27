@@ -14,7 +14,7 @@ const DESKTOP_MOTION_QUERY =
   '(min-width: 1280px) and (prefers-reduced-motion: no-preference)'
 
 export function DesktopFacilitiesScene() {
-  const sceneRef = useRef<HTMLElement>(null)
+  const sceneRef = useRef<HTMLDivElement>(null)
   const stageRef = useRef<HTMLDivElement>(null)
   const viewportRef = useRef<HTMLDivElement>(null)
   const trackRef = useRef<HTMLUListElement>(null)
@@ -98,10 +98,9 @@ export function DesktopFacilitiesScene() {
   }, [])
 
   return (
-    <section
+    <div
       ref={sceneRef}
       data-scroll-trigger-id={SCENE_ID}
-      aria-labelledby="facilities-title"
       style={
         {
           '--facilities-scroll-distance':
@@ -112,9 +111,9 @@ export function DesktopFacilitiesScene() {
     >
       <div
         ref={stageRef}
-        className="bg-background text-foreground flex h-svh w-full px-4 pt-[153px] pb-[60px] motion-reduce:h-auto motion-reduce:min-h-svh md:px-8 xl:px-0"
+        className="stage-padding bg-background text-foreground flex h-svh w-full motion-reduce:h-auto motion-reduce:min-h-svh"
       >
-        <div className="max-w-content mx-auto grid min-h-0 w-full grid-cols-[525px_592px] justify-between gap-16">
+        <div className="page-container grid min-h-0 grid-cols-[525px_592px] justify-between gap-16">
           <div className="self-start">
             <SectionHeading
               align="start"
@@ -148,6 +147,6 @@ export function DesktopFacilitiesScene() {
           </div>
         </div>
       </div>
-    </section>
+    </div>
   )
 }
