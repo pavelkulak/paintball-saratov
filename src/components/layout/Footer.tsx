@@ -80,7 +80,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-14 aspect-[0.55] w-full overflow-hidden rounded-3xl bg-white xl:mt-0 xl:aspect-[1.15]">
+        <div className="mt-14 aspect-[0.55] w-full overflow-hidden rounded-3xl bg-white sm:aspect-[4/3] md:aspect-[16/10] xl:mt-0 xl:aspect-[1.15]">
           <YandexMap />
         </div>
       </div>
