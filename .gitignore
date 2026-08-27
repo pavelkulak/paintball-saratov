@@ -6,6 +6,8 @@
 # next.js
 /.next/
 /out/
+/dist/
+/.sites-artifacts/
 
 # production
 /build
@@ -34,6 +36,8 @@
 /.bitrix-mcp/
 /tools/bitrix-mcp/node_modules/
 /tools/scripts/.cache/
+/.codex/config.toml
+/.codebase-memory/
 
 # vercel
 .vercel

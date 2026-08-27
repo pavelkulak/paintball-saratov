@@ -75,25 +75,9 @@ Project skill находится в [.agents/skills/bitrix-mcp/SKILL.md](.agents
 
 MCP используется для поиска текущего PHP/D7-кода, событий, ORM, компонентов и
 документации. Raw SQL write запрещён. Для локального OSPanel включён
-`bitrix_tinker`; изменения выполняются только через D7/public API после
-резервного копирования.
+`bitrix_tinker`; изменения выполняются только через D7/public API.
 
-Перед изменениями через MCP сделайте backup базы одной командой; пароль вводится
-интерактивно:
-
-```powershell
-New-Item -ItemType Directory -Force backups | Out-Null
-& 'D:\OSPanel\modules\MySQL-8.0\bin\mysqldump.exe' -h 127.0.1.30 -P 3306 -u paintball -p paintball_bitrix > backups\paintball_bitrix.sql
-```
-
-## Тестовый контент и endpoint
-
-После чистой установки можно создать тестовую структуру через MCP/D7 либо
-запустить bootstrap-скрипт:
-
-```powershell
-D:\OSPanel\modules\PHP-8.2\php.exe cms/local/cli/setup-content.php
-```
+## Публичный endpoint
 
 Публичный endpoint:
 
@@ -108,16 +92,45 @@ GET http://paintball-bitrix.local/api/v1/home
   "title": "Пейнтбол в Саратове",
   "description": "Тестовый текст из Bitrix",
   "phone": "+7 000 000-00-00",
-  "address": "Саратов"
+  "address": "Саратов",
+  "quiz": {
+    "total": 5,
+    "questions": [
+      {
+        "id": "audience",
+        "question": "Для кого подбираем игру?",
+        "answers": [
+          { "id": "children", "label": "Детский" },
+          { "id": "adults", "label": "Взрослый" },
+          { "id": "mixed", "label": "Смешанный вариант" }
+        ]
+      }
+    ]
+  },
+  "reviews": [
+    {
+      "id": "irina-m",
+      "name": "Ирина М.",
+      "avatarUrl": null,
+      "rating": 5,
+      "publishedAt": "2026-03-01",
+      "text": "Полный текст отзыва"
+    }
+  ]
 }
 ```
 
 В ответ не попадают `IBLOCK_ID`, `PROPERTY_*`, SQL-структура и внутренние
 исключения.
 
+Отзывы редактируются в инфоблоке «Отзывы родителей»: имя — название элемента,
+аватар — изображение для анонса, дата — начало активности, текст — подробное
+описание, рейтинг — обязательное целое число от 1 до 5. При отсутствии аватара
+frontend автоматически показывает инициалы.
+
 ## Static build
 
-`BITRIX_API_URL` используется только во время `next build`:
+`BITRIX_API_URL` используется во время `next build` и в режиме `dev:bitrix`:
 
 ```powershell
 $env:BITRIX_API_URL = 'http://paintball-bitrix.local/api/v1/home'
@@ -127,6 +140,21 @@ npm run preview
 
 Ответ проверяется Zod-схемой. Если URL не задан или Bitrix недоступен, сборка
 падает.
+
+Для разработки используется один режим с реальными данными Bitrix:
+
+```powershell
+# Hot Reload исходников Next.js
+npm.cmd run dev
+
+# Если Next перестал обновлять страницу, очистить только его dev-кеш
+npm.cmd run dev:reset
+```
+
+Dev-сервер использует Webpack и polling-наблюдение за файлами, что стабильнее
+для Hot Reload на Windows. После изменения записи в Bitrix страницу нужно
+обновить вручную. Production-сборка по-прежнему требует `BITRIX_API_URL` и
+получает данные из Bitrix.
 
 Основные команды:
 

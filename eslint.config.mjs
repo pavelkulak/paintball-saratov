@@ -8,6 +8,8 @@ const eslintConfig = defineConfig([
   globalIgnores([
     '.next/**',
     'out/**',
+    'dist/**',
+    '.sites-artifacts/**',
     'node_modules/**',
     '.bitrix-mcp/**',
     'infra/**',

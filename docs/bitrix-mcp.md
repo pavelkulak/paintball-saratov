@@ -19,21 +19,24 @@ BITRIX_MCP_TINKER_ENABLED=1
 
 Raw SQL write остаётся выключенным. Для доверенного локального OSPanel включён
 `bitrix_tinker`: произвольный PHP выполняется только по явному запросу, а
-изменения контента проходят через D7/public API после резервной копии. Не
-используйте tinker на production или общей базе.
+изменения контента проходят через D7/public API. Не используйте tinker на
+production или общей базе.
 
-В пользовательской конфигурации Codex сервер запускается из корня проекта:
+Сервер настраивается только для этого проекта в локальном
+`.codex/config.toml`. Конфиг не коммитится и запускает MCP напрямую через
+системный Node.js, без дополнительного процесса `npm run`:
 
 ```toml
 [mcp_servers.bitrix-mcp]
-command = 'npm.cmd'
-args = ['run', 'mcp:serve']
+command = 'node'
+args = ['tools/bitrix-mcp/run.mjs', 'serve']
 cwd = 'D:\\Site-Creative\\Paintball'
 startup_timeout_sec = 120
-env = { BITRIX_MCP_TINKER_ENABLED = '1', BITRIX_MCP_DB_ALLOW_WRITE = '0' }
 ```
 
-После изменения конфигурации перезапустите Codex. Project skill коммитится в
+Переменные MCP загружаются обёрткой из локального `.env.local`; raw SQL write
+внутри обёртки принудительно остаётся выключенным. После изменения
+конфигурации перезапустите Codex. Project skill коммитится в
 `.agents/skills/bitrix-mcp/SKILL.md`.
 
 ## Рабочий процесс
@@ -61,6 +64,6 @@ npm run mcp:index
 - `BITRIX_MCP_TINKER_ENABLED=1` разрешён только для этого доверенного локального OSPanel.
 - raw SQL для записи не используется; read-only запросы допустимы только при
   явном подтверждении их режима чтения.
-- Изменения контента через tinker проходят через D7/public API после резервной копии.
+- Изменения контента через tinker проходят через D7/public API.
 - Ядро `cms/bitrix/` не редактируется; проектный код находится в `cms/local/`.
 - Не показывайте `.settings.php`, пароль БД и другие секреты.

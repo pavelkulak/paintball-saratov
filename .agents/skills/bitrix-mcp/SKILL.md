@@ -36,7 +36,7 @@ If MCP returns warnings or an empty result after reindexing, fall back to direct
 ## Safety
 
 - Never use raw SQL for writes; a read-only query is allowed only when the operation is explicitly read-only.
-- `bitrix_tinker` is enabled only for this trusted local OSPanel Bitrix. Use it only after a successful backup, an explicit user request, and only for Bitrix D7/public API operations.
+- `bitrix_tinker` is enabled only for this trusted local OSPanel Bitrix. Use it only after an explicit user request and only for Bitrix D7/public API operations.
 - Keep `BITRIX_MCP_DB_ALLOW_WRITE=0` and `BITRIX_MCP_TINKER_ENABLED=1`.
 - Do not edit Bitrix core under `bitrix/`; prefer `local/` modules, handlers, and templates.
 - Do not expose `.settings.php`, Docker secrets, database passwords, or other credentials in responses or commits.

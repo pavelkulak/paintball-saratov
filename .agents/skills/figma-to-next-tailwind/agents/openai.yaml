@@ -1,0 +1,4 @@
+interface:
+  display_name: 'Figma to Next + Tailwind'
+  short_description: 'Figma-верстка Paintball для статического Next.js'
+  default_prompt: 'Используй $figma-to-next-tailwind, чтобы сверстать выбранный макет Figma в статическом проекте Paintball на Next.js и Tailwind.'
