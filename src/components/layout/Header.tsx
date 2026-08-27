@@ -6,7 +6,9 @@ import { useEffect, useState } from 'react'
 
 import { Logo } from '@/components/icons/Logo'
 import { AudienceTabs } from '@/components/navigation/AudienceTabs'
+import { MobileNavigation } from '@/components/navigation/MobileNavigation'
 import { Button } from '@/components/ui/Button'
+import { siteContact } from '@/lib/site-contact'
 
 export function Header() {
   const [isScrolled, setIsScrolled] = useState(false)
@@ -38,24 +40,14 @@ export function Header() {
         </Link>
         <AudienceTabs className="hidden lg:flex" />
         <div className="hidden flex-col items-start justify-center text-[14px] lg:flex">
-          <a href="tel:+79214480804">+7 (921) 448-08-04</a>
-          <p>г. Домодедово, Каширское ш-се д. 107-А</p>
+          <a href={siteContact.phone.href}>{siteContact.phone.label}</a>
+          <p>{siteContact.address}</p>
         </div>
         <Button href="#lead-form" variant="light" className="hidden lg:flex">
           Оставить заявку
         </Button>
 
-        <button
-          type="button"
-          className="bg-primary text-primary-foreground border-line inline-flex size-12 items-center justify-center self-center rounded-full border lg:hidden"
-          aria-label="Открыть меню"
-        >
-          <span aria-hidden="true" className="flex flex-col gap-1">
-            <span className="h-0.5 w-5 bg-current" />
-            <span className="h-0.5 w-5 bg-current" />
-            <span className="h-0.5 w-5 bg-current" />
-          </span>
-        </button>
+        <MobileNavigation />
       </div>
     </header>
   )

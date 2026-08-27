@@ -1,18 +1,21 @@
 import { FooterIconPlaceholder } from '@/components/icons/FooterIconPlaceholder'
 import { Logo } from '@/components/icons/Logo'
 import { YandexMap } from '@/components/ui/YandexMap'
+import { siteContact, siteSocialLinks } from '@/lib/site-contact'
 import Link from 'next/link'
 
 function FooterSocialLink({
   kind,
+  href,
   label,
 }: {
   kind: 'telegram' | 'vk'
+  href: string
   label: string
 }) {
   return (
     <a
-      href="#footer"
+      href={href}
       aria-label={label}
       className="bg-primary-foreground focus-visible:ring-ink inline-flex size-10 items-center justify-center rounded-lg focus-visible:ring-2 focus-visible:outline-none"
     >
@@ -45,18 +48,19 @@ export function Footer() {
 
           <div className="mt-14 flex flex-col gap-10 xl:mt-auto xl:pt-36">
             <div className="flex gap-4">
-              <FooterSocialLink kind="vk" label="Пейнтбол во ВКонтакте" />
-              <FooterSocialLink kind="telegram" label="Пейнтбол в Telegram" />
+              {siteSocialLinks.map((social) => (
+                <FooterSocialLink key={social.kind} {...social} />
+              ))}
             </div>
 
             <address className="flex flex-col gap-2 text-sm leading-[1.2] font-medium not-italic">
               <a
-                href="tel:+74951043686"
+                href={siteContact.phone.href}
                 className="focus-visible:ring-ink w-fit focus-visible:ring-2 focus-visible:outline-none"
               >
-                +7 (495) 104-36-86
+                {siteContact.phone.label}
               </a>
-              <span>г. Домодедово, Каширское ш-се д. 107-А</span>
+              <span>{siteContact.address}</span>
             </address>
 
             <div className="flex flex-col gap-4 xl:flex-row">

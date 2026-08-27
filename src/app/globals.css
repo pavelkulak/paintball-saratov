@@ -208,3 +208,59 @@
 .paintball-map-balloon__address {
   color: rgb(18 24 12 / 70%);
 }
+
+.mobile-navigation-dialog {
+  --mobile-navigation-origin-x: calc(100% - var(--layout-gutter) - 1.5rem);
+  --mobile-navigation-origin-y: 2.375rem;
+  clip-path: circle(
+    0 at var(--mobile-navigation-origin-x) var(--mobile-navigation-origin-y)
+  );
+  transition:
+    clip-path 560ms cubic-bezier(0.76, 0, 0.24, 1),
+    overlay 560ms allow-discrete,
+    display 560ms allow-discrete;
+}
+
+.mobile-navigation-dialog[open] {
+  clip-path: circle(
+    150vmax at var(--mobile-navigation-origin-x)
+      var(--mobile-navigation-origin-y)
+  );
+}
+
+.mobile-navigation-dialog::backdrop {
+  background: transparent;
+}
+
+.mobile-navigation-content {
+  opacity: 0;
+  transform: translateY(-0.35rem);
+  transition:
+    opacity 180ms ease 100ms,
+    transform 260ms ease 100ms;
+}
+
+.mobile-navigation-dialog[open] .mobile-navigation-content {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@starting-style {
+  .mobile-navigation-dialog[open] {
+    clip-path: circle(
+      0 at var(--mobile-navigation-origin-x) var(--mobile-navigation-origin-y)
+    );
+  }
+
+  .mobile-navigation-dialog[open] .mobile-navigation-content {
+    opacity: 0;
+    transform: translateY(-0.35rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mobile-navigation-dialog,
+  .mobile-navigation-content {
+    transition: none;
+  }
+}

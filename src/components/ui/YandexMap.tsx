@@ -2,6 +2,8 @@
 
 import { useEffect, useRef } from 'react'
 
+import { siteContact } from '@/lib/site-contact'
+
 type Coordinates = [number, number]
 
 type YandexMapInstance = {
@@ -98,7 +100,6 @@ export function YandexMap() {
         if (isCancelled || !mapElementRef.current) return
 
         const point: Coordinates = [55.41584, 37.786051]
-        const address = 'г. Домодедово, Каширское ш-се д. 107-А'
         const routeUrl =
           'https://yandex.ru/maps/?rtext=~55.41584,37.786051&rtt=auto'
         const isMobileViewport = window.matchMedia('(max-width: 576px)').matches
@@ -119,12 +120,12 @@ export function YandexMap() {
           balloonContent: `
             <div class="paintball-map-balloon">
               <strong class="paintball-map-balloon__title">Пейнтбол для всех</strong>
-              <a href="tel:+74951043686" class="paintball-map-balloon__phone">+7 (495) 104-36-86</a>
-              <div class="paintball-map-balloon__address">${address}</div>
+              <a href="${siteContact.phone.href}" class="paintball-map-balloon__phone">${siteContact.phone.label}</a>
+              <div class="paintball-map-balloon__address">${siteContact.address}</div>
               <a href="${routeUrl}" target="_blank" rel="noopener noreferrer" class="paintball-map-balloon__route">Построить маршрут</a>
             </div>
           `,
-          hintContent: address,
+          hintContent: siteContact.address,
         })
 
         map.geoObjects.add(placemark)
