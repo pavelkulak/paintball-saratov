@@ -56,20 +56,22 @@ export function Hero({
         aria-hidden="true"
       />
 
-      <div className="page-container relative z-30 min-h-dvh min-h-svh pt-[115px] pb-4 xl:grid xl:grid-cols-12 xl:grid-rows-[auto_1fr] xl:gap-x-6 xl:pt-[12vh] xl:pb-[8vh]">
-        <div className="relative z-20 mx-auto flex w-full max-w-[345px] flex-col items-center gap-[19px] xl:col-span-12 xl:row-start-1 xl:mx-0 xl:block xl:max-w-none">
+      <div className="page-container relative z-30 min-h-dvh min-h-svh pt-[115px] pb-4 xl:grid xl:grid-cols-12 xl:grid-rows-[auto_1fr] xl:gap-x-6 xl:pt-[max(104px,10vh)]">
+        <div className="relative z-20 mx-auto flex w-full max-w-[345px] flex-col items-center gap-[19px] xl:col-span-12 xl:col-start-1 xl:row-start-1 xl:mx-0 xl:block xl:max-w-none">
           <h1
             id="hero-title"
-            className="w-full max-w-[345px] text-center text-[48px] leading-[0.98] font-bold tracking-[0.03em] uppercase xl:max-w-none xl:text-[6.4vw] xl:whitespace-nowrap"
+            className="w-full max-w-[345px] text-center text-[48px] leading-[0.98] font-bold tracking-[0.03em] uppercase xl:max-w-none xl:text-[clamp(72px,5.6vw,96px)] xl:whitespace-nowrap"
           >
             <span className="xl:hidden">
               Активный формат отдыха, где всем интересно
             </span>
-            <span className="hidden xl:block">
-              <span className="block text-center">Активный формат отдыха,</span>
-              <span className="flex justify-between">
-                <span>где всем</span>
-                <span>интересно</span>
+            <span className="hidden xl:grid xl:grid-cols-12 xl:gap-x-6">
+              <span className="col-span-12 text-center">
+                Активный формат отдыха,
+              </span>
+              <span className="col-span-4 row-start-2 text-left">где всем</span>
+              <span className="col-span-4 col-start-9 row-start-2 text-right">
+                интересно
               </span>
             </span>
           </h1>
@@ -80,7 +82,7 @@ export function Hero({
         </div>
 
         <div
-          className="pointer-events-none absolute top-0 right-0 bottom-0 left-0 z-10 overflow-visible xl:col-span-4 xl:col-start-5 xl:row-span-2 xl:row-start-1"
+          className="pointer-events-none absolute inset-0 z-10 overflow-visible xl:relative xl:inset-auto xl:col-span-4 xl:col-start-5 xl:row-span-2 xl:row-start-1"
           aria-hidden="true"
         >
           <picture>
