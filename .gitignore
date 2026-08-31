@@ -38,6 +38,9 @@
 /tools/scripts/.cache/
 /.codex/config.toml
 /.codebase-memory/
+/.pnpm-store/
+/.codex/*.bak*
+/t2.mp4
 
 # vercel
 .vercel
