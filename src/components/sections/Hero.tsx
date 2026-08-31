@@ -62,9 +62,8 @@ export function Hero({
             className="relative z-20 hidden w-full max-w-none lg:col-span-4 lg:col-start-9 lg:flex lg:self-end"
           />
         </div>
-
-        <AudienceTabs className="absolute inset-x-4 bottom-4 z-20 flex lg:hidden" />
       </div>
+      <AudienceTabs className="absolute inset-x-2 bottom-4 z-40 flex lg:hidden" />
     </HeroParallaxScene>
   )
 }

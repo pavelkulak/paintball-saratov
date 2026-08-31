@@ -10,7 +10,7 @@ const audienceTabs = ['Для всех', 'Для детей', 'Для взрос
 type AudienceTab = (typeof audienceTabs)[number]
 
 const tabBaseClass =
-  'relative z-10 flex min-w-0 flex-1 items-center justify-center rounded-2xl px-1 py-4 text-[14px] leading-[17px] whitespace-nowrap font-medium transition-[color,transform] duration-200 ease-out motion-reduce:transition-none lg:min-w-max lg:flex-none lg:px-5 lg:py-5'
+  'relative z-10 flex min-w-0 flex-1 items-center justify-center rounded-2xl px-2.5 py-4 text-[14px] leading-[17px] whitespace-nowrap font-medium transition-[color,transform] duration-200 ease-out motion-reduce:transition-none lg:min-w-max lg:flex-none lg:px-5 lg:py-5'
 
 type AudienceTabsProps = {
   className?: string
