@@ -53,7 +53,7 @@ const PROCESS_MEDIA_CONDITIONS = {
 
 const PROCESS_SCROLL_DISTANCE = 700
 const PROCESS_CARD_BOTTOM_GAP = 16
-const PROCESS_TOUCH_SCRUB = 6
+const PROCESS_TOUCH_SCRUB = 0.6
 const PROCESS_POINTER_SCRUB = 2
 
 type PinOffsetElements = {
@@ -160,7 +160,7 @@ function ProcessCard({
 
 export function EventProcessOrbit() {
   const sceneRef = useRef<HTMLElement>(null)
-  const stageRef = useRef<HTMLDivElement>(null)
+  const pinViewportRef = useRef<HTMLDivElement>(null)
   const viewportHeightRef = useRef<HTMLSpanElement>(null)
   const orbitViewportRef = useRef<HTMLDivElement>(null)
   const orbitAnchorRef = useRef<HTMLDivElement>(null)
@@ -180,6 +180,7 @@ export function EventProcessOrbit() {
         }
 
         gsap.registerPlugin(ScrollTrigger)
+        ScrollTrigger.config({ ignoreMobileResize: true })
 
         const scheduleRefresh = () => {
           if (disposed) {
@@ -204,14 +205,14 @@ export function EventProcessOrbit() {
             return
           }
 
-          const stage = stageRef.current
+          const pinViewport = pinViewportRef.current
           const viewportHeight = viewportHeightRef.current
           const orbitViewport = orbitViewportRef.current
           const orbitAnchor = orbitAnchorRef.current
           const orbit = orbitRef.current
 
           if (
-            !stage ||
+            !pinViewport ||
             !viewportHeight ||
             !orbitViewport ||
             !orbitAnchor ||
@@ -246,8 +247,8 @@ export function EventProcessOrbit() {
 
             pinOffset = nextPinOffset
 
-            // A delayed pin moves the stage's clipping edge upward. Extending the
-            // stage by the same amount keeps that edge at the viewport bottom.
+            // Keep the extra layout height inside the clipped pin viewport. The
+            // inner composition shifts upward without enlarging GSAP's spacer.
             scene.style.setProperty('--process-pin-offset', `${pinOffset}px`)
           }
 
@@ -267,15 +268,14 @@ export function EventProcessOrbit() {
               scrollTrigger: {
                 id: 'event-process-orbit',
                 trigger: scene,
-                pin: stage,
+                pin: pinViewport,
                 // ScrollSmoother transforms its content on desktop. Reparenting
                 // gives text one fixed coordinate system instead of two competing
-                // transforms. Mobile stays nested so it inherits the pin offset.
+                // transforms. Mobile stays nested inside its clipping viewport.
                 ...(usesFixedDesktopPin
                   ? { pinType: 'fixed' as const, pinReparent: true }
                   : {}),
-                start: () =>
-                  pinOffset > 0 ? `top+=${pinOffset} top` : 'top top',
+                start: 'top top',
                 end: `+=${PROCESS_SCROLL_DISTANCE}`,
                 scrub,
                 anticipatePin: 1,
@@ -307,89 +307,91 @@ export function EventProcessOrbit() {
       ref={sceneRef}
       data-scroll-trigger-id="event-process-orbit"
       aria-labelledby="event-process-title"
-      className="section-anchor relative mt-[50px] min-h-[calc(100svh+700px)] w-full motion-reduce:min-h-0 md:mt-[55px] xl:mt-32"
+      className="section-anchor relative mt-[50px] min-h-[calc(100lvh+700px)] w-full motion-reduce:min-h-0 md:mt-[55px] xl:mt-32"
     >
-      {/* A CSS svh probe is stable when mobile browser chrome expands or collapses. */}
+      {/* The large viewport stays stable while mobile browser chrome retracts. */}
       <span
         ref={viewportHeightRef}
         aria-hidden="true"
-        className="pointer-events-none invisible absolute inset-x-0 top-0 h-svh"
+        className="pointer-events-none invisible absolute inset-x-0 top-0 h-lvh"
       />
-      {/* The pin offset is added to the stage height to preserve its clipping edge. */}
+      {/* Pin only the visible viewport; the inner layout absorbs the card offset. */}
       <div
-        ref={stageRef}
-        className="stage-padding-start bg-primary text-primary-foreground relative flex h-[calc(100svh+var(--process-pin-offset,0px))] min-h-[680px] w-full flex-col overflow-hidden [--process-card-half-height:252px] [--process-card-width:clamp(280px,91.111vw,328px)] [--process-orbit-shift:-32px] [--process-radius:clamp(480px,147vw,668px)] motion-reduce:h-auto motion-reduce:min-h-0 md:[--process-card-width:clamp(344px,46vw,374px)] md:[--process-orbit-shift:50px] md:[--process-radius:clamp(580px,82vw,668px)] xl:[--process-card-width:390px] xl:[--process-orbit-shift:100px] xl:[--process-radius:clamp(593px,46.4vw,668px)]"
+        ref={pinViewportRef}
+        className="bg-primary text-primary-foreground relative h-lvh w-full overflow-hidden motion-reduce:h-auto motion-reduce:min-h-0"
       >
-        <div className="page-container relative z-10 shrink-0">
-          <SectionHeading
-            title="Как проходит праздник"
-            titleId="event-process-title"
-            description="Шесть простых шагов от заявки до последней эмоции"
-            decor="process"
-          />
-        </div>
+        <div className="stage-padding-start relative flex h-[calc(100lvh+var(--process-pin-offset,0px))] min-h-[680px] w-full translate-y-[calc(var(--process-pin-offset,0px)*-1)] flex-col [--process-card-half-height:252px] [--process-card-width:clamp(280px,91.111vw,328px)] [--process-orbit-shift:-32px] [--process-radius:clamp(480px,147vw,668px)] motion-reduce:h-auto motion-reduce:min-h-0 motion-reduce:translate-y-0 md:[--process-card-width:clamp(344px,46vw,374px)] md:[--process-orbit-shift:50px] md:[--process-radius:clamp(580px,82vw,668px)] xl:[--process-card-width:390px] xl:[--process-orbit-shift:100px] xl:[--process-radius:clamp(593px,46.4vw,668px)]">
+          <div className="page-container relative z-10 shrink-0">
+            <SectionHeading
+              title="Как проходит праздник"
+              titleId="event-process-title"
+              description="Шесть простых шагов от заявки до последней эмоции"
+              decor="process"
+            />
+          </div>
 
-        <ol className="sr-only motion-reduce:hidden">
-          {processSteps.map((step) => (
-            <li key={step.title}>
-              <h3>{step.title}</h3>
-              <p>{step.description}</p>
-            </li>
-          ))}
-        </ol>
+          <ol className="sr-only motion-reduce:hidden">
+            {processSteps.map((step) => (
+              <li key={step.title}>
+                <h3>{step.title}</h3>
+                <p>{step.description}</p>
+              </li>
+            ))}
+          </ol>
 
-        <div
-          ref={orbitViewportRef}
-          className="relative mt-10 min-h-0 flex-1 motion-reduce:hidden md:mt-[45px] xl:mt-[50px]"
-        >
           <div
-            ref={orbitAnchorRef}
-            className="pointer-events-none absolute left-1/2 -translate-x-1/2 motion-reduce:hidden"
-            style={{
-              top: 'calc(var(--process-card-half-height) + var(--process-orbit-shift))',
-            }}
+            ref={orbitViewportRef}
+            className="relative mt-10 min-h-0 flex-1 motion-reduce:hidden md:mt-[45px] xl:mt-[50px]"
           >
-            <ol
-              ref={orbitRef}
-              aria-hidden="true"
-              className="relative will-change-transform"
+            <div
+              ref={orbitAnchorRef}
+              className="pointer-events-none absolute left-1/2 -translate-x-1/2 motion-reduce:hidden"
               style={{
-                width: 'calc(var(--process-radius) + var(--process-radius))',
-                height: 'calc(var(--process-radius) + var(--process-radius))',
-                transform: 'rotate(30deg)',
-                transformOrigin: '50% 50%',
+                top: 'calc(var(--process-card-half-height) + var(--process-orbit-shift))',
               }}
             >
-              {orbitAngles.map((angle, orbitIndex) => {
-                const stepIndex = (orbitIndex + 1) % processSteps.length
-                const step = processSteps[stepIndex]
+              <ol
+                ref={orbitRef}
+                aria-hidden="true"
+                className="relative will-change-transform"
+                style={{
+                  width: 'calc(var(--process-radius) + var(--process-radius))',
+                  height: 'calc(var(--process-radius) + var(--process-radius))',
+                  transform: 'rotate(30deg)',
+                  transformOrigin: '50% 50%',
+                }}
+              >
+                {orbitAngles.map((angle, orbitIndex) => {
+                  const stepIndex = (orbitIndex + 1) % processSteps.length
+                  const step = processSteps[stepIndex]
 
-                return (
-                  <ProcessCard
-                    key={`${step.title}-${angle}`}
-                    step={step}
-                    index={stepIndex}
-                    className="absolute top-1/2 left-1/2 h-[504px]"
-                    style={{
-                      width: 'var(--process-card-width)',
-                      transform: `translate(-50%, -50%) rotate(${angle}deg) translateY(calc(var(--process-radius) * -1))`,
-                    }}
-                  />
-                )
-              })}
-            </ol>
+                  return (
+                    <ProcessCard
+                      key={`${step.title}-${angle}`}
+                      step={step}
+                      index={stepIndex}
+                      className="absolute top-1/2 left-1/2 h-[504px]"
+                      style={{
+                        width: 'var(--process-card-width)',
+                        transform: `translate(-50%, -50%) rotate(${angle}deg) translateY(calc(var(--process-radius) * -1))`,
+                      }}
+                    />
+                  )
+                })}
+              </ol>
+            </div>
           </div>
+          <ol className="page-container hidden grid-cols-1 gap-4 py-[50px] motion-reduce:grid md:grid-cols-2 xl:grid-cols-3">
+            {processSteps.map((step, index) => (
+              <ProcessCard
+                key={step.title}
+                step={step}
+                index={index}
+                className="h-[504px] w-full"
+              />
+            ))}
+          </ol>
         </div>
-        <ol className="page-container hidden grid-cols-1 gap-4 py-[50px] motion-reduce:grid md:grid-cols-2 xl:grid-cols-3">
-          {processSteps.map((step, index) => (
-            <ProcessCard
-              key={step.title}
-              step={step}
-              index={index}
-              className="h-[504px] w-full"
-            />
-          ))}
-        </ol>
       </div>
     </section>
   )
