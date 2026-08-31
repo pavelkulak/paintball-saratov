@@ -34,7 +34,7 @@ export function Hero({
     <section
       id="hero"
       aria-labelledby="hero-title"
-      className="section-anchor relative isolate min-h-dvh min-h-svh overflow-hidden"
+      className="section-anchor relative isolate min-h-svh overflow-hidden"
     >
       <div className="bg-olive absolute inset-0 z-0" aria-hidden="true">
         <Image
@@ -56,7 +56,7 @@ export function Hero({
         aria-hidden="true"
       />
 
-      <div className="page-container relative z-30 min-h-dvh min-h-svh pt-[115px] pb-4 xl:grid xl:grid-cols-12 xl:grid-rows-[auto_1fr] xl:gap-x-6 xl:pt-[max(104px,10vh)]">
+      <div className="page-container relative z-30 min-h-svh pt-[115px] pb-4 xl:grid xl:grid-cols-12 xl:grid-rows-[auto_1fr] xl:gap-x-6 xl:pt-[max(104px,10vh)]">
         <div className="relative z-20 mx-auto flex w-full max-w-[345px] flex-col items-center gap-[19px] xl:col-span-12 xl:col-start-1 xl:row-start-1 xl:mx-0 xl:block xl:max-w-none">
           <h1
             id="hero-title"
@@ -102,7 +102,7 @@ export function Hero({
               draggable={false}
               decoding="async"
               fetchPriority="high"
-              className="absolute bottom-[min(0px,calc(100dvh-53.75rem))] left-1/2 h-auto w-[427px] max-w-none -translate-x-1/2 max-[340px]:bottom-[min(0px,calc(100dvh-56.75rem))] xl:bottom-[clamp(-18rem,calc(100dvh-67.5rem),0rem)] xl:w-[540px]"
+              className="absolute bottom-[min(0px,calc(100svh-53.75rem))] left-1/2 h-auto w-[427px] max-w-none -translate-x-1/2 max-[340px]:bottom-[min(0px,calc(100svh-56.75rem))] xl:bottom-[clamp(-18rem,calc(100svh-67.5rem),0rem)] xl:w-[540px]"
             />
           </picture>
         </div>
