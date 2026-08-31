@@ -65,12 +65,14 @@ export function Hero({
             <span className="xl:hidden">
               Активный формат отдыха, где всем интересно
             </span>
-            <span className="hidden xl:grid xl:grid-cols-12 xl:gap-x-6">
-              <span className="col-span-12 text-center">
+            <span className="hidden xl:inline-grid xl:w-max xl:max-w-full xl:grid-cols-[auto_1fr_auto]">
+              <span className="col-span-3 text-center">
                 Активный формат отдыха,
               </span>
-              <span className="col-span-4 row-start-2 text-left">где всем</span>
-              <span className="col-span-4 col-start-9 row-start-2 text-right">
+              <span className="col-start-1 row-start-2 text-left">
+                где всем
+              </span>
+              <span className="col-start-3 row-start-2 text-right">
                 интересно
               </span>
             </span>
