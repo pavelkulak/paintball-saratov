@@ -1,10 +1,11 @@
-import Image, { getImageProps } from 'next/image'
+import { getImageProps } from 'next/image'
 
 import type { HomeResponse } from '@/lib/bitrix/home-schema'
 
 import { QuizCard } from '../ui/QuizCard'
 import { Button } from '../ui/Button'
 import { AudienceTabs } from '../navigation/AudienceTabs'
+import { HeroParallaxScene } from './hero/HeroParallaxScene'
 
 export function Hero({
   content,
@@ -31,51 +32,14 @@ export function Hero({
   })
 
   return (
-    <section
-      id="hero"
-      aria-labelledby="hero-title"
-      className="section-anchor relative isolate min-h-svh overflow-hidden"
-    >
-      <div className="bg-olive absolute inset-0 z-0" aria-hidden="true">
-        <Image
-          src="/images/hero-background.jpg"
-          alt=""
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover object-center"
-        />
-      </div>
-
-      <div
-        className="pointer-events-none absolute inset-0 z-10"
-        style={{
-          background:
-            'radial-gradient(ellipse at center, transparent 0%, rgb(0 0 0 / 50%) 39%, rgb(0 0 0 / 50%) 100%)',
-        }}
-        aria-hidden="true"
-      />
-
-      <div className="page-container relative z-30 min-h-svh pt-[115px] pb-4 xl:grid xl:grid-cols-12 xl:grid-rows-[auto_1fr] xl:gap-x-6 xl:pt-[max(104px,10vh)]">
-        <div className="relative z-20 mx-auto flex w-full max-w-[345px] flex-col items-center gap-[19px] xl:col-span-12 xl:col-start-1 xl:row-start-1 xl:mx-0 xl:block xl:max-w-none">
+    <HeroParallaxScene>
+      <div className="page-container relative z-30 flex min-h-svh flex-col pt-[115px] pb-[88px] xl:pt-[max(104px,10vh)] xl:pb-5">
+        <div className="relative z-20 mx-auto flex w-full flex-col items-center gap-[19px]">
           <h1
             id="hero-title"
-            className="w-full max-w-[345px] text-center text-[48px] leading-[0.98] font-bold tracking-[0.03em] uppercase xl:max-w-none xl:text-[clamp(72px,5.6vw,96px)] xl:whitespace-nowrap"
+            className="w-full max-w-[1180px] text-center text-[48px] leading-[0.98] font-bold tracking-[0.03em] text-balance uppercase xl:text-[clamp(72px,5.6vw,96px)]"
           >
-            <span className="xl:hidden">
-              Активный формат отдыха, где всем интересно
-            </span>
-            <span className="hidden xl:inline-grid xl:w-max xl:max-w-full xl:grid-cols-[auto_1fr_auto]">
-              <span className="col-span-3 text-center">
-                Активный формат отдыха,
-              </span>
-              <span className="col-start-1 row-start-2 text-left">
-                где всем
-              </span>
-              <span className="col-start-3 row-start-2 text-right">
-                интересно
-              </span>
-            </span>
+            Активный формат отдыха, где всем интересно
           </h1>
 
           <Button href="#lead-form" variant="light" className="xl:hidden">
@@ -83,44 +47,51 @@ export function Hero({
           </Button>
         </div>
 
-        <div
-          className="pointer-events-none absolute inset-0 z-10 overflow-visible xl:relative xl:inset-auto xl:col-span-4 xl:col-start-5 xl:row-span-2 xl:row-start-1"
-          aria-hidden="true"
-        >
-          <picture>
-            <source
-              media="(min-width: 1280px)"
-              srcSet={desktopPlayersSrcSet ?? desktopPlayersProps.src}
-            />
-            <source
-              media="(max-width: 1279px)"
-              srcSet={mobilePlayersSrcSet ?? mobilePlayersProps.src}
-            />
-            <img
-              {...mobilePlayersProps}
-              alt=""
-              draggable={false}
-              decoding="async"
-              fetchPriority="high"
-              className="absolute bottom-[min(0px,calc(100svh-53.75rem))] left-1/2 h-auto w-[427px] max-w-none -translate-x-1/2 max-[340px]:bottom-[min(0px,calc(100svh-56.75rem))] xl:bottom-[clamp(-18rem,calc(100svh-67.5rem),0rem)] xl:w-[540px]"
-            />
-          </picture>
-        </div>
+        <div className="relative mt-6 min-h-[430px] flex-1 xl:mt-4 xl:grid xl:min-h-[510px] xl:grid-cols-12 xl:gap-x-6">
+          <div
+            className="pointer-events-none absolute inset-y-0 left-1/2 z-10 w-[400px] max-w-[112vw] -translate-x-1/2 overflow-visible xl:w-[540px] xl:max-w-none"
+            aria-hidden="true"
+          >
+            <div
+              data-hero-players
+              className="absolute inset-0 will-change-transform motion-reduce:transform-none"
+            >
+              <picture>
+                <source
+                  media="(min-width: 1280px)"
+                  srcSet={desktopPlayersSrcSet ?? desktopPlayersProps.src}
+                />
+                <source
+                  media="(max-width: 1279px)"
+                  srcSet={mobilePlayersSrcSet ?? mobilePlayersProps.src}
+                />
+                <img
+                  {...mobilePlayersProps}
+                  alt=""
+                  draggable={false}
+                  decoding="async"
+                  fetchPriority="high"
+                  className="absolute top-0 left-1/2 h-auto w-full max-w-none -translate-x-1/2 xl:w-[540px]"
+                />
+              </picture>
+            </div>
+          </div>
 
-        <div className="relative z-20 hidden w-full max-w-[372px] flex-col gap-10 xl:col-span-4 xl:row-start-2 xl:flex xl:self-end">
-          <p className="text-body leading-[1.2]">{content.description}</p>
-          <Button href="#lead-form" variant="light">
-            Оставить заявку
-          </Button>
-        </div>
+          <div className="relative z-20 hidden w-full max-w-[372px] flex-col gap-10 xl:col-span-4 xl:flex xl:self-end">
+            <p className="text-body leading-[1.2]">{content.description}</p>
+            <Button href="#lead-form" variant="light">
+              Оставить заявку
+            </Button>
+          </div>
 
-        <QuizCard
-          quiz={content.quiz}
-          className="relative z-20 hidden w-full max-w-none xl:col-span-4 xl:col-start-9 xl:row-start-2 xl:flex xl:self-end"
-        />
+          <QuizCard
+            quiz={content.quiz}
+            className="relative z-20 hidden w-full max-w-none xl:col-span-4 xl:col-start-9 xl:flex xl:self-end"
+          />
+        </div>
 
         <AudienceTabs className="absolute inset-x-4 bottom-4 z-20 flex lg:hidden" />
       </div>
-    </section>
+    </HeroParallaxScene>
   )
 }
