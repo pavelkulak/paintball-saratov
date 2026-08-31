@@ -14,7 +14,7 @@ export function Hero({
 }) {
   return (
     <HeroParallaxScene>
-      <div className="page-container relative z-30 flex min-h-svh flex-col pt-[115px] pb-[88px] lg:pt-[max(104px,10vh)] lg:pb-5">
+      <div className="page-container relative z-30 flex h-full min-h-0 flex-col overflow-hidden pt-[115px] pb-[88px] lg:h-auto lg:min-h-svh lg:overflow-visible lg:pt-[max(104px,10vh)] lg:pb-5">
         <div className="relative z-20 mx-auto flex w-full flex-col items-center gap-[19px]">
           <h1
             id="hero-title"
@@ -28,7 +28,7 @@ export function Hero({
           </Button>
         </div>
 
-        <div className="relative mt-6 min-h-[430px] flex-1 md:min-h-[520px] lg:mt-4 lg:grid lg:min-h-[510px] lg:grid-cols-12 lg:gap-x-6">
+        <div className="relative mt-6 min-h-0 flex-1 lg:mt-4 lg:grid lg:min-h-[510px] lg:grid-cols-12 lg:gap-x-6">
           <div
             className="pointer-events-none absolute inset-y-0 left-1/2 z-10 w-[min(108vw,430px)] -translate-x-1/2 overflow-visible md:w-[480px] lg:w-[clamp(480px,44vw,540px)]"
             aria-hidden="true"
