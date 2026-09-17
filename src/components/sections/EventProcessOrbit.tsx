@@ -132,7 +132,7 @@ function ProcessCard({
           src={step.image}
           alt=""
           fill
-          sizes="(min-width: 1280px) 390px, (min-width: 768px) 374px, calc(100vw - 32px)"
+          sizes="(min-width: 1921px) 520px, (min-width: 1280px) 390px, (min-width: 768px) 374px, calc(100vw - 32px)"
           className="object-cover"
           onError={(event) => {
             event.currentTarget.style.display = 'none'
@@ -320,7 +320,7 @@ export function EventProcessOrbit() {
         ref={pinViewportRef}
         className="bg-primary text-primary-foreground relative h-lvh w-full overflow-hidden motion-reduce:h-auto motion-reduce:min-h-0"
       >
-        <div className="stage-padding-start relative flex h-[calc(100lvh+var(--process-pin-offset,0px))] min-h-[680px] w-full translate-y-[calc(var(--process-pin-offset,0px)*-1)] flex-col [--process-card-half-height:252px] [--process-card-width:clamp(280px,91.111vw,328px)] [--process-orbit-shift:-32px] [--process-radius:clamp(480px,147vw,668px)] motion-reduce:h-auto motion-reduce:min-h-0 motion-reduce:translate-y-0 md:[--process-card-width:clamp(344px,46vw,374px)] md:[--process-orbit-shift:50px] md:[--process-radius:clamp(580px,82vw,668px)] xl:[--process-card-width:390px] xl:[--process-orbit-shift:100px] xl:[--process-radius:clamp(593px,46.4vw,668px)]">
+        <div className="stage-padding-start relative flex h-[calc(100lvh+var(--process-pin-offset,0px))] min-h-[680px] w-full translate-y-[calc(var(--process-pin-offset,0px)*-1)] flex-col [--process-card-half-height:252px] [--process-card-width:clamp(280px,91.111vw,328px)] [--process-orbit-shift:-32px] [--process-radius:clamp(480px,147vw,668px)] motion-reduce:h-auto motion-reduce:min-h-0 motion-reduce:translate-y-0 md:[--process-card-width:clamp(344px,46vw,374px)] md:[--process-orbit-shift:50px] md:[--process-radius:clamp(580px,82vw,668px)] xl:[--process-card-width:390px] xl:[--process-orbit-shift:100px] xl:[--process-radius:clamp(593px,46.4vw,668px)] 2xl:[--process-card-half-height:calc(var(--process-card-height)/2)] 2xl:[--process-card-height:clamp(504px,26.25vw,672px)] 2xl:[--process-card-width:clamp(390px,20.3125vw,520px)] 2xl:[--process-orbit-shift:clamp(100px,5.2083vw,133px)] 2xl:[--process-radius:clamp(668px,34.7917vw,890px)]">
           <div className="page-container relative z-10 shrink-0">
             <SectionHeading
               title="Как проходит праздник"
@@ -370,7 +370,7 @@ export function EventProcessOrbit() {
                       key={`${step.title}-${angle}`}
                       step={step}
                       index={stepIndex}
-                      className="absolute top-1/2 left-1/2 h-[504px]"
+                      className="absolute top-1/2 left-1/2 h-[504px] 2xl:h-[var(--process-card-height)]"
                       style={{
                         width: 'var(--process-card-width)',
                         transform: `translate(-50%, -50%) rotate(${angle}deg) translateY(calc(var(--process-radius) * -1))`,
@@ -387,7 +387,7 @@ export function EventProcessOrbit() {
                 key={step.title}
                 step={step}
                 index={index}
-                className="h-[504px] w-full"
+                className="h-[504px] w-full 2xl:h-[var(--process-card-height)]"
               />
             ))}
           </ol>

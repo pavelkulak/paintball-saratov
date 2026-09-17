@@ -29,32 +29,3 @@ export function GalleryPhoto({
     </div>
   )
 }
-
-export function GalleryVideo({
-  src,
-  className,
-}: {
-  src: string
-  className?: string
-}) {
-  return (
-    <div
-      className={twMerge(
-        'relative aspect-[16/7] w-full overflow-hidden rounded-[24px]',
-        className,
-      )}
-    >
-      <video
-        className="absolute inset-0 size-full object-cover"
-        autoPlay
-        loop
-        muted
-        playsInline
-        preload="metadata"
-        aria-hidden="true"
-      >
-        <source src={src} type="video/mp4" />
-      </video>
-    </div>
-  )
-}

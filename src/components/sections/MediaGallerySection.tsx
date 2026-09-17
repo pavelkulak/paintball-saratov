@@ -1,9 +1,9 @@
 import { SectionHeading } from '@/components/ui/SectionHeading'
 
 import { DesktopMediaGallery } from './media-gallery/DesktopMediaGallery'
+import { GalleryVideo } from './media-gallery/GalleryVideo'
 import {
   GalleryPhoto,
-  GalleryVideo,
   type MediaGalleryPhotoData,
 } from './media-gallery/MediaGalleryVisuals'
 
