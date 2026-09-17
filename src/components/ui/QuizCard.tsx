@@ -3,6 +3,8 @@
 import { useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 
+import { ArrowLeftIcon } from '@/components/icons/ArrowLeftIcon'
+import { ArrowRightIcon } from '@/components/icons/ArrowRightIcon'
 import type { HomeResponse } from '@/lib/bitrix/home-schema'
 
 type QuizCardProps = {
@@ -89,20 +91,7 @@ export function QuizCard({ quiz, className }: QuizCardProps) {
           onClick={() => selectQuestion(currentQuestionIndex - 1)}
           className="border-ink text-ink hover:bg-ink focus-visible:outline-primary disabled:hover:text-ink inline-flex size-10 items-center justify-center rounded-full border-2 transition-colors hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent"
         >
-          <svg
-            aria-hidden="true"
-            viewBox="0 0 24 24"
-            className="size-4"
-            fill="none"
-          >
-            <path
-              d="m14 6-6 6 6 6"
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-            />
-          </svg>
+          <ArrowLeftIcon aria-hidden="true" className="size-4" />
         </button>
 
         <span className="text-ink/50 text-base">
@@ -116,20 +105,7 @@ export function QuizCard({ quiz, className }: QuizCardProps) {
           onClick={() => selectQuestion(currentQuestionIndex + 1)}
           className="bg-ink focus-visible:outline-primary inline-flex size-10 items-center justify-center rounded-full text-white transition-transform hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-2 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:scale-100"
         >
-          <svg
-            aria-hidden="true"
-            viewBox="0 0 24 24"
-            className="size-4"
-            fill="none"
-          >
-            <path
-              d="m10 6 6 6-6 6"
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-            />
-          </svg>
+          <ArrowRightIcon aria-hidden="true" className="size-4" />
         </button>
       </div>
     </section>

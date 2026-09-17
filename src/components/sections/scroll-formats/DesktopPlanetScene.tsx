@@ -327,7 +327,7 @@ export function DesktopPlanetScene() {
           />
 
           <div className="mt-[50px] grid min-h-0 flex-1 grid-cols-1 gap-4 xl:grid-cols-2">
-            <div className="flex min-h-[420px] items-center justify-center overflow-hidden rounded-[24px] bg-white px-5 md:min-h-[520px] md:px-8 xl:min-h-0">
+            <div className="flex max-h-[650px] min-h-[420px] items-center justify-center overflow-hidden rounded-[24px] bg-white px-5 md:min-h-[520px] md:px-8 xl:min-h-0">
               <div
                 className="w-full overflow-hidden"
                 style={{ height: `${TITLE_VIEWPORT_HEIGHT}px` }}
@@ -371,7 +371,7 @@ export function DesktopPlanetScene() {
               </div>
             </div>
 
-            <MediaCardFrame className="min-h-[420px] md:min-h-[520px] xl:min-h-0">
+            <MediaCardFrame className="max-h-[650px] min-h-[420px] md:min-h-[520px] xl:min-h-0">
               {planets.map((planet, index) => (
                 <div
                   key={planet.image}

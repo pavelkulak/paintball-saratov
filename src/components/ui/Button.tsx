@@ -26,7 +26,7 @@ export function Button({
 }: ButtonProps) {
   const mergedClassName = twMerge(
     clsx(
-      'focus-visible:outline-primary inline-flex w-full max-w-[200px] items-center justify-center rounded-2xl px-8 py-3 font-medium transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 disabled:pointer-events-none disabled:opacity-50',
+      'focus-visible:outline-primary inline-flex w-full max-w-[200px] cursor-pointer items-center justify-center rounded-2xl px-8 py-3 font-medium transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50',
       variantClasses[variant],
       className,
     ),

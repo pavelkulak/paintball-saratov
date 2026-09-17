@@ -1,9 +1,9 @@
 'use client'
 
-import { X } from 'lucide-react'
 import { useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 
+import { CloseIcon } from '@/components/icons/CloseIcon'
 import type { Review } from '@/lib/bitrix/home-schema'
 
 import { formatReviewDate } from './review.utils'
@@ -94,7 +94,7 @@ export function ReviewDetailsModal({
             onClick={onClose}
             className="text-ink/60 hover:text-ink focus-visible:ring-primary shrink-0 cursor-pointer rounded-full p-1 transition-colors focus-visible:ring-2 focus-visible:outline-none"
           >
-            <X aria-hidden="true" className="size-6" />
+            <CloseIcon aria-hidden="true" className="size-6" />
           </button>
         </div>
 
