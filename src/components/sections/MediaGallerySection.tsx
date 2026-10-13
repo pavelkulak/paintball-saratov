@@ -9,25 +9,27 @@ import {
 
 const mediaGalleryContent = {
   title: 'Обзор площадки и игр',
-  video: '/videos/paintball-overview.mp4',
+  video: '/videos/paintball-overview-1080p.mp4',
+  mobileVideo: '/videos/paintball-overview-720p.mp4',
+  poster: '/videos/paintball-overview-poster.webp',
   photos: [
     {
-      src: '/images/media-gallery/paintball-gallery-01.jpg',
+      src: '/images/media-gallery/paintball-gallery-01.webp',
       desktopClassName:
         'left-[13%] top-[234svh] aspect-[4/5] w-[10vw] max-w-[154px]',
     },
     {
-      src: '/images/media-gallery/paintball-gallery-02.jpg',
+      src: '/images/media-gallery/paintball-gallery-02.webp',
       desktopClassName:
         'right-[13%] top-[234svh] aspect-[4/5] w-[10vw] max-w-[154px]',
     },
     {
-      src: '/images/media-gallery/paintball-gallery-03.jpg',
+      src: '/images/media-gallery/paintball-gallery-03.webp',
       desktopClassName:
         'left-[34%] top-[253svh] aspect-[3/4] w-[15vw] max-w-[226px]',
     },
     {
-      src: '/images/media-gallery/paintball-gallery-04.jpg',
+      src: '/images/media-gallery/paintball-gallery-04.webp',
       desktopClassName:
         'right-[36%] top-[260svh] aspect-[3/4] w-[9vw] max-w-[132px]',
     },
@@ -42,7 +44,8 @@ function StaticMediaGallery() {
     <div className="bg-background text-foreground w-full overflow-hidden xl:hidden xl:motion-reduce:block">
       <div className="page-container pt-[50px] pb-6 md:pt-[55px] md:pb-[55px]">
         <GalleryVideo
-          src={mediaGalleryContent.video}
+          src={mediaGalleryContent.mobileVideo}
+          poster={mediaGalleryContent.poster}
           className="aspect-[328/176] w-full rounded-[24px] md:aspect-[16/7]"
         />
 

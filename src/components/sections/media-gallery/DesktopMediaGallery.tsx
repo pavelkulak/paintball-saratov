@@ -20,6 +20,7 @@ type DesktopMediaGalleryProps = {
   content: {
     title: string
     video: string
+    poster: string
     photos: readonly MediaGalleryPhotoData[]
   }
 }
@@ -189,7 +190,11 @@ export function DesktopMediaGallery({ content }: DesktopMediaGalleryProps) {
       >
         <div className="mx-auto w-full max-w-[min(1680px,calc((100svh-var(--layout-stage-start)-var(--layout-stage-end))*16/7))]">
           <div ref={videoRef} className="relative mx-auto w-full">
-            <GalleryVideo src={content.video} playbackGate={playbackEnabled} />
+            <GalleryVideo
+              src={content.video}
+              poster={content.poster}
+              playbackGate={playbackEnabled}
+            />
           </div>
         </div>
       </div>

@@ -7,6 +7,7 @@ import { siteContact } from '@/lib/site-contact'
 type Coordinates = [number, number]
 
 type YandexMapInstance = {
+  destroy: () => void
   behaviors: {
     disable: (behavior: 'scrollZoom' | 'drag') => void
   }
@@ -92,32 +93,37 @@ export function YandexMap() {
   const mapElementRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
+    const element = mapElementRef.current
+    if (!element) return
+
     let isCancelled = false
     let map: YandexMapInstance | undefined
 
-    loadYandexMaps()
-      .then((ymaps) => {
-        if (isCancelled || !mapElementRef.current) return
+    const initializeMap = () => {
+      void loadYandexMaps()
+        .then((ymaps) => {
+          if (isCancelled || !mapElementRef.current) return
 
-        const point: Coordinates = [55.41584, 37.786051]
-        const routeUrl =
-          'https://yandex.ru/maps/?rtext=~55.41584,37.786051&rtt=auto'
-        const isMobileViewport = window.matchMedia('(max-width: 576px)').matches
+          const point: Coordinates = [55.41584, 37.786051]
+          const routeUrl =
+            'https://yandex.ru/maps/?rtext=~55.41584,37.786051&rtt=auto'
+          const isMobileViewport =
+            window.matchMedia('(max-width: 576px)').matches
 
-        map = new ymaps.Map(mapElementRef.current, {
-          center: point,
-          zoom: 16,
-          controls: ['zoomControl'],
-        })
+          map = new ymaps.Map(mapElementRef.current, {
+            center: point,
+            zoom: 16,
+            controls: ['zoomControl'],
+          })
 
-        map.behaviors.disable('scrollZoom')
+          map.behaviors.disable('scrollZoom')
 
-        if (isMobileViewport) {
-          map.behaviors.disable('drag')
-        }
+          if (isMobileViewport) {
+            map.behaviors.disable('drag')
+          }
 
-        const placemark = new ymaps.Placemark(point, {
-          balloonContent: `
+          const placemark = new ymaps.Placemark(point, {
+            balloonContent: `
             <div class="paintball-map-balloon">
               <strong class="paintball-map-balloon__title">Пейнтбол для всех</strong>
               <a href="${siteContact.phone.href}" class="paintball-map-balloon__phone">${siteContact.phone.label}</a>
@@ -125,16 +131,29 @@ export function YandexMap() {
               <a href="${routeUrl}" target="_blank" rel="noopener noreferrer" class="paintball-map-balloon__route">Построить маршрут</a>
             </div>
           `,
-          hintContent: siteContact.address,
-        })
+            hintContent: siteContact.address,
+          })
 
-        map.geoObjects.add(placemark)
-      })
-      .catch(() => undefined)
+          map.geoObjects.add(placemark)
+        })
+        .catch(() => undefined)
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry?.isIntersecting) {
+          observer.disconnect()
+          initializeMap()
+        }
+      },
+      { rootMargin: '600px 0px' },
+    )
+    observer.observe(element)
 
     return () => {
       isCancelled = true
-      map = undefined
+      observer.disconnect()
+      map?.destroy()
     }
   }, [])
 

@@ -36,14 +36,13 @@ function nextFrame() {
   })
 }
 
-function waitForWindowLoad() {
-  if (document.readyState === 'complete') {
-    return Promise.resolve()
-  }
-
-  return new Promise<void>((resolve) => {
-    window.addEventListener('load', () => resolve(), { once: true })
-  })
+function waitForHeroImages() {
+  const images = Array.from(
+    document.querySelectorAll<HTMLImageElement>('#hero img'),
+  )
+  return Promise.all(
+    images.map((image) => image.decode().catch(() => undefined)),
+  )
 }
 
 function getVisibleTriggerIds() {
@@ -151,7 +150,7 @@ export function SiteLoader() {
       setPhase('assets')
 
       await Promise.all([
-        waitForWindowLoad(),
+        waitForHeroImages(),
         'fonts' in document ? document.fonts.ready : Promise.resolve(),
       ])
 

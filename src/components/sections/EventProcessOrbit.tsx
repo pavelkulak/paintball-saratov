@@ -9,32 +9,32 @@ const processSteps = [
   {
     title: 'Оставляете заявку',
     description: 'Через форму на сайте, по телефону или в мессенджере',
-    image: '/images/process/process-01.png',
+    image: '/images/process/process-01.webp',
   },
   {
     title: 'Уточняем формат',
     description: 'Состав группы, повод и пожелания занимает 5–10 минут',
-    image: '/images/process/process-02.png',
+    image: '/images/process/process-02.webp',
   },
   {
     title: 'Подбираем сценарий',
     description: 'Предлагаем программу и пакет под ваш запрос и бюджет',
-    image: '/images/process/process-03.png',
+    image: '/images/process/process-03.webp',
   },
   {
     title: 'Встречаем гостей',
     description: 'Проводим инструктаж и знакомим с площадкой',
-    image: '/images/process/process-04.png',
+    image: '/images/process/process-04.webp',
   },
   {
     title: 'Игра с сопровождением',
     description: 'Инструктор ведёт игру — вам не нужно ничего контролировать',
-    image: '/images/process/process-05.png',
+    image: '/images/process/process-05.webp',
   },
   {
     title: 'Отдых и продолжение',
     description: 'Зона отдыха, питание, активности по вашему желанию',
-    image: '/images/process/process-06.png',
+    image: '/images/process/process-06.webp',
   },
 ] as const
 

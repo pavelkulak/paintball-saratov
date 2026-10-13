@@ -1,16 +1,18 @@
 'use client'
 
-import { useCallback, useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 
 type GalleryVideoProps = {
   src: string
+  poster: string
   className?: string
   playbackGate?: boolean
 }
 
 export function GalleryVideo({
   src,
+  poster,
   className,
   playbackGate = true,
 }: GalleryVideoProps) {
@@ -20,6 +22,8 @@ export function GalleryVideo({
   const isVisibleRef = useRef(false)
   const reducedMotionRef = useRef(false)
   const documentVisibleRef = useRef(true)
+  const sourceLoadedRef = useRef(false)
+  const [shouldLoad, setShouldLoad] = useState(false)
 
   const syncPlayback = useCallback(() => {
     const video = videoRef.current
@@ -30,6 +34,7 @@ export function GalleryVideo({
 
     const shouldPlay =
       playbackGateRef.current &&
+      sourceLoadedRef.current &&
       isVisibleRef.current &&
       !reducedMotionRef.current &&
       documentVisibleRef.current
@@ -77,18 +82,39 @@ export function GalleryVideo({
       { threshold: 0 },
     )
 
+    const loadingObserver = new IntersectionObserver(
+      ([entry]) => {
+        if (entry?.isIntersecting) {
+          setShouldLoad(true)
+          loadingObserver.disconnect()
+        }
+      },
+      { rootMargin: '600px 0px' },
+    )
+
     documentVisibleRef.current = document.visibilityState === 'visible'
     observer.observe(container)
+    loadingObserver.observe(container)
     syncReducedMotion()
     document.addEventListener('visibilitychange', syncDocumentVisibility)
     reducedMotionQuery.addEventListener('change', syncReducedMotion)
 
     return () => {
       observer.disconnect()
+      loadingObserver.disconnect()
       document.removeEventListener('visibilitychange', syncDocumentVisibility)
       reducedMotionQuery.removeEventListener('change', syncReducedMotion)
     }
   }, [syncPlayback])
+
+  useEffect(() => {
+    const video = videoRef.current
+    if (!shouldLoad || !video) return
+
+    sourceLoadedRef.current = true
+    video.load()
+    syncPlayback()
+  }, [shouldLoad, src, syncPlayback])
 
   useEffect(() => {
     playbackGateRef.current = playbackGate
@@ -109,10 +135,11 @@ export function GalleryVideo({
         loop
         muted
         playsInline
-        preload="metadata"
+        preload={shouldLoad ? 'metadata' : 'none'}
+        poster={poster}
         aria-hidden="true"
       >
-        <source src={src} type="video/mp4" />
+        {shouldLoad ? <source src={src} type="video/mp4" /> : null}
       </video>
     </div>
   )

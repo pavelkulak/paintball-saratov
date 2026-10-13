@@ -308,10 +308,10 @@ export function HeroParallaxScene({ children }: HeroParallaxSceneProps) {
         aria-hidden="true"
       >
         <Image
-          src="/images/hero-background.jpg"
+          src="/images/hero-background.webp"
           alt=""
           fill
-          priority
+          preload
           sizes="100vw"
           className="object-cover object-center"
         />

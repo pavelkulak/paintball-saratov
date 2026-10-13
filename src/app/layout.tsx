@@ -20,9 +20,9 @@ export const metadata: Metadata = {
     description: 'Активный отдых, где всем интересно.',
     images: [
       {
-        url: '/og.png',
-        width: 1746,
-        height: 909,
+        url: '/og.jpg',
+        width: 1200,
+        height: 630,
         alt: 'Команда игроков в пейнтбол',
       },
     ],
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Пейнтбол в Саратове',
     description: 'Активный отдых, где всем интересно.',
-    images: ['/og.png'],
+    images: ['/og.jpg'],
   },
 }
 

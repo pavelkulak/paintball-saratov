@@ -38,11 +38,11 @@ export function Hero({
               className="absolute inset-0 will-change-transform motion-reduce:transform-none"
             >
               <Image
-                src="/images/hero-players-full.png"
+                src="/images/hero-players-full.webp"
                 alt=""
                 width={1054}
                 height={1492}
-                priority
+                preload
                 sizes="(min-width: 1024px) 44vw, (min-width: 768px) 480px, min(108vw, 430px)"
                 draggable={false}
                 className="absolute top-0 left-1/2 h-auto w-full max-w-none -translate-x-1/2"

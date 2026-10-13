@@ -6,7 +6,7 @@ import { MobileScenariosSlider } from './scenarios/MobileScenariosSlider'
 const scenarios = [
   {
     title: 'Компания друзей',
-    image: '/images/scenarios/scenario-01.jpg',
+    image: '/images/scenarios/scenario-01.webp',
     fields: [
       { label: 'Кому подходит:', value: 'Группы от 6 до 30 человек' },
       {
@@ -22,7 +22,7 @@ const scenarios = [
   },
   {
     title: 'День рождения / праздник',
-    image: '/images/scenarios/scenario-02.jpg',
+    image: '/images/scenarios/scenario-02.webp',
     fields: [
       { label: 'Кому подходит:', value: 'Группы от 8 до 140 человек' },
       {
@@ -38,7 +38,7 @@ const scenarios = [
   },
   {
     title: 'Корпоратив / тимбилдинг',
-    image: '/images/scenarios/scenario-03.jpg',
+    image: '/images/scenarios/scenario-03.webp',
     fields: [
       { label: 'Кому подходит:', value: 'Группы от 15 до 100 человек' },
       {
@@ -55,7 +55,7 @@ const scenarios = [
   },
   {
     title: 'День рождения',
-    image: '/images/scenarios/scenario-04.jpg',
+    image: '/images/scenarios/scenario-04.webp',
     fields: [
       { label: 'Кому подходит:', value: 'Имениннику и его друзьям' },
       {
@@ -72,7 +72,7 @@ const scenarios = [
   },
   {
     title: 'Праздник для класса или компании',
-    image: '/images/scenarios/scenario-05.jpg',
+    image: '/images/scenarios/scenario-05.webp',
     fields: [
       {
         label: 'Кому подходит:',
@@ -92,7 +92,7 @@ const scenarios = [
   },
   {
     title: 'Семейный формат: дети + родители',
-    image: '/images/scenarios/scenario-06.jpg',
+    image: '/images/scenarios/scenario-06.webp',
     fields: [
       { label: 'Кому подходит:', value: 'Семьям с детьми' },
       {
