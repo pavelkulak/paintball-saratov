@@ -14,6 +14,7 @@ const DESKTOP_QUERY =
 const SETTLED_PROGRESS = 0.12
 const REVEAL_PROGRESS = 0.55
 const VIDEO_SCALE = 0.48
+const PHOTO_STAGGER = 0.08
 
 type DesktopMediaGalleryProps = {
   content: {
@@ -72,7 +73,6 @@ export function DesktopMediaGallery({ content }: DesktopMediaGalleryProps) {
             return
           }
 
-          const headerOffset = 153
           const headingGap = 80
           const photos = photoRefs.current.filter(
             (photo): photo is HTMLDivElement => photo !== null,
@@ -82,12 +82,11 @@ export function DesktopMediaGallery({ content }: DesktopMediaGalleryProps) {
             Math.max(
               0,
               heading.offsetTop -
-                headerOffset -
+                parseFloat(window.getComputedStyle(stage).paddingTop) -
                 video.offsetHeight * VIDEO_SCALE -
                 headingGap,
             )
 
-          gsap.set(stage, { y: 0 })
           gsap.set(video, {
             scale: 1,
             transformOrigin: '50% 0%',
@@ -100,7 +99,6 @@ export function DesktopMediaGallery({ content }: DesktopMediaGalleryProps) {
             transformOrigin: '50% 50%',
           })
 
-          let settledProgress = SETTLED_PROGRESS
           const setPlaybackGate = (enabled: boolean) => {
             if (disposed || playbackEnabledRef.current === enabled) {
               return
@@ -114,24 +112,25 @@ export function DesktopMediaGallery({ content }: DesktopMediaGalleryProps) {
             scrollTrigger: {
               id: SCENE_ID,
               trigger: scene,
+              pin: stage,
+              pinSpacing: false,
+              pinType: 'fixed',
+              pinReparent: true,
               start: 'top top',
               end: () => `+=${Math.max(1, getStageTravel())}`,
               scrub: true,
+              anticipatePin: 1,
               invalidateOnRefresh: true,
               onUpdate: (self) => {
-                setPlaybackGate(self.progress >= settledProgress)
+                setPlaybackGate(self.progress >= SETTLED_PROGRESS)
+              },
+              onRefresh: (self) => {
+                setPlaybackGate(self.progress >= SETTLED_PROGRESS)
               },
             },
           })
 
           timeline
-            // The stage keeps tracking the scroll position, which gives the
-            // video its existing visual hold without adding another trigger.
-            .to(stage, {
-              y: getStageTravel,
-              duration: 1,
-              ease: 'none',
-            })
             .addLabel('settled', SETTLED_PROGRESS)
             .addLabel('reveal', REVEAL_PROGRESS)
             .to(
@@ -149,14 +148,17 @@ export function DesktopMediaGallery({ content }: DesktopMediaGalleryProps) {
                 autoAlpha: 1,
                 scale: 1,
                 y: 0,
-                duration: 1 - REVEAL_PROGRESS,
+                // Keep the last photo inside the same scroll interval as
+                // the video; stagger must not extend the timeline past 1.
+                duration: Math.max(
+                  0.01,
+                  1 - REVEAL_PROGRESS - PHOTO_STAGGER * (photos.length - 1),
+                ),
                 ease: 'none',
-                stagger: 0.08,
+                stagger: PHOTO_STAGGER,
               },
               'reveal',
             )
-
-          settledProgress = timeline.labels.settled / timeline.duration()
 
           scheduleRefresh()
 
@@ -183,9 +185,9 @@ export function DesktopMediaGallery({ content }: DesktopMediaGalleryProps) {
     >
       <div
         ref={stageRef}
-        className="stage-padding-start pointer-events-none relative z-30 h-svh w-full overflow-hidden"
+        className="stage-padding pointer-events-none relative z-30 h-svh w-full overflow-hidden"
       >
-        <div className="mx-auto w-full max-w-[1680px]">
+        <div className="mx-auto w-full max-w-[min(1680px,calc((100svh-var(--layout-stage-start)-var(--layout-stage-end))*16/7))]">
           <div ref={videoRef} className="relative mx-auto w-full">
             <GalleryVideo src={content.video} playbackGate={playbackEnabled} />
           </div>

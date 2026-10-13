@@ -45,7 +45,7 @@ export function MobilePlanetSlider() {
         />
 
         <EmblaCarousel
-          ariaLabel="Планеты Солнечной системы"
+          ariaLabel="Дополнения к празднику"
           containerClassName="h-full items-stretch gap-[min(2.051vw,9.2px)]"
           options={MOBILE_ONLY_EMBLA_OPTIONS}
           className="-mx-4 mt-10 min-h-0 w-auto flex-1 px-[5vw] pb-4 md:mt-[45px] [@media(max-height:700px)]:h-[320px] [@media(max-height:700px)]:flex-none [@media(max-height:700px)]:pb-0"

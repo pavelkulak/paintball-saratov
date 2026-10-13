@@ -15,6 +15,7 @@
     "build:sites": "node tools/scripts/build-sites.mjs",
     "start": "npm run preview",
     "preview": "node tools/scripts/preview.mjs",
+    "showcase": "node tools/scripts/showcase.mjs",
     "mcp:serve": "node tools/bitrix-mcp/run.mjs serve",
     "mcp:status": "node tools/bitrix-mcp/run.mjs status",
     "mcp:config": "node tools/bitrix-mcp/run.mjs config",
