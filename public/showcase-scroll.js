@@ -1,5 +1,10 @@
 ;(() => {
   const params = new URLSearchParams(window.location.search)
+  if (params.get('run') !== '1') return
+
+  const statusUrl = document.querySelector(
+    'meta[name="showcase-status-url"]',
+  )?.content
   const duration = Math.max(
     5,
     Math.min(180, Number(params.get('duration')) || 48),
@@ -12,7 +17,8 @@
 
   const report = (phase, details = {}) => {
     document.body.dataset.showcaseStatus = phase
-    return fetch('/__showcase__/status', {
+    if (!statusUrl) return Promise.resolve()
+    return fetch(statusUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ phase, ...details }),

@@ -6,9 +6,6 @@ import { projectRoot } from './project.mjs'
 
 const root = resolve(projectRoot, 'out')
 const port = Number(process.env.SHOWCASE_PORT ?? 3005)
-const clientScript = readFileSync(
-  resolve(projectRoot, 'tools/scripts/showcase-scroll.js'),
-)
 let status = { phase: 'idle' }
 const types = {
   '.html': 'text/html; charset=utf-8',
@@ -56,12 +53,6 @@ const server = createServer(async (request, response) => {
       return
     }
 
-    if (url.pathname === '/__showcase__/scroll.js') {
-      response.setHeader('Content-Type', types['.js'])
-      response.end(clientScript)
-      return
-    }
-
     if (request.method !== 'GET' && request.method !== 'HEAD') {
       response.writeHead(405).end()
       return
@@ -89,8 +80,8 @@ const server = createServer(async (request, response) => {
       const html = readFileSync(path, 'utf8')
         .replace(/<title>.*?<\/title>/, '<title>Paintball Showcase</title>')
         .replace(
-          '</body>',
-          '<script src="/__showcase__/scroll.js"></script></body>',
+          '</head>',
+          '<meta name="showcase-status-url" content="/__showcase__/status"></head>',
         )
       response.end(request.method === 'HEAD' ? undefined : html)
       return
