@@ -9,32 +9,32 @@ const processSteps = [
   {
     title: 'Оставляете заявку',
     description: 'Через форму на сайте, по телефону или в мессенджере',
-    image: '/images/process/process-01.webp',
+    image: '/images/process/updated/step-01.webp',
   },
   {
     title: 'Уточняем формат',
     description: 'Состав группы, повод и пожелания занимает 5–10 минут',
-    image: '/images/process/process-02.webp',
+    image: '/images/process/updated/step-02.webp',
   },
   {
     title: 'Подбираем сценарий',
     description: 'Предлагаем программу и пакет под ваш запрос и бюджет',
-    image: '/images/process/process-03.webp',
+    image: '/images/process/updated/step-03.webp',
   },
   {
     title: 'Встречаем гостей',
     description: 'Проводим инструктаж и знакомим с площадкой',
-    image: '/images/process/process-04.webp',
+    image: '/images/process/updated/step-04.webp',
   },
   {
     title: 'Игра с сопровождением',
     description: 'Инструктор ведёт игру — вам не нужно ничего контролировать',
-    image: '/images/process/process-05.webp',
+    image: '/images/process/updated/step-05.webp',
   },
   {
     title: 'Отдых и продолжение',
     description: 'Зона отдыха, питание, активности по вашему желанию',
-    image: '/images/process/process-06.webp',
+    image: '/images/process/updated/step-06.webp',
   },
 ] as const
 
@@ -94,22 +94,13 @@ function calculateMobilePinOffset({
   )
 }
 
-function StepDots({ count }: { count: number }) {
+function StepNumber({ value }: { value: number }) {
   return (
     <span
       aria-hidden="true"
-      className="grid grid-cols-2 place-items-center gap-1"
+      className="font-display text-ink text-lg leading-none md:text-[28px] xl:text-[40px]"
     >
-      {Array.from({ length: count }, (_, index) => (
-        <span
-          key={index}
-          className={`bg-primary-foreground size-1 rounded-full md:size-2 xl:size-3 ${
-            count % 2 === 1 && index === count - 1
-              ? 'col-span-2 justify-self-center'
-              : ''
-          }`}
-        />
-      ))}
+      {value}
     </span>
   )
 }
@@ -141,7 +132,7 @@ function ProcessCard({
 
         <div className="absolute top-1 right-1 left-1 z-10 flex min-h-[98px] items-center gap-4 rounded-[20px] bg-white p-4 md:top-1.5 md:right-1.5 md:left-1.5 md:rounded-[18px] md:p-2.5 xl:top-2 xl:right-2 xl:left-2 xl:rounded-[16px] xl:p-1">
           <div className="bg-primary flex size-9 shrink-0 items-center justify-center rounded-[14px] md:size-16 xl:size-[90px]">
-            <StepDots count={index + 1} />
+            <StepNumber value={index + 1} />
           </div>
 
           <div className="flex min-w-0 flex-col gap-2 pr-3">

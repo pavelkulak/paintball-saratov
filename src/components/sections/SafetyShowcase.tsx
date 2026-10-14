@@ -3,7 +3,7 @@
 import Image from 'next/image'
 import { useState, type CSSProperties } from 'react'
 
-const SAFETY_ARTWORK_SRC = '/images/safety-players.webp'
+const SAFETY_ARTWORK_SRC = '/images/safety-players-new.webp'
 
 const rings = [
   { diameter: 592, opacity: 0.3 },
@@ -204,7 +204,7 @@ export function SafetyShowcase() {
         <div className="relative h-[clamp(930px,258vw,1060px)] sm:h-[804px] md:h-[738px]">
           <SafetyRings compact />
 
-          <div className="pointer-events-none absolute top-[7%] left-1/2 z-[1] aspect-[1440/1072] w-[160%] max-w-none -translate-x-1/2 sm:top-[8.5%] sm:w-[112%] md:top-[11%] md:w-[96%]">
+          <div className="pointer-events-none absolute top-[7%] left-1/2 z-[1] aspect-[1440/1053] w-[160%] max-w-none -translate-x-1/2 sm:top-[8.5%] sm:w-[112%] md:top-[11%] md:w-[96%]">
             <Image
               src={SAFETY_ARTWORK_SRC}
               alt=""

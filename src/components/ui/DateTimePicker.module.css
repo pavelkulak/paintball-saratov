@@ -1,0 +1,111 @@
+.dialog {
+  position: fixed;
+  inset: auto;
+  top: var(--picker-top, 8px);
+  left: var(--picker-left, 8px);
+  width: var(--picker-width, calc(100vw - 16px));
+  max-width: calc(100vw - 16px);
+  max-height: var(--picker-height, calc(100dvh - 16px));
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 14px;
+  background: white;
+  color: var(--theme-background);
+  opacity: 0;
+  translate: 0 4px;
+  overflow: hidden;
+  box-shadow: 0 12px 32px rgb(18 24 12 / 18%);
+  transition:
+    opacity 160ms ease-out,
+    translate 160ms ease-out,
+    overlay 160ms allow-discrete,
+    display 160ms allow-discrete;
+}
+
+.dialog[open] {
+  display: flex;
+  flex-direction: column;
+  opacity: 1;
+  translate: 0 0;
+}
+
+.dialog::backdrop {
+  background: rgb(18 24 12 / 35%);
+  opacity: 0;
+  transition:
+    opacity 160ms ease-out,
+    overlay 160ms allow-discrete,
+    display 160ms allow-discrete;
+}
+
+.dialog[open]::backdrop {
+  opacity: 1;
+}
+
+.timeSteps {
+  grid-template-columns: 40px minmax(0, 1fr) 40px;
+}
+
+.day {
+  height: 44px;
+}
+
+.timeButton {
+  display: none;
+}
+
+@media (min-width: 640px) and (pointer: fine), (min-width: 1024px) {
+  .dialog {
+    border-start-start-radius: var(--picker-top-radius, 14px);
+    border-start-end-radius: var(--picker-top-radius, 14px);
+  }
+
+  .dialog::backdrop {
+    background: transparent;
+  }
+
+  .mobileHeader,
+  .collapsedTime {
+    display: none;
+  }
+
+  .timeButton {
+    display: inline-flex;
+  }
+
+  .timeSteps {
+    grid-template-columns: 32px minmax(0, 1fr) 32px;
+  }
+
+  .day {
+    height: 36px;
+  }
+
+  .monthNavigation {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+@starting-style {
+  .dialog[open],
+  .dialog[open]::backdrop {
+    opacity: 0;
+  }
+
+  .dialog[open] {
+    translate: 0 4px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dialog,
+  .dialog::backdrop {
+    transition: none;
+  }
+
+  .dialog {
+    translate: none;
+  }
+}

@@ -1,4 +1,5 @@
 import { twMerge } from 'tailwind-merge'
+import Image from 'next/image'
 
 import { EventProcessOrbit } from '@/components/sections/EventProcessOrbit'
 import { SectionHeading } from '@/components/ui/SectionHeading'
@@ -6,52 +7,55 @@ import { SafetyShowcase } from '@/components/sections/SafetyShowcase'
 
 const supportCards = [
   {
-    icons: '👩 👦',
+    imageSrc: '/images/event-support/choose-format.webp',
+    imageAlt: 'Организатор помогает гостям выбрать формат игры',
     text: 'Помогаем выбрать формат по возрасту — не придётся гадать, что подойдёт',
   },
   {
-    icons: '🥰 🤝',
+    imageSrc: '/images/event-support/instructor-guidance.webp',
+    imageAlt: 'Инструктор сопровождает участников во время игры',
     text: 'Инструкторы сопровождают игру от старта до финала',
   },
   {
-    icons: '😎 🤌',
+    imageSrc: '/images/event-support/event-briefing.webp',
+    imageAlt: 'Ведущий объясняет гостям, как пройдёт мероприятие',
     text: 'Объясняем, как всё проходит, до мероприятия — никаких сюрпризов',
   },
   {
-    icons: '💯 ✍',
+    imageSrc: '/images/event-support/scenario-planning.webp',
+    imageAlt: 'Гости вместе с организатором выбирают сценарий игры',
     text: 'Помогаем собрать сценарий под ваш повод и состав гостей',
   },
   {
-    icons: '🍕 ⛺',
+    imageSrc: '/images/event-support/rest-and-food.webp',
+    imageAlt: 'Гости отдыхают и угощаются после игры',
     text: 'Можно дополнить зоной отдыха и питанием прямо на месте',
   },
   {
-    icons: '🎒 👌',
+    imageSrc: '/images/event-support/prepare-equipment.webp',
+    imageAlt: 'Подготовленная экипировка для игры в пейнтбол',
     text: 'Заранее подсказываем, что подготовить и взять с собой',
   },
 ] as const
 
 type SupportCardProps = {
-  icons: string
+  imageSrc: string
+  imageAlt: string
   text: string
 }
 
-function SupportCard({ icons, text }: SupportCardProps) {
+function SupportCard({ imageSrc, imageAlt, text }: SupportCardProps) {
   return (
-    <article className="text-ink relative flex h-[355px] w-[clamp(280px,27vw,389px)] flex-none flex-col rounded-[24px] bg-white p-6">
-      <div className="flex items-start">
-        <div className="bg-primary flex h-12 w-20 items-center justify-center rounded-[14px]">
-          {icons.split(' ').map((icon) => (
-            <span
-              key={icon}
-              aria-hidden="true"
-              className="size-8 text-[32px] leading-none"
-            >
-              {icon}
-            </span>
-          ))}
-        </div>
-      </div>
+    <article className="text-ink relative flex h-[355px] w-[clamp(280px,27vw,389px)] flex-none flex-col overflow-hidden rounded-[24px] bg-[linear-gradient(180deg,#fff_0%,#fff_64%,transparent_100%)] p-6">
+      <Image
+        src={imageSrc}
+        alt={imageAlt}
+        width={163}
+        height={163}
+        sizes="163px"
+        unoptimized
+        className="size-[163px] rounded-[14px] object-cover"
+      />
       <p className="mt-4 max-w-[318px] text-base leading-[1.2]">{text}</p>
     </article>
   )

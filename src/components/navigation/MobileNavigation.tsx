@@ -1,8 +1,8 @@
 'use client'
 
+import Image from 'next/image'
 import { useEffect, useRef, useState } from 'react'
 
-import { FooterIconPlaceholder } from '@/components/icons/FooterIconPlaceholder'
 import { Logo } from '@/components/icons/Logo'
 import { siteContact, siteSocialLinks } from '@/lib/site-contact'
 
@@ -10,12 +10,14 @@ const navigationItems = [
   { href: '#event-additions', label: 'Форматы игры' },
   { href: '#event-support', label: 'Организация' },
   { href: '#event-safety', label: 'Безопасность' },
-  { href: '#event-process', label: 'Как всё проходит' },
+  { href: '#event-process', label: 'Как всё происходит' },
   { href: '#facilities', label: 'Площадка' },
   { href: '#media-gallery', label: 'Фото и видео' },
   { href: '#reviews', label: 'Отзывы' },
   { href: '#faq', label: 'Вопросы' },
 ] as const
+
+const mobileSocialLinks = [siteSocialLinks[1], siteSocialLinks[0]]
 
 export function MobileNavigation() {
   const dialogRef = useRef<HTMLDialogElement>(null)
@@ -108,7 +110,7 @@ export function MobileNavigation() {
             ))}
           </div>
 
-          <div className="page-container relative z-10 flex shrink-0 items-center justify-between py-[14px]">
+          <div className="page-container relative z-10 flex shrink-0 items-start justify-between py-4">
             <a
               href="#hero"
               aria-label="К началу страницы"
@@ -117,7 +119,7 @@ export function MobileNavigation() {
             >
               <Logo
                 aria-hidden="true"
-                className="h-auto w-[107px]"
+                className="h-auto w-[101px]"
                 color="#12180c"
               />
             </a>
@@ -125,17 +127,17 @@ export function MobileNavigation() {
             <button
               type="button"
               autoFocus
-              className="bg-ink text-surface focus-visible:outline-surface relative inline-flex size-12 items-center justify-center rounded-full transition-transform duration-200 hover:scale-105 hover:rotate-6 focus-visible:outline-2 focus-visible:outline-offset-2 active:scale-95"
+              className="bg-background text-surface focus-visible:outline-background relative inline-flex size-[60px] items-center justify-center rounded-full transition-transform duration-200 hover:scale-105 hover:rotate-6 focus-visible:outline-2 focus-visible:outline-offset-2 active:scale-95"
               aria-label="Закрыть меню"
               onClick={closeMenu}
             >
               <span
                 aria-hidden="true"
-                className="absolute h-0.5 w-5 rotate-45 bg-current"
+                className="absolute h-0.5 w-[22px] rotate-45 rounded-full bg-current"
               />
               <span
                 aria-hidden="true"
-                className="absolute h-0.5 w-5 -rotate-45 bg-current"
+                className="absolute h-0.5 w-[22px] -rotate-45 rounded-full bg-current"
               />
             </button>
           </div>
@@ -144,80 +146,68 @@ export function MobileNavigation() {
             Навигация по сайту
           </h2>
 
-          <div className="page-container relative z-10 flex min-h-0 flex-1 flex-col pb-5 sm:pb-7">
-            <div className="border-ink/15 mb-4 flex shrink-0 items-end justify-between border-b pb-3 sm:mb-5">
-              <p className="text-ink/55 text-[11px] font-bold tracking-[0.16em] uppercase">
-                Разделы страницы
-              </p>
-              <p className="text-ink/45 hidden max-w-52 text-right text-xs leading-snug sm:block">
-                Всё для яркой игры и комфортного отдыха
-              </p>
-            </div>
-
+          <div className="relative z-10 flex min-h-0 flex-1 flex-col overflow-y-auto pt-11">
             <nav
               aria-label="Навигация по разделам страницы"
-              className="min-h-0 flex-1 overflow-y-auto"
+              className="page-container shrink-0"
             >
-              <ol className="grid sm:grid-cols-2 sm:gap-x-10 lg:gap-x-14">
+              <ol className="flex flex-col gap-4">
                 {navigationItems.map((item) => (
-                  <li key={item.href} className="border-ink/15 border-b">
+                  <li key={item.href}>
                     <a
                       href={item.href}
-                      className="group focus-visible:outline-ink flex min-h-12 items-center py-2.5 focus-visible:outline-2 focus-visible:-outline-offset-2 sm:min-h-16 sm:py-3"
+                      className="text-background focus-visible:outline-background block w-fit text-xl leading-6 font-medium no-underline transition-transform duration-200 hover:translate-x-1 focus-visible:outline-2 focus-visible:outline-offset-4"
                       onClick={closeMenu}
                     >
-                      <span className="min-w-0 flex-1 text-[17px] leading-tight font-bold transition-transform duration-200 group-hover:translate-x-1 sm:text-xl">
-                        {item.label}
-                      </span>
+                      {item.label}
                     </a>
                   </li>
                 ))}
               </ol>
             </nav>
 
-            <div className="border-ink/15 mt-5 flex shrink-0 flex-col gap-4 border-t pt-5 sm:flex-row sm:items-center sm:justify-between">
-              <div className="flex min-w-0 items-center justify-between gap-5 sm:justify-start">
-                <div className="min-w-0">
-                  <p className="text-ink/45 mb-1 text-[9px] font-bold tracking-[0.14em] uppercase">
-                    Телефон для связи
-                  </p>
+            <div
+              className="page-container mt-auto flex shrink-0 gap-4 pt-[70px]"
+              aria-label="Социальные сети"
+            >
+              {mobileSocialLinks.map((social) => (
+                <a
+                  key={social.kind}
+                  href={social.href}
+                  aria-label={social.label}
+                  className="focus-visible:outline-background inline-flex size-10 items-center justify-center transition-transform duration-200 hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-4 active:translate-y-0"
+                  onClick={closeMenu}
+                >
+                  <Image
+                    src={`/images/mobile-menu-${social.kind}.svg`}
+                    alt=""
+                    width={40}
+                    height={40}
+                  />
+                </a>
+              ))}
+            </div>
+
+            <div className="border-background/20 mt-8 shrink-0 border-t pt-8 pb-4">
+              <div className="page-container">
+                <address className="text-background flex max-w-[279px] flex-col gap-4 text-xl leading-6 font-medium not-italic">
                   <a
                     href={siteContact.phone.href}
-                    className="focus-visible:outline-ink block w-fit text-sm font-bold whitespace-nowrap focus-visible:outline-2 focus-visible:outline-offset-4"
+                    className="focus-visible:outline-background w-fit whitespace-nowrap focus-visible:outline-2 focus-visible:outline-offset-4"
                   >
                     {siteContact.phone.label}
                   </a>
-                </div>
-
-                <div
-                  className="flex shrink-0 gap-2"
-                  aria-label="Социальные сети"
-                >
-                  {siteSocialLinks.map((social) => (
-                    <a
-                      key={social.kind}
-                      href={social.href}
-                      aria-label={social.label}
-                      className="bg-ink focus-visible:outline-ink inline-flex size-9 items-center justify-center rounded-lg transition-transform duration-200 hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 active:translate-y-0"
-                      onClick={closeMenu}
-                    >
-                      <FooterIconPlaceholder kind={social.kind} />
-                    </a>
-                  ))}
-                </div>
-
-                <address className="text-ink/55 hidden max-w-48 text-xs leading-snug not-italic md:block">
-                  {siteContact.address}
+                  <span>{siteContact.address}</span>
                 </address>
-              </div>
 
-              <a
-                href="#lead-form"
-                className="bg-ink text-surface focus-visible:outline-ink inline-flex min-h-12 w-full items-center justify-center rounded-2xl px-7 py-3 text-sm font-bold transition-opacity hover:opacity-85 focus-visible:outline-2 focus-visible:outline-offset-2 sm:w-auto"
-                onClick={closeMenu}
-              >
-                Оставить заявку
-              </a>
+                <a
+                  href="#scenarios"
+                  className="bg-background text-primary focus-visible:outline-background mt-8 inline-flex min-h-[68px] w-full items-center justify-center rounded-[24px] px-8 py-4 text-base leading-[19px] font-bold transition-opacity hover:opacity-85 focus-visible:outline-2 focus-visible:outline-offset-2"
+                  onClick={closeMenu}
+                >
+                  Смотреть вариант
+                </a>
+              </div>
             </div>
           </div>
         </div>
