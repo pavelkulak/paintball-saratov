@@ -49,7 +49,7 @@ export function ReviewDetailsModal({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[60] flex cursor-default items-center justify-center overscroll-contain bg-black/65 p-4"
+      className="fixed inset-0 z-[60] flex cursor-pointer items-center justify-center overscroll-contain bg-black/65 p-4"
       onMouseDown={onClose}
     >
       <div
@@ -58,7 +58,7 @@ export function ReviewDetailsModal({
         aria-modal="true"
         aria-labelledby={`review-dialog-title-${review.id}`}
         tabIndex={-1}
-        className="bg-surface text-ink relative w-full max-w-[560px] rounded-[24px] p-5 outline-none md:p-6"
+        className="bg-surface text-ink relative w-full max-w-[560px] cursor-default rounded-[24px] p-5 outline-none md:p-6"
         onMouseDown={(event) => {
           event.stopPropagation()
         }}

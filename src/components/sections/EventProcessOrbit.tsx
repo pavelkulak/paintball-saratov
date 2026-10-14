@@ -5,6 +5,8 @@ import { useEffect, useRef, type CSSProperties } from 'react'
 
 import { SectionHeading } from '@/components/ui/SectionHeading'
 
+import styles from './EventProcessOrbit.module.css'
+
 const processSteps = [
   {
     title: 'Оставляете заявку',
@@ -98,7 +100,7 @@ function StepNumber({ value }: { value: number }) {
   return (
     <span
       aria-hidden="true"
-      className="font-display text-ink text-lg leading-none md:text-[28px] xl:text-[40px]"
+      className={`${styles.stepNumber} font-display text-ink text-lg leading-none md:text-[28px] xl:text-[40px]`}
     >
       {value}
     </span>
@@ -130,16 +132,24 @@ function ProcessCard({
           }}
         />
 
-        <div className="absolute top-1 right-1 left-1 z-10 flex min-h-[98px] items-center gap-4 rounded-[20px] bg-white p-4 md:top-1.5 md:right-1.5 md:left-1.5 md:rounded-[18px] md:p-2.5 xl:top-2 xl:right-2 xl:left-2 xl:rounded-[16px] xl:p-1">
-          <div className="bg-primary flex size-9 shrink-0 items-center justify-center rounded-[14px] md:size-16 xl:size-[90px]">
+        <div
+          className={`${styles.cardHeader} absolute top-1 right-1 left-1 z-10 flex min-h-[98px] items-center gap-4 rounded-[20px] bg-white p-4 md:top-1.5 md:right-1.5 md:left-1.5 md:rounded-[18px] md:p-2.5 xl:top-2 xl:right-2 xl:left-2 xl:rounded-[16px] xl:p-1`}
+        >
+          <div
+            className={`${styles.cardBadge} bg-primary flex size-9 shrink-0 items-center justify-center rounded-[14px] md:size-16 xl:size-[90px]`}
+          >
             <StepNumber value={index + 1} />
           </div>
 
           <div className="flex min-w-0 flex-col gap-2 pr-3">
-            <h3 className="text-xl leading-[1.2] font-semibold">
+            <h3
+              className={`${styles.cardTitle} text-xl leading-[1.2] font-semibold`}
+            >
               {step.title}
             </h3>
-            <p className="text-muted text-sm leading-[1.2]">
+            <p
+              className={`${styles.cardDescription} text-muted text-sm leading-[1.2]`}
+            >
               {step.description}
             </p>
           </div>
@@ -311,7 +321,9 @@ export function EventProcessOrbit() {
         ref={pinViewportRef}
         className="bg-primary text-primary-foreground relative h-lvh w-full overflow-hidden motion-reduce:h-auto motion-reduce:min-h-0"
       >
-        <div className="stage-padding-start relative flex h-[calc(100lvh+var(--process-pin-offset,0px))] min-h-[680px] w-full translate-y-[calc(var(--process-pin-offset,0px)*-1)] flex-col [--process-card-half-height:252px] [--process-card-width:clamp(280px,91.111vw,328px)] [--process-orbit-shift:-32px] [--process-radius:clamp(480px,147vw,668px)] motion-reduce:h-auto motion-reduce:min-h-0 motion-reduce:translate-y-0 md:[--process-card-width:clamp(344px,46vw,374px)] md:[--process-orbit-shift:50px] md:[--process-radius:clamp(580px,82vw,668px)] xl:[--process-card-width:390px] xl:[--process-orbit-shift:100px] xl:[--process-radius:clamp(593px,46.4vw,668px)] 2xl:[--process-card-half-height:calc(var(--process-card-height)/2)] 2xl:[--process-card-height:clamp(504px,26.25vw,672px)] 2xl:[--process-card-width:clamp(390px,20.3125vw,520px)] 2xl:[--process-orbit-shift:clamp(100px,5.2083vw,133px)] 2xl:[--process-radius:clamp(668px,34.7917vw,890px)]">
+        <div
+          className={`${styles.composition} stage-padding-start relative flex h-[calc(100lvh+var(--process-pin-offset,0px))] min-h-[680px] w-full translate-y-[calc(var(--process-pin-offset,0px)*-1)] flex-col [--process-card-half-height:calc(var(--process-card-height)/2)] [--process-card-height:var(--process-card-max-height)] [--process-card-max-height:504px] [--process-card-width:clamp(280px,91.111vw,328px)] [--process-orbit-shift:-32px] [--process-radius:clamp(480px,147vw,668px)] motion-reduce:h-auto motion-reduce:min-h-0 motion-reduce:translate-y-0 md:min-h-0 md:[--process-card-width:clamp(344px,46vw,374px)] md:[--process-orbit-shift:50px] md:[--process-radius:clamp(580px,82vw,668px)] xl:[--process-card-width:390px] xl:[--process-orbit-shift:100px] xl:[--process-radius:clamp(593px,46.4vw,668px)] 2xl:[--process-card-max-height:clamp(504px,26.25vw,672px)] 2xl:[--process-card-width:clamp(390px,20.3125vw,520px)] 2xl:[--process-orbit-shift:clamp(100px,5.2083vw,133px)] 2xl:[--process-radius:clamp(668px,34.7917vw,890px)]`}
+        >
           <div className="page-container relative z-10 shrink-0">
             <SectionHeading
               title="Как проходит праздник"
@@ -332,11 +344,11 @@ export function EventProcessOrbit() {
 
           <div
             ref={orbitViewportRef}
-            className="relative mt-10 min-h-0 flex-1 motion-reduce:hidden md:mt-[45px] xl:mt-[50px]"
+            className={`${styles.orbitViewport} relative mt-10 min-h-0 flex-1 motion-reduce:hidden md:mt-[45px] xl:mt-[50px]`}
           >
             <div
               ref={orbitAnchorRef}
-              className="pointer-events-none absolute left-1/2 -translate-x-1/2 motion-reduce:hidden"
+              className={`${styles.orbitAnchor} pointer-events-none absolute left-1/2 -translate-x-1/2 motion-reduce:hidden`}
               style={{
                 top: 'calc(var(--process-card-half-height) + var(--process-orbit-shift))',
               }}
@@ -346,8 +358,10 @@ export function EventProcessOrbit() {
                 aria-hidden="true"
                 className="relative will-change-transform"
                 style={{
-                  width: 'calc(var(--process-radius) + var(--process-radius))',
-                  height: 'calc(var(--process-radius) + var(--process-radius))',
+                  width:
+                    'calc(var(--process-orbit-radius, var(--process-radius)) * 2)',
+                  height:
+                    'calc(var(--process-orbit-radius, var(--process-radius)) * 2)',
                   transform: 'rotate(30deg)',
                   transformOrigin: '50% 50%',
                 }}
@@ -361,10 +375,11 @@ export function EventProcessOrbit() {
                       key={`${step.title}-${angle}`}
                       step={step}
                       index={stepIndex}
-                      className="absolute top-1/2 left-1/2 h-[504px] 2xl:h-[var(--process-card-height)]"
+                      className="absolute top-1/2 left-1/2 h-[var(--process-card-height)]"
                       style={{
-                        width: 'var(--process-card-width)',
-                        transform: `translate(-50%, -50%) rotate(${angle}deg) translateY(calc(var(--process-radius) * -1))`,
+                        width:
+                          'var(--process-orbit-card-width, var(--process-card-width))',
+                        transform: `translate(-50%, -50%) rotate(${angle}deg) translateY(calc(var(--process-orbit-radius, var(--process-radius)) * -1))`,
                       }}
                     />
                   )

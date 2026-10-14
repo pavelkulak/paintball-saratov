@@ -1,0 +1,81 @@
+@media (min-width: 768px) and (prefers-reduced-motion: no-preference) {
+  .composition {
+    --process-orbit-gap: clamp(20px, calc(100lvh - 865px), 45px);
+    --process-orbit-shift: clamp(0px, calc(100lvh - 800px), 50px);
+    --process-badge-size: 64px;
+    --process-number-size: 28px;
+    padding-block-start: clamp(111px, 16lvh, var(--layout-stage-start));
+  }
+
+  .orbitViewport {
+    container-type: size;
+    margin-block-start: var(--process-orbit-gap);
+  }
+
+  .orbitAnchor {
+    /* Reserve room for the lower corners while cards turn through the top. */
+    --process-card-height: min(
+      var(--process-card-max-height),
+      calc((100cqh - var(--process-orbit-shift) - 16px) / 1.13)
+    );
+    --process-card-half-height: calc(var(--process-card-height) / 2);
+    --process-orbit-card-width: min(
+      var(--process-card-width),
+      calc(var(--process-card-height) * 390 / 504)
+    );
+    --process-orbit-radius: min(
+      var(--process-radius),
+      calc(var(--process-card-height) * 668 / 504)
+    );
+    --process-badge-rendered-size: min(
+      var(--process-badge-size),
+      clamp(36px, calc((var(--process-card-height) - 216px) * 5 / 16), 90px)
+    );
+  }
+
+  .orbitAnchor .cardHeader {
+    min-height: clamp(64px, calc(var(--process-card-height) * 98 / 504), 98px);
+    gap: clamp(12px, calc(var(--process-card-height) * 16 / 504), 16px);
+  }
+
+  .orbitAnchor .cardBadge {
+    width: var(--process-badge-rendered-size);
+    height: var(--process-badge-rendered-size);
+    border-radius: min(14px, calc(var(--process-badge-rendered-size) * 7 / 32));
+  }
+
+  .orbitAnchor .stepNumber {
+    font-size: clamp(
+      20px,
+      calc(var(--process-badge-rendered-size) * 40 / 90),
+      var(--process-number-size)
+    );
+  }
+
+  .orbitAnchor .cardTitle {
+    font-size: clamp(16px, calc(var(--process-card-height) * 20 / 504), 20px);
+  }
+
+  .orbitAnchor .cardDescription {
+    font-size: clamp(12px, calc(var(--process-card-height) * 14 / 504), 14px);
+  }
+}
+
+@media (min-width: 1280px) and (prefers-reduced-motion: no-preference) {
+  .composition {
+    --process-orbit-gap: clamp(20px, calc(100lvh - 865px), 50px);
+    --process-orbit-shift: clamp(0px, calc(100lvh - 850px), 100px);
+    --process-badge-size: 90px;
+    --process-number-size: 40px;
+  }
+}
+
+@media (min-width: 1536px) and (prefers-reduced-motion: no-preference) {
+  .composition {
+    --process-orbit-shift: clamp(
+      0px,
+      calc(100lvh - 850px),
+      clamp(100px, 5.2083vw, 133px)
+    );
+  }
+}

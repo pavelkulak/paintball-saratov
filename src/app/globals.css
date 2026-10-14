@@ -129,6 +129,20 @@
     font-family: var(--theme-font-sans);
   }
 
+  button:not(:disabled):not([aria-disabled='true']),
+  a[href]:not([aria-disabled='true']),
+  summary,
+  [role='button']:not([aria-disabled='true']),
+  input:enabled:is([type='checkbox'], [type='radio']),
+  label:has(input:enabled:is([type='checkbox'], [type='radio'])) {
+    cursor: pointer;
+  }
+
+  :disabled,
+  [aria-disabled='true'] {
+    cursor: not-allowed;
+  }
+
   #smooth-wrapper {
     min-height: 100vh;
   }
