@@ -1,0 +1,21 @@
+.stage {
+  container-type: size;
+}
+
+/* Size from the space under the heading, rather than the viewport width alone. */
+.artwork {
+  bottom: 0;
+  width: min(calc(100cqh * 871 / 706), 100vw);
+  aspect-ratio: 871 / 706;
+  translate: -50% 0;
+}
+
+@media (min-width: 1024px) {
+  .artwork {
+    /* Continue through the content padding to meet the actual hero edge. */
+    bottom: -16px;
+    width: min(calc((100cqh + 16px) * 871 / 706), calc(100vw - 64px));
+    /* Keep the child centred and clear of the quiz on the right. */
+    translate: -63% 0;
+  }
+}

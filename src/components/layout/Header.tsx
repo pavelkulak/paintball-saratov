@@ -49,7 +49,7 @@ export function Header() {
     <header
       data-hidden={isHidden || undefined}
       className={clsx(
-        'fixed inset-x-0 top-0 z-50 transition-[transform,background-color,backdrop-filter,border-color] duration-300 motion-reduce:transition-none lg:focus-within:translate-y-0 lg:data-[hidden=true]:-translate-y-full',
+        'fixed inset-x-0 top-0 z-50 transition-[translate,background-color,backdrop-filter,border-color] duration-300 ease-out motion-reduce:transition-none lg:focus-within:translate-y-0 lg:data-[hidden=true]:-translate-y-full',
         isScrolled &&
           'border-line/40 bg-background/75 border-b backdrop-blur-md',
       )}

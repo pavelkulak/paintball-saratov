@@ -1,8 +1,7 @@
 'use client'
 
 import clsx from 'clsx'
-import { motion, useReducedMotion } from 'motion/react'
-import { useId, useState } from 'react'
+import { useLayoutEffect, useRef, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 
 const audienceTabs = ['Для всех', 'Для детей', 'Для взрослых'] as const
@@ -18,11 +17,40 @@ type AudienceTabsProps = {
 
 export function AudienceTabs({ className }: AudienceTabsProps) {
   const [activeTab, setActiveTab] = useState<AudienceTab>(audienceTabs[0])
-  const shouldReduceMotion = useReducedMotion()
-  const bubbleLayoutId = `audience-tab-bubble-${useId()}`
+  const rootRef = useRef<HTMLDivElement>(null)
+  const [indicator, setIndicator] = useState<{
+    left: number
+    width: number
+  } | null>(null)
+
+  useLayoutEffect(() => {
+    const root = rootRef.current
+    if (!root) return
+
+    const buttons = root.querySelectorAll<HTMLButtonElement>('button')
+    const selectedButton = buttons[audienceTabs.indexOf(activeTab)]
+    const measure = () => {
+      if (!selectedButton || selectedButton.offsetWidth === 0) return
+      // Local offsets stay constant when the entire header slides or the page scrolls.
+      const left = selectedButton.offsetLeft
+      const width = selectedButton.offsetWidth
+      setIndicator((current) =>
+        current?.left === left && current.width === width
+          ? current
+          : { left, width },
+      )
+    }
+
+    measure()
+    const observer = new ResizeObserver(measure)
+    observer.observe(root)
+    buttons.forEach((button) => observer.observe(button))
+    return () => observer.disconnect()
+  }, [activeTab])
 
   return (
     <div
+      ref={rootRef}
       role="group"
       aria-label="Выбор аудитории"
       className={twMerge(
@@ -32,6 +60,16 @@ export function AudienceTabs({ className }: AudienceTabsProps) {
         ),
       )}
     >
+      {indicator && (
+        <span
+          aria-hidden="true"
+          className="bg-ink pointer-events-none absolute inset-y-1 left-0 z-0 rounded-[16px] shadow-md transition-[transform,width] duration-200 ease-out motion-reduce:transition-none"
+          style={{
+            transform: `translateX(${indicator.left}px)`,
+            width: indicator.width,
+          }}
+        />
+      )}
       {audienceTabs.map((tab) => {
         const isActive = activeTab === tab
 
@@ -45,22 +83,11 @@ export function AudienceTabs({ className }: AudienceTabsProps) {
               tabBaseClass,
               'isolate',
               isActive ? 'text-surface' : 'text-ink/60 hover:text-ink',
+              isActive && !indicator && 'bg-ink',
               'focus-visible:outline-primary focus-visible:outline-2 focus-visible:outline-offset-2 active:scale-95',
             )}
             style={{ WebkitTapHighlightColor: 'transparent' }}
           >
-            {isActive && (
-              <motion.span
-                layoutId={bubbleLayoutId}
-                aria-hidden="true"
-                className="bg-ink pointer-events-none absolute inset-0 z-0 rounded-[16px] shadow-md"
-                transition={
-                  shouldReduceMotion
-                    ? { duration: 0 }
-                    : { type: 'spring', bounce: 0.2, duration: 0.6 }
-                }
-              />
-            )}
             <span className="relative z-10">{tab}</span>
           </button>
         )

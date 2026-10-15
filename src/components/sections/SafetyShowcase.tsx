@@ -3,7 +3,7 @@
 import Image from 'next/image'
 import { useState, type CSSProperties } from 'react'
 
-const SAFETY_ARTWORK_SRC = '/images/safety-players-new.webp'
+const SAFETY_ARTWORK_SRC = '/images/safety-players-family.webp'
 
 const rings = [
   { diameter: 592, opacity: 0.3 },

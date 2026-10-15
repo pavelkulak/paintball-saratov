@@ -6,6 +6,7 @@ import { QuizCard } from '../ui/QuizCard'
 import { Button } from '../ui/Button'
 import { AudienceTabs } from '../navigation/AudienceTabs'
 import { HeroParallaxScene } from './hero/HeroParallaxScene'
+import styles from './hero/Hero.module.css'
 
 export function Hero({
   content,
@@ -15,7 +16,7 @@ export function Hero({
   return (
     <>
       <HeroParallaxScene>
-        <div className="page-container relative z-30 flex h-full min-h-0 flex-col overflow-hidden pt-[115px] pb-[88px] lg:overflow-visible lg:pt-[max(96px,12svh)] lg:pb-4">
+        <div className="page-container relative z-30 flex h-full min-h-0 flex-col pt-[115px] lg:pt-[max(96px,12svh)] lg:pb-4">
           <div className="relative z-20 mx-auto flex w-full flex-col items-center gap-[19px]">
             <h1
               id="hero-title"
@@ -29,9 +30,11 @@ export function Hero({
             </Button>
           </div>
 
-          <div className="relative mt-6 min-h-0 flex-1 lg:mt-2 lg:grid lg:grid-cols-12 lg:grid-rows-[minmax(0,1fr)] lg:gap-x-6">
+          <div
+            className={`${styles.stage} relative mt-6 min-h-0 flex-1 lg:mt-2 lg:grid lg:grid-cols-12 lg:grid-rows-[minmax(0,1fr)] lg:gap-x-6`}
+          >
             <div
-              className="pointer-events-none absolute inset-y-0 left-1/2 z-10 w-[min(108vw,430px)] -translate-x-1/2 overflow-visible md:w-[480px] lg:w-[clamp(480px,44vw,540px)]"
+              className={`${styles.artwork} pointer-events-none absolute left-1/2 z-10`}
               aria-hidden="true"
             >
               <div
@@ -39,14 +42,14 @@ export function Hero({
                 className="absolute inset-0 will-change-transform motion-reduce:transform-none"
               >
                 <Image
-                  src="/images/hero-players-full.webp"
+                  src="/images/hero-players-family.webp"
                   alt=""
-                  width={1054}
-                  height={1492}
+                  width={871}
+                  height={706}
                   preload
-                  sizes="(min-width: 1024px) 44vw, (min-width: 768px) 480px, min(108vw, 430px)"
+                  sizes="(min-width: 1024px) min(100vw - 64px, 124svh), 100vw"
                   draggable={false}
-                  className="absolute top-0 left-1/2 h-auto w-full max-w-none -translate-x-1/2 lg:h-full lg:object-contain lg:object-bottom"
+                  className="block h-full w-full object-contain object-bottom"
                 />
               </div>
             </div>
@@ -62,9 +65,9 @@ export function Hero({
             />
           </div>
         </div>
-        <AudienceTabs className="absolute inset-x-2 bottom-4 z-40 flex lg:hidden" />
       </HeroParallaxScene>
-      <div className="page-container mt-5 flex justify-center lg:hidden">
+      <div className="page-container mt-4 flex flex-col items-center gap-5 lg:hidden">
+        <AudienceTabs className="w-full max-w-[480px]" />
         <QuizCard quiz={content.quiz} />
       </div>
     </>
