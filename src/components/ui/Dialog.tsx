@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useId, useRef, type ReactNode } from 'react'
+import { useEffect, useId, useRef, useState, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 
 import { CloseIcon } from '@/components/icons/CloseIcon'
@@ -23,6 +23,7 @@ export function Dialog({
   const panelRef = useRef<HTMLDivElement>(null)
   const onCloseRef = useRef(onClose)
   const closingRef = useRef(false)
+  const [isClosing, setIsClosing] = useState(false)
   const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
@@ -43,17 +44,28 @@ export function Dialog({
     }
   }, [])
 
+  function finishClose() {
+    if (!closingRef.current) return
+    closingRef.current = false
+    if (closeTimerRef.current) clearTimeout(closeTimerRef.current)
+    dialogRef.current?.close()
+    onCloseRef.current()
+  }
+
   function close() {
     if (closingRef.current) return
     closingRef.current = true
-    dialogRef.current?.close()
     const reducedMotion = window.matchMedia(
       '(prefers-reduced-motion: reduce)',
     ).matches
-    closeTimerRef.current = setTimeout(
-      () => onCloseRef.current(),
-      reducedMotion ? 0 : 200,
-    )
+    if (reducedMotion) {
+      finishClose()
+      return
+    }
+    setIsClosing(true)
+    // Keep the native modal open and centred until its fade finishes.
+    // The timeout also releases it if the browser skips transitionend.
+    closeTimerRef.current = setTimeout(finishClose, 300)
   }
 
   if (typeof document === 'undefined') return null
@@ -63,6 +75,15 @@ export function Dialog({
       ref={dialogRef}
       aria-labelledby={titleId}
       className={styles.dialog}
+      data-closing={isClosing || undefined}
+      onTransitionEnd={(event) => {
+        if (
+          event.target === event.currentTarget &&
+          event.propertyName === 'opacity'
+        ) {
+          finishClose()
+        }
+      }}
       onCancel={(event) => {
         event.preventDefault()
         close()
