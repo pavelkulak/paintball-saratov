@@ -45,7 +45,7 @@ export function QuizCard({
       className={twMerge(
         'relative flex w-full max-w-[388px] flex-col overflow-hidden rounded-[20px] px-5 pt-6 pb-5',
         isGlass
-          ? `${styles.hero} bg-background/50 text-white shadow-[inset_1px_1px_1px_rgb(255_255_255_/_80%),inset_-1px_-1px_1px_rgb(255_255_255_/_12%)] backdrop-blur-[4px]`
+          ? `${styles.hero} bg-background/50 text-white backdrop-blur-[4px]`
           : 'text-background min-h-[467px] bg-white',
         className,
       )}
