@@ -16,6 +16,7 @@ const eslintConfig = defineConfig([
     'cms/bitrix/**',
     'cms/upload/**',
     'next-env.d.ts',
+    'Демо-сборка/**',
   ]),
 ])
 

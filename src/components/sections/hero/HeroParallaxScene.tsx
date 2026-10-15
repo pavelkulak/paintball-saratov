@@ -300,7 +300,7 @@ export function HeroParallaxScene({ children }: HeroParallaxSceneProps) {
       ref={rootRef}
       id="hero"
       aria-labelledby="hero-title"
-      className="section-anchor relative isolate h-svh max-h-svh min-h-svh overflow-hidden lg:h-auto lg:max-h-none"
+      className="section-anchor relative isolate h-svh min-h-[520px] overflow-hidden lg:overflow-clip"
     >
       <div
         ref={backgroundRef}

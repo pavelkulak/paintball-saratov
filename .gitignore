@@ -41,6 +41,7 @@
 /.pnpm-store/
 /.codex/*.bak*
 /t2.mp4
+/Демо-сборка/
 
 # vercel
 .vercel

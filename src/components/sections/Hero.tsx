@@ -15,7 +15,7 @@ export function Hero({
   return (
     <>
       <HeroParallaxScene>
-        <div className="page-container relative z-30 flex h-full min-h-0 flex-col overflow-hidden pt-[115px] pb-[88px] lg:h-auto lg:min-h-svh lg:overflow-visible lg:pt-[max(104px,10vh)] lg:pb-5">
+        <div className="page-container relative z-30 flex h-full min-h-0 flex-col overflow-hidden pt-[115px] pb-[88px] lg:overflow-visible lg:pt-[max(96px,12svh)] lg:pb-4">
           <div className="relative z-20 mx-auto flex w-full flex-col items-center gap-[19px]">
             <h1
               id="hero-title"
@@ -29,7 +29,7 @@ export function Hero({
             </Button>
           </div>
 
-          <div className="relative mt-6 min-h-0 flex-1 lg:mt-4 lg:grid lg:min-h-[510px] lg:grid-cols-12 lg:gap-x-6">
+          <div className="relative mt-6 min-h-0 flex-1 lg:mt-2 lg:grid lg:grid-cols-12 lg:grid-rows-[minmax(0,1fr)] lg:gap-x-6">
             <div
               className="pointer-events-none absolute inset-y-0 left-1/2 z-10 w-[min(108vw,430px)] -translate-x-1/2 overflow-visible md:w-[480px] lg:w-[clamp(480px,44vw,540px)]"
               aria-hidden="true"
@@ -46,20 +46,18 @@ export function Hero({
                   preload
                   sizes="(min-width: 1024px) 44vw, (min-width: 768px) 480px, min(108vw, 430px)"
                   draggable={false}
-                  className="absolute top-0 left-1/2 h-auto w-full max-w-none -translate-x-1/2"
+                  className="absolute top-0 left-1/2 h-auto w-full max-w-none -translate-x-1/2 lg:h-full lg:object-contain lg:object-bottom"
                 />
               </div>
             </div>
 
             <div className="relative z-20 hidden w-full max-w-[372px] flex-col gap-10 lg:col-span-4 lg:flex lg:self-end">
               <p className="text-body leading-[1.2]">{content.description}</p>
-              <Button href="#lead-form" variant="light">
-                Оставить заявку
-              </Button>
             </div>
 
             <QuizCard
               quiz={content.quiz}
+              variant="hero"
               className="relative z-20 hidden w-full max-w-none lg:col-span-4 lg:col-start-9 lg:flex lg:self-end"
             />
           </div>

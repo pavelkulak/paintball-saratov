@@ -1,123 +1,164 @@
 'use client'
 
-import { useId, useState } from 'react'
+import { useId, useRef, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 
 import { ArrowLeftIcon } from '@/components/icons/ArrowLeftIcon'
 import { ArrowRightIcon } from '@/components/icons/ArrowRightIcon'
 import type { HomeResponse } from '@/lib/bitrix/home-schema'
 
+import { Button } from './Button'
+import styles from './QuizCard.module.css'
+
 type QuizCardProps = {
   quiz: HomeResponse['quiz']
   className?: string
+  variant?: 'standalone' | 'hero'
 }
 
-const navigationButtonClassName =
-  'border-background text-background focus-visible:outline-primary enabled:hover:bg-background inline-flex size-10 items-center justify-center rounded-full border-2 bg-transparent transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 enabled:hover:text-white disabled:cursor-not-allowed disabled:opacity-40 lg:border-white lg:text-white lg:enabled:hover:bg-white lg:enabled:hover:text-background'
-
-export function QuizCard({ quiz, className }: QuizCardProps) {
+export function QuizCard({
+  quiz,
+  className,
+  variant = 'standalone',
+}: QuizCardProps) {
   const titleId = useId()
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
-  const [selectedOption, setSelectedOption] = useState<string | null>(null)
-  const question = quiz.questions[currentQuestionIndex]
-  const currentQuestionNumber = currentQuestionIndex + 1
+  const previewTitleId = useId()
+  const contentId = useId()
+  const headingRef = useRef<HTMLHeadingElement>(null)
+  const isGlass = variant === 'hero'
+  const [expanded, setExpanded] = useState(!isGlass)
+  const [questionIndex, setQuestionIndex] = useState(0)
+  const [answers, setAnswers] = useState<Record<string, string>>({})
+  const question = quiz.questions[questionIndex]
+  const total = quiz.questions.length
+  const navigationClassName = twMerge(
+    'focus-visible:outline-primary inline-flex size-10 shrink-0 items-center justify-center rounded-full border-2 bg-transparent transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-40',
+    isGlass
+      ? 'border-white text-white enabled:hover:bg-white enabled:hover:text-background'
+      : 'border-background text-background enabled:hover:bg-background enabled:hover:text-white',
+  )
 
-  const selectQuestion = (nextIndex: number) => {
-    setCurrentQuestionIndex(nextIndex)
-    setSelectedOption(null)
-  }
-
-  // Figma Glass: light -45° / 80%, refraction 80, depth 20,
-  // dispersion 50, frost 4, splay 0. CSS approximates frost and edge lighting;
-  // the refraction and dispersion require a separate shader implementation.
   return (
     <section
-      aria-labelledby={titleId}
+      aria-labelledby={expanded ? titleId : previewTitleId}
+      data-expanded={expanded}
       className={twMerge(
-        'text-background lg:bg-background/50 flex min-h-[467px] w-full max-w-[388px] flex-col overflow-hidden rounded-[20px] bg-white px-5 pt-8 pb-[22px] lg:text-white lg:shadow-[inset_1px_1px_1px_rgb(255_255_255_/_80%),inset_-1px_-1px_1px_rgb(255_255_255_/_12%)] lg:backdrop-blur-[4px]',
+        'relative flex w-full max-w-[388px] flex-col overflow-hidden rounded-[20px] px-5 pt-6 pb-5',
+        isGlass
+          ? `${styles.hero} bg-background/50 text-white shadow-[inset_1px_1px_1px_rgb(255_255_255_/_80%),inset_-1px_-1px_1px_rgb(255_255_255_/_12%)] backdrop-blur-[4px]`
+          : 'text-background min-h-[467px] bg-white',
         className,
       )}
     >
-      <div className="flex flex-1 flex-col">
-        <h2
-          id={titleId}
-          className="min-h-[60px] max-w-[253px] text-[25px] leading-[1.2] font-semibold"
-        >
-          {question.question}
-        </h2>
-
+      {isGlass && (
         <div
-          aria-label={`Прогресс квиза: вопрос ${currentQuestionNumber} из ${quiz.total}`}
-          className="relative mt-5 h-1.5 w-full"
-          role="progressbar"
-          aria-valuemin={1}
-          aria-valuemax={quiz.total}
-          aria-valuenow={currentQuestionNumber}
+          inert={expanded}
+          aria-hidden={expanded}
+          className={`absolute inset-0 flex flex-col items-center justify-center gap-5 px-6 text-center transition-opacity duration-200 motion-reduce:transition-none ${expanded ? 'invisible opacity-0' : 'visible opacity-100'}`}
         >
-          <div
-            aria-hidden="true"
-            className="bg-background/40 absolute inset-x-0 top-px h-1 rounded-full lg:bg-white/40"
-          />
-          <div
-            className="bg-background relative h-full rounded-full transition-[width] duration-300 lg:bg-white"
-            style={{ width: `${(currentQuestionNumber / quiz.total) * 100}%` }}
-          />
+          <h2
+            id={previewTitleId}
+            className="max-w-[280px] text-[25px] leading-[1.15] font-semibold"
+          >
+            Индивидуальный подбор игры
+          </h2>
+          <Button
+            type="button"
+            variant="primary"
+            aria-expanded={expanded}
+            aria-controls={contentId}
+            className="max-w-[180px] rounded-full"
+            onClick={() => {
+              setExpanded(true)
+              requestAnimationFrame(() =>
+                headingRef.current?.focus({ preventScroll: true }),
+              )
+            }}
+          >
+            Подобрать
+          </Button>
         </div>
-
-        <div
-          className="mt-[27px] space-y-2"
-          role="radiogroup"
-          aria-label="Варианты ответа"
-        >
-          {question.answers.map((answer) => {
-            const isSelected = selectedOption === answer.id
-
-            return (
-              <button
+      )}
+      <div
+        id={contentId}
+        inert={!expanded}
+        aria-hidden={!expanded}
+        className={`flex min-h-0 flex-1 flex-col transition-opacity duration-200 motion-reduce:transition-none ${expanded ? 'visible opacity-100' : 'invisible opacity-0'}`}
+      >
+        <div className="min-h-0 flex-1 overflow-y-auto pr-1">
+          <h2
+            ref={headingRef}
+            tabIndex={-1}
+            id={titleId}
+            className="min-h-[52px] text-[23px] leading-[1.2] font-semibold outline-none"
+          >
+            {question.question}
+          </h2>
+          <div
+            role="progressbar"
+            aria-label={`Прогресс квиза: вопрос ${questionIndex + 1} из ${total}`}
+            aria-valuemin={1}
+            aria-valuemax={total}
+            aria-valuenow={questionIndex + 1}
+            className={`relative mt-4 h-1.5 rounded-full ${isGlass ? 'bg-white/40' : 'bg-background/40'}`}
+          >
+            <div
+              aria-hidden="true"
+              style={{ width: `${((questionIndex + 1) / total) * 100}%` }}
+              className={`h-full rounded-full transition-[width] duration-300 motion-reduce:transition-none ${isGlass ? 'bg-white' : 'bg-background'}`}
+            />
+          </div>
+          <fieldset className="mt-5 space-y-2">
+            <legend className="sr-only">Варианты ответа</legend>
+            {question.answers.map((answer) => (
+              <label
                 key={answer.id}
-                type="button"
-                role="radio"
-                aria-checked={isSelected}
-                onClick={() => setSelectedOption(answer.id)}
-                className="border-background bg-background focus-visible:outline-primary lg:text-background flex h-[43px] w-full items-center gap-3 rounded-[21px] border px-[15px] text-left text-base leading-[19px] font-semibold text-white transition-transform duration-200 hover:scale-[1.01] focus-visible:outline-2 focus-visible:outline-offset-2 active:scale-[0.99] lg:border-white lg:bg-white"
+                className={`relative flex min-h-10 items-center gap-3 rounded-[21px] border px-[15px] py-2 text-base leading-[19px] font-semibold transition-transform duration-200 hover:scale-[1.01] active:scale-[0.99] motion-reduce:transform-none ${isGlass ? 'text-background border-white bg-white' : 'border-background bg-background text-white'}`}
               >
-                <span
-                  aria-hidden="true"
-                  className={`lg:border-background size-4 shrink-0 rounded-full border border-white transition-colors ${
-                    isSelected ? 'lg:bg-background bg-white' : 'bg-transparent'
-                  }`}
+                <input
+                  type="radio"
+                  name={`${contentId}-${question.id}`}
+                  value={answer.id}
+                  checked={answers[question.id] === answer.id}
+                  onChange={() =>
+                    setAnswers((current) => ({
+                      ...current,
+                      [question.id]: answer.id,
+                    }))
+                  }
+                  className={`size-4 shrink-0 ${isGlass ? 'accent-background' : 'accent-white'}`}
                 />
                 <span>{answer.label}</span>
-              </button>
-            )
-          })}
+              </label>
+            ))}
+          </fieldset>
         </div>
-      </div>
-
-      <div className="mt-6 grid grid-cols-[40px_1fr_40px] items-center">
-        <button
-          type="button"
-          aria-label="Предыдущий вопрос"
-          disabled={currentQuestionIndex === 0}
-          onClick={() => selectQuestion(currentQuestionIndex - 1)}
-          className={navigationButtonClassName}
-        >
-          <ArrowLeftIcon aria-hidden="true" className="size-6" />
-        </button>
-
-        <span className="text-background/50 text-center text-base leading-[19px] lg:text-white/50">
-          Вопрос {currentQuestionNumber} из {quiz.total}
-        </span>
-
-        <button
-          type="button"
-          aria-label="Следующий вопрос"
-          disabled={currentQuestionIndex === quiz.questions.length - 1}
-          onClick={() => selectQuestion(currentQuestionIndex + 1)}
-          className={navigationButtonClassName}
-        >
-          <ArrowRightIcon aria-hidden="true" className="size-6" />
-        </button>
+        <div className="mt-5 grid shrink-0 grid-cols-[40px_1fr_40px] items-center">
+          <button
+            type="button"
+            aria-label="Предыдущий вопрос"
+            disabled={questionIndex === 0}
+            className={navigationClassName}
+            onClick={() => setQuestionIndex((index) => index - 1)}
+          >
+            <ArrowLeftIcon aria-hidden="true" className="size-6" />
+          </button>
+          <span
+            aria-live="polite"
+            className={`text-center text-sm leading-[19px] ${isGlass ? 'text-white/70' : 'text-background/60'}`}
+          >
+            Вопрос {questionIndex + 1} из {total}
+          </span>
+          <button
+            type="button"
+            aria-label="Следующий вопрос"
+            disabled={questionIndex === total - 1}
+            className={navigationClassName}
+            onClick={() => setQuestionIndex((index) => index + 1)}
+          >
+            <ArrowRightIcon aria-hidden="true" className="size-6" />
+          </button>
+        </div>
       </div>
     </section>
   )

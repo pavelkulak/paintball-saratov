@@ -12,24 +12,44 @@ import { siteContact } from '@/lib/site-contact'
 
 export function Header() {
   const [isScrolled, setIsScrolled] = useState(false)
+  const [isHidden, setIsHidden] = useState(false)
 
   useEffect(() => {
+    const desktop = window.matchMedia('(min-width: 1024px)')
+    let previousY = Math.max(0, window.scrollY)
+    let accumulatedDelta = 0
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 8)
+      const currentY = Math.max(0, window.scrollY)
+      const delta = currentY - previousY
+      previousY = currentY
+      setIsScrolled(currentY > 8)
+      if (!desktop.matches || currentY < 80) {
+        accumulatedDelta = 0
+        setIsHidden(false)
+        return
+      }
+      accumulatedDelta =
+        Math.sign(delta) === Math.sign(accumulatedDelta)
+          ? accumulatedDelta + delta
+          : delta
+      if (Math.abs(accumulatedDelta) >= 8) setIsHidden(accumulatedDelta > 0)
     }
 
     handleScroll()
     window.addEventListener('scroll', handleScroll, { passive: true })
+    desktop.addEventListener('change', handleScroll)
 
     return () => {
       window.removeEventListener('scroll', handleScroll)
+      desktop.removeEventListener('change', handleScroll)
     }
   }, [])
 
   return (
     <header
+      data-hidden={isHidden || undefined}
       className={clsx(
-        'fixed inset-x-0 top-0 z-50 transition-[background-color,backdrop-filter,border-color] duration-300',
+        'fixed inset-x-0 top-0 z-50 transition-[transform,background-color,backdrop-filter,border-color] duration-300 motion-reduce:transition-none lg:focus-within:translate-y-0 lg:data-[hidden=true]:-translate-y-full',
         isScrolled &&
           'border-line/40 bg-background/75 border-b backdrop-blur-md',
       )}

@@ -3,7 +3,7 @@ export const siteContact = {
     href: 'tel:+74951043686',
     label: '+7 (495) 104-36-86',
   },
-  address: 'г. Домодедово, Каширское ш-се д. 107-А',
+  address: 'г. Домодедово, Каширское шоссе д. 107-А',
 } as const
 
 // TODO: replace the section anchors when the public social profile URLs are approved.

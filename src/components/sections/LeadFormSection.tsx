@@ -1,21 +1,11 @@
 'use client'
 
-import {
-  useEffect,
-  useId,
-  useRef,
-  useState,
-  type ChangeEvent,
-  type FormEvent,
-  type KeyboardEvent,
-} from 'react'
+import { useEffect, useId, useRef, useState, type KeyboardEvent } from 'react'
 
 import { ArrowRightIcon } from '@/components/icons/ArrowRightIcon'
 import { DateTimePicker } from '@/components/ui/DateTimePicker'
-
-type SubmitStatus = 'idle' | 'submitting' | 'success' | 'error'
-
-const russianPhonePattern = '\\+7 \\(\\d{3}\\) \\d{3}-\\d{2}-\\d{2}'
+import { RussianPhoneInput } from '@/components/ui/RussianPhoneInput'
+import { BookingSubmission } from '@/components/booking/BookingSubmission'
 
 const fieldLabelClassName =
   'text-background/60 flex min-w-0 flex-col gap-2 text-base leading-[19px]'
@@ -216,133 +206,7 @@ function DemoSelect({
   )
 }
 
-function getRussianPhoneDigits(value: string) {
-  const digits = value.replace(/\D/g, '')
-  const trimmedValue = value.trimStart()
-
-  if (trimmedValue.startsWith('+7')) return digits.slice(1, 11)
-  if (digits.startsWith('8')) return digits.slice(1, 11)
-  if (digits.length === 11 && digits.startsWith('7')) {
-    return digits.slice(1, 11)
-  }
-
-  return digits.slice(0, 10)
-}
-
-function formatRussianPhone(value: string) {
-  const localDigits = getRussianPhoneDigits(value)
-  if (!localDigits) {
-    return /^\s*(?:\+7|8)$/.test(value) ? '+7' : ''
-  }
-
-  let formatted = `+7 (${localDigits.slice(0, 3)}`
-  if (localDigits.length >= 3) formatted += ')'
-  if (localDigits.length > 3) formatted += ` ${localDigits.slice(3, 6)}`
-  if (localDigits.length > 6) formatted += `-${localDigits.slice(6, 8)}`
-  if (localDigits.length > 8) formatted += `-${localDigits.slice(8, 10)}`
-
-  return formatted
-}
-
-function getPhoneCaretPosition(value: string, localDigitsBefore: number) {
-  if (localDigitsBefore === 0) return value === '+7' ? 2 : value.indexOf('(')
-
-  let localDigitsSeen = 0
-  for (let index = 3; index < value.length; index += 1) {
-    if (/\d/.test(value[index])) {
-      localDigitsSeen += 1
-      if (localDigitsSeen === localDigitsBefore) return index + 1
-    }
-  }
-
-  return value.length
-}
-
-function RussianPhoneInput() {
-  const [phone, setPhone] = useState('')
-  const phoneInputRef = useRef<HTMLInputElement>(null)
-
-  function handlePhoneChange(event: ChangeEvent<HTMLInputElement>) {
-    const input = event.currentTarget
-    const caretPosition = input.selectionStart ?? input.value.length
-    const localDigitsBefore = getRussianPhoneDigits(
-      input.value.slice(0, caretPosition),
-    ).length
-    const nextPhone = formatRussianPhone(input.value)
-
-    setPhone(nextPhone)
-
-    requestAnimationFrame(() => {
-      const nextCaretPosition = getPhoneCaretPosition(
-        nextPhone,
-        localDigitsBefore,
-      )
-      phoneInputRef.current?.setSelectionRange(
-        nextCaretPosition,
-        nextCaretPosition,
-      )
-    })
-  }
-
-  return (
-    <label className={fieldLabelClassName}>
-      <span>Телефон</span>
-      <input
-        required
-        autoComplete="tel"
-        className={`${fieldInputClassName} placeholder:text-background/60`}
-        inputMode="tel"
-        name="phone"
-        pattern={russianPhonePattern}
-        placeholder="+7 (___) ___-__-__"
-        ref={phoneInputRef}
-        type="tel"
-        value={phone}
-        onChange={handlePhoneChange}
-      />
-    </label>
-  )
-}
-
 export function LeadFormSection() {
-  const [status, setStatus] = useState<SubmitStatus>('idle')
-  const [formResetKey, setFormResetKey] = useState(0)
-
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-    setStatus('submitting')
-
-    const form = event.currentTarget
-    const formData = new FormData(form)
-    const phoneDigits = getRussianPhoneDigits(
-      String(formData.get('phone') ?? ''),
-    )
-
-    try {
-      const response = await fetch('/api/v1/leads', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: formData.get('name'),
-          phone: phoneDigits ? `+7${phoneDigits}` : '',
-          consent: formData.get('consent') === 'on',
-        }),
-      })
-
-      if (!response.ok) {
-        throw new Error('Lead request failed')
-      }
-
-      form.reset()
-      setFormResetKey((currentKey) => currentKey + 1)
-      setStatus('success')
-    } catch {
-      setStatus('error')
-    }
-  }
-
   return (
     <section
       id="lead-form"
@@ -364,7 +228,7 @@ export function LeadFormSection() {
 
       <form
         className="mx-auto mt-[52px] flex w-full max-w-[540px] flex-col xl:mx-0 xl:mt-0"
-        onSubmit={handleSubmit}
+        onSubmit={(event) => event.preventDefault()}
       >
         <div className="grid grid-cols-1 gap-x-4 gap-y-5 sm:grid-cols-2">
           <label className={fieldLabelClassName}>
@@ -378,17 +242,18 @@ export function LeadFormSection() {
             />
           </label>
 
-          <RussianPhoneInput key={formResetKey} />
+          <RussianPhoneInput
+            labelClassName={fieldLabelClassName}
+            inputClassName={fieldInputClassName}
+          />
 
           <DemoSelect
-            key={`tariff-${formResetKey}`}
             label="Тариф"
             name="tariff"
             options={demoTariffs}
             defaultValue={demoTariffs[0]}
           />
           <DemoSelect
-            key={`scenario-${formResetKey}`}
             label="Сценарий"
             name="scenario"
             options={demoScenarios}
@@ -407,7 +272,6 @@ export function LeadFormSection() {
           </label>
 
           <DateTimePicker
-            key={`dateTime-${formResetKey}`}
             labelClassName={fieldLabelClassName}
             inputClassName={fieldInputClassName}
           />
@@ -443,24 +307,10 @@ export function LeadFormSection() {
           </span>
         </label>
 
-        <button
-          type="submit"
-          disabled={status === 'submitting'}
-          className="bg-background text-surface focus-visible:ring-background focus-visible:ring-offset-primary mt-10 inline-flex min-h-[68px] w-full items-center justify-center rounded-[20px] px-8 py-4 text-base leading-[19px] font-bold transition-opacity hover:opacity-85 focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-wait disabled:opacity-60 xl:justify-start"
-        >
-          {status === 'submitting' ? 'Отправляем…' : 'Оставить заявку'}
-        </button>
-
-        <p
-          aria-live="polite"
-          className={`text-background/70 mt-4 text-sm leading-[1.2] ${
-            status === 'idle' || status === 'submitting' ? 'sr-only' : ''
-          }`}
-        >
-          {status === 'success'
-            ? 'Заявка отправлена. Мы свяжемся с вами в ближайшее время.'
-            : 'Не удалось отправить заявку. Попробуйте ещё раз или свяжитесь с нами по телефону.'}
-        </p>
+        <BookingSubmission
+          className="mt-10"
+          buttonClassName="min-h-[68px] rounded-[20px] px-8 py-4 xl:justify-start"
+        />
       </form>
     </section>
   )
