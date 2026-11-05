@@ -1,17 +1,20 @@
 'use client'
 
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import {
   createContext,
   useCallback,
   useContext,
   useEffect,
   useRef,
+  useState,
+  useTransition,
   type ReactNode,
 } from 'react'
 
 const SMOOTHER_QUERY =
   '(min-width: 1280px) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)'
+const SCENARIOS_SCROLL_TIMEOUT = 1400
 
 type ScrollSmootherProviderProps = {
   outsideContent?: ReactNode
@@ -25,6 +28,19 @@ type ScrollSmootherInstance = {
 }
 
 type ScrollTarget = number | HTMLElement
+
+const AudienceNavigationContext = createContext<{
+  pendingHref: string | null
+  navigate: (href: string) => void
+} | null>(null)
+
+export function useAudienceNavigation() {
+  return useContext(AudienceNavigationContext)
+}
+
+function getAnchorOffset(target: HTMLElement) {
+  return Number.parseFloat(getComputedStyle(target).scrollMarginBlockStart) || 0
+}
 
 const SmoothScrollContext = createContext<
   (target: ScrollTarget, smooth?: boolean) => void
@@ -49,8 +65,12 @@ export function ScrollSmootherProvider({
   outsideContent,
 }: ScrollSmootherProviderProps) {
   const pathname = usePathname()
+  const router = useRouter()
   const previousPathnameRef = useRef(pathname)
   const smootherRef = useRef<ScrollSmootherInstance | null>(null)
+  const audienceScrollFrameRef = useRef(0)
+  const [requestedHref, setRequestedHref] = useState<string | null>(null)
+  const [isNavigating, startNavigation] = useTransition()
   const scrollTo = useCallback((target: ScrollTarget, smooth = true) => {
     const smoother = smootherRef.current
 
@@ -61,10 +81,7 @@ export function ScrollSmootherProvider({
 
     if (smoother && target instanceof HTMLElement) {
       const offset = smoother.offset(target, 'top top')
-      const anchorOffset =
-        Number.parseFloat(getComputedStyle(target).scrollMarginBlockStart) || 0
-
-      smoother.scrollTo(Math.max(0, offset - anchorOffset), smooth)
+      smoother.scrollTo(Math.max(0, offset - getAnchorOffset(target)), smooth)
       return
     }
 
@@ -78,6 +95,57 @@ export function ScrollSmootherProvider({
       block: 'start',
     })
   }, [])
+
+  const navigateToAudience = useCallback(
+    (href: string) => {
+      if (isNavigating) return
+      window.cancelAnimationFrame(audienceScrollFrameRef.current)
+
+      const section = document.getElementById('scenarios')
+      const changeRoute = () => {
+        setRequestedHref(href)
+        startNavigation(() => router.push(href, { scroll: !section }))
+      }
+
+      if (!section) {
+        changeRoute()
+        return
+      }
+
+      const isAtSection = () =>
+        Math.abs(
+          section.getBoundingClientRect().top - getAnchorOffset(section),
+        ) <= 4
+      const prefersReducedMotion = window.matchMedia(
+        '(prefers-reduced-motion: reduce)',
+      ).matches
+      const deadline = performance.now() + SCENARIOS_SCROLL_TIMEOUT
+
+      const waitForSection = () => {
+        if (
+          prefersReducedMotion ||
+          isAtSection() ||
+          performance.now() >= deadline
+        ) {
+          scrollTo(section, false)
+          audienceScrollFrameRef.current =
+            window.requestAnimationFrame(changeRoute)
+          return
+        }
+
+        audienceScrollFrameRef.current =
+          window.requestAnimationFrame(waitForSection)
+      }
+
+      if (!prefersReducedMotion && !isAtSection()) scrollTo(section)
+      waitForSection()
+    },
+    [isNavigating, router, scrollTo],
+  )
+
+  useEffect(() => {
+    return () => window.cancelAnimationFrame(audienceScrollFrameRef.current)
+  }, [pathname])
 
   useEffect(() => {
     if (previousPathnameRef.current === pathname) {
@@ -203,15 +271,22 @@ export function ScrollSmootherProvider({
 
   return (
     <SmoothScrollContext.Provider value={scrollTo}>
-      {outsideContent}
-      <div
-        id="smooth-wrapper"
-        className="min-h-screen [html.has-scroll-smoother_&]:overflow-hidden"
+      <AudienceNavigationContext.Provider
+        value={{
+          pendingHref: isNavigating ? requestedHref : null,
+          navigate: navigateToAudience,
+        }}
       >
-        <div id="smooth-content" className="min-h-screen overflow-visible">
-          {children}
+        {outsideContent}
+        <div
+          id="smooth-wrapper"
+          className="min-h-screen [html.has-scroll-smoother_&]:overflow-hidden"
+        >
+          <div id="smooth-content" className="min-h-screen overflow-visible">
+            {children}
+          </div>
         </div>
-      </div>
+      </AudienceNavigationContext.Provider>
     </SmoothScrollContext.Provider>
   )
 }

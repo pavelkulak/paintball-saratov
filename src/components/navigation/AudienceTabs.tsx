@@ -1,10 +1,11 @@
 'use client'
 
 import clsx from 'clsx'
-import Link, { useLinkStatus } from 'next/link'
+import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useLayoutEffect, useRef, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
+import { useAudienceNavigation } from '@/components/providers/ScrollSmootherProvider'
 import { audienceOptions, normalizePathname } from '@/lib/audience'
 
 const tabBaseClass =
@@ -16,11 +17,10 @@ type AudienceTabsProps = {
 
 type AudienceTabContentProps = {
   label: string
+  pending: boolean
 }
 
-function AudienceTabContent({ label }: AudienceTabContentProps) {
-  const { pending } = useLinkStatus()
-
+function AudienceTabContent({ label, pending }: AudienceTabContentProps) {
   return (
     <>
       <span
@@ -58,6 +58,7 @@ function AudienceTabContent({ label }: AudienceTabContentProps) {
 
 export function AudienceTabs({ className }: AudienceTabsProps) {
   const pathname = normalizePathname(usePathname())
+  const navigation = useAudienceNavigation()
   const activeOption =
     audienceOptions.find(
       (option) => normalizePathname(option.href) === pathname,
@@ -119,12 +120,20 @@ export function AudienceTabs({ className }: AudienceTabsProps) {
       )}
       {audienceOptions.map((option) => {
         const isActive = activeOption.id === option.id
+        const pending = navigation?.pendingHref === option.href
 
         return (
           <Link
             key={option.id}
             href={option.href}
+            prefetch={false}
             aria-current={isActive ? 'page' : undefined}
+            aria-busy={pending || undefined}
+            onNavigate={(event) => {
+              if (!navigation) return
+              event.preventDefault()
+              if (!isActive) navigation.navigate(option.href)
+            }}
             className={clsx(
               tabBaseClass,
               'isolate',
@@ -134,7 +143,7 @@ export function AudienceTabs({ className }: AudienceTabsProps) {
             )}
             style={{ WebkitTapHighlightColor: 'transparent' }}
           >
-            <AudienceTabContent label={option.label} />
+            <AudienceTabContent label={option.label} pending={pending} />
           </Link>
         )
       })}
