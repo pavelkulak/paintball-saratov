@@ -12,10 +12,12 @@ request. The response uses `cache: 'no-store'`, so an edit in Bitrix appears on
 the next request without rebuilding or redeploying Next.js. The browser receives
 rendered HTML and does not request public content from Bitrix.
 
-`BITRIX_API_URL` is a server-side runtime environment variable. It is not
-required by `next build` and must not use the `NEXT_PUBLIC_` prefix. A missing or
-unavailable endpoint causes the page request to fail; it does not prevent the
-application image from being built.
+`CONTENT_SOURCE=bitrix` selects Bitrix data at server runtime. In this mode,
+`BITRIX_API_URL` is required, must not use the `NEXT_PUBLIC_` prefix, and must
+point to the public `/api/v1/home` endpoint. A missing or unavailable endpoint
+causes the page request to fail; it does not prevent the application image from
+being built. `CONTENT_SOURCE=demo` uses the checked-in demo payload while the
+Bitrix endpoint is not ready.
 
 The Next.js application runs in a Node.js container. Bitrix and its database run
 as a separate PHP application and database service on the host. The same HTTP
@@ -90,8 +92,10 @@ of the next content migration.
 - `cms/bitrix/`, `cms/upload/`, the Bitrix admin site, runtime configuration,
   and database are not part of the repository.
 - The rewrite in `cms/.htaccess` maps `GET /api/v1/home` to the PHP endpoint.
-- `Dockerfile` and `docker-compose.yml` run Next.js only. Configure
-  `BITRIX_API_URL` in the deployment environment or local `.env` file.
+- `Dockerfile` and `docker-compose.yml` run Next.js only. Compose defaults to
+  demo content. When the Bitrix endpoint is ready, configure
+  `CONTENT_SOURCE=bitrix` and `BITRIX_API_URL` in the deployment environment or
+  local `.env` file.
 
 If the content changes infrequently and request volume requires it, a bounded
 server-side revalidation interval can be considered later. The current contract

@@ -25,14 +25,16 @@ cd Paintball
 npm run setup
 ```
 
-Скопируйте `.env.example` в `.env.local` и задайте адрес публичного endpoint:
+Скопируйте `.env.example` в `.env.local`. По умолчанию используется локальный
+demo-контент. Для проверки данных из Битрикса задайте:
 
 ```text
+CONTENT_SOURCE=bitrix
 BITRIX_API_URL=https://your-bitrix-domain.example/api/v1/home
 ```
 
-Переменная нужна запущенному Next.js серверу. `next build` не загружает контент
-из Bitrix и может выполняться без доступного CMS.
+`BITRIX_API_URL` нужна серверу только при `CONTENT_SOURCE=bitrix`. `next build`
+не загружает контент из Bitrix и может выполняться без доступного CMS.
 
 ```powershell
 npm run dev
@@ -46,13 +48,15 @@ npm run start
 ## Развёртывание
 
 Для домашнего сервера используется Docker Compose только для Next.js. Bitrix и
-его база данных остаются отдельными PHP/MySQL сервисами на сервере. Скопируйте
-`.env.example` в `.env`, укажите доступный из контейнера URL Bitrix и запускайте
-Compose через 1Panel. Внешний reverse proxy должен направлять запросы на порт
-Next.js.
+его база данных остаются отдельными PHP/MySQL сервисами на сервере. Compose по
+умолчанию использует demo-контент, пока Bitrix API не готов. Когда endpoint будет
+развёрнут, задайте `CONTENT_SOURCE=bitrix` и доступный из контейнера URL API в
+`.env` или переменных окружения приложения 1Panel. Внешний reverse proxy должен
+направлять запросы на порт Next.js.
 
 ```text
-BITRIX_API_URL=https://your-bitrix-domain.example/api/v1/home
+CONTENT_SOURCE=demo
+BITRIX_API_URL=
 NEXT_PORT=3000
 ```
 
@@ -66,7 +70,8 @@ Bitrix публикует JSON endpoint; его PHP-адаптер находи�
 разворачивается в установленный отдельно Bitrix. Сам Bitrix, его админка,
 ядро и база данных в репозиторий не входят.
 
-В production Next.js обращается к адресу из серверной переменной `BITRIX_API_URL`:
+При `CONTENT_SOURCE=bitrix` Next.js обращается к адресу из серверной переменной
+`BITRIX_API_URL`:
 
 ```text
 GET https://your-bitrix-domain.example/api/v1/home
