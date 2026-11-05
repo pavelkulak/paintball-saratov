@@ -3,18 +3,19 @@
 ## Architecture
 
 - Next.js App Router is the only frontend.
-- The public site is a static export. Do not add server-side rendering or runtime content requests.
-- Bitrix is a headless CMS/backend only. The frontend must never connect to the Bitrix database.
-- Content is read from the stable public JSON contract `GET /api/v1/home` during `next build` only.
-- Lead forms use the separate Bitrix D7 endpoint `POST /api/v1/leads` from the browser.
+- The public site runs as a Node.js server with server-side rendering. Do not restore static export as the production mode.
+- Bitrix with PHP and its database is deployed separately from the Next.js container. The frontend must never connect to the Bitrix database.
+- Content is read from the stable public JSON contract `GET /api/v1/home` by server-only code at request time.
+- Lead forms use the separate Bitrix D7 endpoint `POST /api/v1/leads`; keep this integration separate from the public content contract.
 - Bitrix internal details such as `IBLOCK_ID`, `PROPERTY_*`, database fields, and ORM entities must not appear in the frontend contract.
 
 ## Data fetching
 
 - Keep the Bitrix response validated at the boundary with Zod.
-- Keep the request in a server-only module used by statically generated routes.
-- Do not add TanStack Query, Next Runtime caching, or client-side Bitrix content requests.
-- A build without `BITRIX_API_URL` must fail. CI/production builds must provide `BITRIX_API_URL`.
+- Keep the request in a server-only module used by server-rendered routes.
+- Fetch public content without caching so CMS edits appear on the next request. Change caching only with an explicit freshness decision.
+- Do not add TanStack Query or client-side Bitrix content requests.
+- `BITRIX_API_URL` is required at runtime, not during `next build`, and must remain server-only.
 
 ## Design and styling
 
@@ -27,12 +28,9 @@
 - Run `npm run format:check`, `npm run lint`, and `npm run build` before handoff.
 - Keep API schemas and examples synchronized when the Bitrix contract changes.
 
-## Bitrix MCP
-
-- Bitrix MCP is a local development aid, not the website runtime or Bitrix admin UI.
-- Keep raw SQL writes disabled. The local OSPanel-only `bitrix_tinker` capability may execute explicitly requested D7/public API mutations; production and shared databases stay read-only.
-- Do not commit `.bitrix-mcp`, `cms/bitrix`, `cms/upload`, runtime configuration, or credentials.
-- Use the project skill in `.agents/skills/bitrix-mcp/SKILL.md` for the MCP workflow and fallback rules.
+- Keep the Bitrix admin site, core, uploads, runtime configuration, and database outside this repository.
+- The tracked `cms/local/` directory contains only project-owned PHP integration code for deployment into the separate Bitrix installation.
+- Do not commit credentials or database connection settings.
 
 <!-- BEGIN:nextjs-agent-rules -->
 

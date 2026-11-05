@@ -16,7 +16,6 @@ import {
   shiftTime,
   toDateKey,
 } from './date-time.utils'
-import styles from './DateTimePicker.module.css'
 
 const months = [
   'Январь',
@@ -58,9 +57,7 @@ function TimeUnit({
   return (
     <div className="min-w-0">
       <p className="text-background/60 mb-1 text-center text-xs">{label}</p>
-      <div
-        className={`${styles.timeSteps} bg-background/5 grid items-center rounded-lg`}
-      >
+      <div className="bg-background/5 grid grid-cols-[40px_minmax(0,_1fr)_40px] items-center rounded-lg [@media(min-width:_640px)_and_(pointer:_fine),_(min-width:_1024px)]:grid-cols-[32px_minmax(0,_1fr)_32px]">
         <button
           type="button"
           aria-label={`Уменьшить ${label.toLocaleLowerCase('ru')}`}
@@ -331,7 +328,7 @@ export function DateTimePicker({
       <dialog
         ref={dialogRef}
         id={dialogId}
-        className={styles.dialog}
+        className="text-background fixed inset-auto top-[var(--picker-top,_8px)] left-[var(--picker-left,_8px)] m-0 max-h-[var(--picker-height,_calc(100dvh_-_16px))] w-[var(--picker-width,_calc(100vw_-_16px))] max-w-[calc(100vw_-_16px)] [translate:0_4px] overflow-hidden rounded-[14px] border-0 bg-white p-0 opacity-0 shadow-[0_12px_32px_rgb(18_24_12_/_18%)] [transition:opacity_160ms_ease-out,_translate_160ms_ease-out,_overlay_160ms_allow-discrete,_display_160ms_allow-discrete] motion-reduce:translate-none motion-reduce:transition-none [&::backdrop]:opacity-0 [&::backdrop]:[background:rgb(18_24_12_/_35%)] [&::backdrop]:[transition:opacity_160ms_ease-out,_overlay_160ms_allow-discrete,_display_160ms_allow-discrete] motion-reduce:[&::backdrop]:transition-none [&[open]]:flex [&[open]]:[translate:0_0] [&[open]]:flex-col [&[open]]:opacity-100 starting:[&[open]]:[translate:0_4px] starting:[&[open]]:opacity-0 [&[open]::backdrop]:opacity-100 starting:[&[open]::backdrop]:opacity-0 [@media(min-width:_640px)_and_(pointer:_fine),_(min-width:_1024px)]:[border-start-start-radius:var(--picker-top-radius,_14px)] [@media(min-width:_640px)_and_(pointer:_fine),_(min-width:_1024px)]:[border-start-end-radius:var(--picker-top-radius,_14px)] [@media(min-width:_640px)_and_(pointer:_fine),_(min-width:_1024px)]:[&::backdrop]:bg-transparent"
         aria-labelledby={titleId}
         onCancel={(event) => {
           event.preventDefault()
@@ -353,9 +350,7 @@ export function DateTimePicker({
             closePicker()
         }}
       >
-        <header
-          className={`${styles.mobileHeader} border-background/10 flex shrink-0 items-center justify-between gap-2 border-b px-3 py-1`}
-        >
+        <header className="border-background/10 flex shrink-0 items-center justify-between gap-2 border-b px-3 py-1 [@media(min-width:_640px)_and_(pointer:_fine),_(min-width:_1024px)]:hidden">
           <h3 id={titleId} className="text-sm font-semibold">
             Дата и время
           </h3>
@@ -391,7 +386,7 @@ export function DateTimePicker({
             <div className="flex shrink-0">
               <button
                 type="button"
-                className={`${styles.monthNavigation} ${smallButtonClassName} text-[#869400]`}
+                className={`[@media(min-width:_640px)_and_(pointer:_fine),_(min-width:_1024px)]:h-8 [@media(min-width:_640px)_and_(pointer:_fine),_(min-width:_1024px)]:w-8 ${smallButtonClassName} text-[#869400]`}
                 aria-label={showMonths ? 'Предыдущий год' : 'Предыдущий месяц'}
                 onClick={() => moveMonth(showMonths ? -12 : -1)}
               >
@@ -399,7 +394,7 @@ export function DateTimePicker({
               </button>
               <button
                 type="button"
-                className={`${styles.monthNavigation} ${smallButtonClassName} text-[#869400]`}
+                className={`[@media(min-width:_640px)_and_(pointer:_fine),_(min-width:_1024px)]:h-8 [@media(min-width:_640px)_and_(pointer:_fine),_(min-width:_1024px)]:w-8 ${smallButtonClassName} text-[#869400]`}
                 aria-label={showMonths ? 'Следующий год' : 'Следующий месяц'}
                 onClick={() => moveMonth(showMonths ? 12 : 1)}
               >
@@ -454,7 +449,7 @@ export function DateTimePicker({
                         tabIndex={focusedDate === day.key ? 0 : -1}
                         aria-label={dateLabel.format(fromDateKey(day.key))}
                         aria-current={today === day.key ? 'date' : undefined}
-                        className={`${styles.day} focus-visible:outline-background hover:bg-primary/40 flex w-full items-center justify-center rounded-full text-sm tabular-nums transition-colors focus-visible:outline-2 focus-visible:-outline-offset-2 ${today === day.key ? 'font-semibold text-[#869400]' : day.inMonth ? 'text-background' : 'text-background/30'}`}
+                        className={`focus-visible:outline-background hover:bg-primary/40 flex h-11 w-full items-center justify-center rounded-full text-sm tabular-nums transition-colors focus-visible:outline-2 focus-visible:-outline-offset-2 [@media(min-width:_640px)_and_(pointer:_fine),_(min-width:_1024px)]:h-9 ${today === day.key ? 'font-semibold text-[#869400]' : day.inMonth ? 'text-background' : 'text-background/30'}`}
                         onClick={() => {
                           setDraftDate(day.key)
                           setFocusedDate(day.key)
@@ -481,7 +476,7 @@ export function DateTimePicker({
                 type="button"
                 aria-label="Изменить время"
                 aria-expanded={showTimeControls}
-                className={`${styles.timeButton} bg-background/5 focus-visible:outline-background min-h-8 items-center rounded-md px-2 text-base tabular-nums focus-visible:outline-2`}
+                className="bg-background/5 focus-visible:outline-background hidden min-h-8 items-center rounded-md px-2 text-base tabular-nums focus-visible:outline-2 [@media(min-width:_640px)_and_(pointer:_fine),_(min-width:_1024px)]:inline-flex"
                 onClick={() => setShowTimeControls(!showTimeControls)}
               >
                 {String(normalizeTimePart(hours, 23)).padStart(2, '0')}:
@@ -489,7 +484,7 @@ export function DateTimePicker({
               </button>
             </div>
             <div
-              className={`${showTimeControls ? '' : styles.collapsedTime} grid grid-cols-2 gap-3`}
+              className={`${showTimeControls ? '' : '[@media(min-width:_640px)_and_(pointer:_fine),_(min-width:_1024px)]:hidden'} grid grid-cols-2 gap-3`}
             >
               <TimeUnit
                 label="Часы"

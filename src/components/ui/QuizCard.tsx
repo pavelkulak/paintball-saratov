@@ -8,7 +8,6 @@ import { ArrowRightIcon } from '@/components/icons/ArrowRightIcon'
 import type { HomeResponse } from '@/lib/bitrix/home-schema'
 
 import { Button } from './Button'
-import styles from './QuizCard.module.css'
 
 type QuizCardProps = {
   quiz: HomeResponse['quiz']
@@ -45,7 +44,7 @@ export function QuizCard({
       className={twMerge(
         'relative flex w-full max-w-[388px] flex-col overflow-hidden rounded-[20px] px-5 pt-6 pb-5',
         isGlass
-          ? `${styles.hero} bg-background/50 text-white backdrop-blur-[4px]`
+          ? `bg-background/50 h-[210px] max-h-[100%] min-h-0 text-white backdrop-blur-[4px] [transition:height_400ms_ease] motion-reduce:transition-none [&[data-expanded='true']]:h-[440px]`
           : 'text-background min-h-[467px] bg-white',
         className,
       )}

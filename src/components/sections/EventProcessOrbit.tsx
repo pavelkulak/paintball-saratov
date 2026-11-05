@@ -5,8 +5,6 @@ import { useEffect, useRef, type CSSProperties } from 'react'
 
 import { SectionHeading } from '@/components/ui/SectionHeading'
 
-import styles from './EventProcessOrbit.module.css'
-
 const processSteps = [
   {
     title: 'Оставляете заявку',
@@ -54,53 +52,77 @@ const PROCESS_MEDIA_CONDITIONS = {
 } as const
 
 const PROCESS_SCROLL_DISTANCE = 700
-const PROCESS_CARD_BOTTOM_GAP = 16
 const PROCESS_TOUCH_SCRUB = 0.6
 const PROCESS_POINTER_SCRUB = 2
 
-type PinOffsetElements = {
-  orbit: HTMLOListElement
-  orbitAnchor: HTMLDivElement
-  orbitViewport: HTMLDivElement
-  viewportHeight: HTMLSpanElement
-}
+function getMobileOrbitLayout(
+  width: number,
+  height: number,
+  expandedHeight: number,
+  headerHeight: number,
+  headingHeight: number,
+  descriptionTop: number,
+  radius: number,
+) {
+  const cardWidth = Math.round(Math.min(width * 0.89, height * 0.46, 380))
+  const stageTop = headerHeight + Math.round(Math.min(30, height * 0.035))
+  const topGap = Math.round(Math.max(16, cardWidth * 0.07))
+  const bottomGap = Math.round(Math.max(24, cardWidth * 0.1))
+  const spaceWithHeading =
+    height - stageTop - headingHeight - topGap - bottomGap
+  // Use the full screen height for this choice so the browser toolbar cannot flip it.
+  const showDescriptionOnly =
+    expandedHeight <= 700 ||
+    spaceWithHeading + expandedHeight - height < cardWidth * 1.2
 
-function calculateMobilePinOffset({
-  orbit,
-  orbitAnchor,
-  orbitViewport,
-  viewportHeight,
-}: PinOffsetElements) {
-  if (!window.matchMedia(PROCESS_MEDIA_CONDITIONS.mobile).matches) {
-    return 0
-  }
-
-  // The orbit starts at 30deg, so its final 330deg card is upright at the top.
-  // Measuring that card keeps this calculation independent of transformed bounds.
-  const initialCard = orbit.lastElementChild as HTMLElement | null
-
-  if (!initialCard) {
-    return 0
-  }
-
-  const cardBottom =
-    orbitViewport.offsetTop +
-    orbitAnchor.offsetTop +
-    initialCard.offsetHeight / 2
-
-  return Math.max(
-    0,
-    Math.ceil(
-      cardBottom + PROCESS_CARD_BOTTOM_GAP - viewportHeight.offsetHeight,
+  // On short phones, align the description below the fixed header.
+  const pinOffset = showDescriptionOnly
+    ? Math.max(0, Math.round(stageTop + descriptionTop - headerHeight - 12))
+    : 0
+  const availableHeight = spaceWithHeading + pinOffset
+  const cardHeight = Math.max(
+    1,
+    Math.round(
+      Math.min(
+        availableHeight,
+        Math.max(cardWidth * 1.45, availableHeight - 24),
+      ),
     ),
   )
+  const cardGap =
+    topGap + Math.max(0, Math.round((availableHeight - cardHeight) / 2))
+
+  // The nearest card tilts up to half a step. Reserve its lowest corner.
+  const tilt = Math.PI / orbitAngles.length
+  const cosTilt = Math.cos(tilt)
+  const orbitTop = stageTop + headingHeight - pinOffset + cardGap
+  const maxTiltedHeight = Math.floor(
+    (height -
+      6 -
+      orbitTop -
+      radius * (1 - cosTilt) -
+      (cardWidth / 2) * Math.sin(tilt)) /
+      ((1 + cosTilt) / 2),
+  )
+
+  return {
+    '--process-pin-offset': pinOffset,
+    '--process-mobile-top': stageTop,
+    '--process-mobile-card-width': cardWidth,
+    '--process-mobile-card-height': Math.max(
+      1,
+      Math.min(cardHeight, maxTiltedHeight),
+    ),
+    '--process-mobile-card-gap': cardGap,
+  }
 }
 
 function StepNumber({ value }: { value: number }) {
   return (
     <span
       aria-hidden="true"
-      className={`${styles.stepNumber} font-display text-ink text-lg leading-none md:text-[28px] xl:text-[40px]`}
+      data-process-step-number
+      className="font-display text-ink text-lg leading-none max-md:text-[clamp(16px,6cqw,22px)] md:text-[28px] xl:text-[40px]"
     >
       {value}
     </span>
@@ -120,7 +142,7 @@ function ProcessCard({
 }) {
   return (
     <li className={className} style={style}>
-      <article className="text-ink relative size-full overflow-hidden rounded-[24px] bg-white">
+      <article className="text-ink relative size-full overflow-hidden rounded-[24px] bg-white max-md:[container-type:inline-size] max-md:rounded-[clamp(16px,5vw,24px)]">
         <Image
           src={step.image}
           alt=""
@@ -133,22 +155,26 @@ function ProcessCard({
         />
 
         <div
-          className={`${styles.cardHeader} absolute top-1 right-1 left-1 z-10 flex min-h-[98px] items-center gap-4 rounded-[20px] bg-white p-4 md:top-1.5 md:right-1.5 md:left-1.5 md:rounded-[18px] md:p-2.5 xl:top-2 xl:right-2 xl:left-2 xl:rounded-[16px] xl:p-1`}
+          data-process-card-header
+          className="absolute top-1 right-1 left-1 z-10 flex min-h-[98px] items-center gap-4 rounded-[20px] bg-white p-4 max-md:min-h-0 max-md:gap-[clamp(8px,3cqw,12px)] max-md:rounded-[clamp(12px,5cqw,18px)] max-md:p-[clamp(8px,3.5cqw,14px)] md:top-1.5 md:right-1.5 md:left-1.5 md:rounded-[18px] md:p-2.5 xl:top-2 xl:right-2 xl:left-2 xl:rounded-[16px] xl:p-1"
         >
           <div
-            className={`${styles.cardBadge} bg-primary flex size-9 shrink-0 items-center justify-center rounded-[14px] md:size-16 xl:size-[90px]`}
+            data-process-card-badge
+            className="bg-primary flex size-9 shrink-0 items-center justify-center rounded-[14px] max-md:size-[clamp(26px,10cqw,36px)] max-md:rounded-[clamp(8px,3.3cqw,12px)] md:size-16 xl:size-[90px]"
           >
             <StepNumber value={index + 1} />
           </div>
 
-          <div className="flex min-w-0 flex-col gap-2 pr-3">
+          <div className="flex min-w-0 flex-col gap-2 pr-3 max-md:gap-1 max-md:pr-0">
             <h3
-              className={`${styles.cardTitle} text-xl leading-[1.2] font-semibold`}
+              data-process-card-title
+              className="text-xl leading-[1.2] font-semibold max-md:text-[clamp(15px,5.4cqw,21px)]"
             >
               {step.title}
             </h3>
             <p
-              className={`${styles.cardDescription} text-muted text-sm leading-[1.2]`}
+              data-process-card-description
+              className="text-muted max-md:text-ink/65 text-sm leading-[1.2] max-md:text-[clamp(12px,4.1cqw,15px)]"
             >
               {step.description}
             </p>
@@ -163,8 +189,7 @@ export function EventProcessOrbit() {
   const sceneRef = useRef<HTMLElement>(null)
   const pinViewportRef = useRef<HTMLDivElement>(null)
   const viewportHeightRef = useRef<HTMLSpanElement>(null)
-  const orbitViewportRef = useRef<HTMLDivElement>(null)
-  const orbitAnchorRef = useRef<HTMLDivElement>(null)
+  const headingRef = useRef<HTMLDivElement>(null)
   const orbitRef = useRef<HTMLOListElement>(null)
 
   useEffect(() => {
@@ -208,17 +233,10 @@ export function EventProcessOrbit() {
 
           const pinViewport = pinViewportRef.current
           const viewportHeight = viewportHeightRef.current
-          const orbitViewport = orbitViewportRef.current
-          const orbitAnchor = orbitAnchorRef.current
+          const heading = headingRef.current
           const orbit = orbitRef.current
 
-          if (
-            !pinViewport ||
-            !viewportHeight ||
-            !orbitViewport ||
-            !orbitAnchor ||
-            !orbit
-          ) {
+          if (!pinViewport || !viewportHeight || !heading || !orbit) {
             return
           }
 
@@ -232,29 +250,49 @@ export function EventProcessOrbit() {
             ScrollTrigger.isTouch === 1
               ? PROCESS_TOUCH_SCRUB
               : PROCESS_POINTER_SCRUB
-          let pinOffset = -1
+          let cleanupMobileLayout: (() => void) | undefined
+          if (window.matchMedia(PROCESS_MEDIA_CONDITIONS.mobile).matches) {
+            const siteHeader =
+              document.querySelector<HTMLElement>('body > header')
+            const description = heading.querySelector('p')
+            let layoutProperties: string[] = []
+            const syncMobileLayout = () => {
+              const bounds = heading.getBoundingClientRect()
+              const layout = getMobileOrbitLayout(
+                viewportHeight.clientWidth,
+                viewportHeight.clientHeight,
+                pinViewport.clientHeight,
+                siteHeader?.offsetHeight ?? 0,
+                bounds.height,
+                description
+                  ? description.getBoundingClientRect().top - bounds.top
+                  : 0,
+                orbit.offsetWidth / 2,
+              )
 
-          const syncPinOffset = () => {
-            const nextPinOffset = calculateMobilePinOffset({
-              orbit,
-              orbitAnchor,
-              orbitViewport,
-              viewportHeight,
-            })
-
-            if (nextPinOffset === pinOffset) {
-              return
+              layoutProperties = Object.keys(layout)
+              for (const [property, value] of Object.entries(layout)) {
+                const cssValue = `${value}px`
+                if (scene.style.getPropertyValue(property) !== cssValue) {
+                  scene.style.setProperty(property, cssValue)
+                }
+              }
             }
 
-            pinOffset = nextPinOffset
+            syncMobileLayout()
+            const observer = new ResizeObserver(syncMobileLayout)
+            observer.observe(viewportHeight)
+            observer.observe(heading)
+            if (siteHeader) observer.observe(siteHeader, { box: 'border-box' })
+            ScrollTrigger.addEventListener('refreshInit', syncMobileLayout)
 
-            // Keep the extra layout height inside the clipped pin viewport. The
-            // inner composition shifts upward without enlarging GSAP's spacer.
-            scene.style.setProperty('--process-pin-offset', `${pinOffset}px`)
+            cleanupMobileLayout = () => {
+              observer.disconnect()
+              ScrollTrigger.removeEventListener('refreshInit', syncMobileLayout)
+              for (const property of layoutProperties)
+                scene.style.removeProperty(property)
+            }
           }
-
-          syncPinOffset()
-          ScrollTrigger.addEventListener('refreshInit', syncPinOffset)
 
           gsap.fromTo(
             orbit,
@@ -287,10 +325,7 @@ export function EventProcessOrbit() {
 
           scheduleRefresh()
 
-          return () => {
-            ScrollTrigger.removeEventListener('refreshInit', syncPinOffset)
-            scene.style.removeProperty('--process-pin-offset')
-          }
+          return cleanupMobileLayout
         })
       },
     )
@@ -310,22 +345,25 @@ export function EventProcessOrbit() {
       aria-labelledby="event-process-title"
       className="section-anchor relative mt-[50px] min-h-[calc(100lvh+700px)] w-full motion-reduce:min-h-0 md:mt-[55px] xl:mt-32"
     >
-      {/* The large viewport stays stable while mobile browser chrome retracts. */}
+      {/* Measure the visible area without changing the pin spacer as browser chrome moves. */}
       <span
         ref={viewportHeightRef}
         aria-hidden="true"
-        className="pointer-events-none invisible absolute inset-x-0 top-0 h-lvh"
+        className="pointer-events-none invisible absolute inset-x-0 top-0 h-dvh md:hidden"
       />
       {/* Pin only the visible viewport; the inner layout absorbs the card offset. */}
       <div
         ref={pinViewportRef}
         className="bg-primary text-primary-foreground relative h-lvh w-full overflow-hidden motion-reduce:h-auto motion-reduce:min-h-0"
       >
-        <div
-          className={`${styles.composition} stage-padding-start relative flex h-[calc(100lvh+var(--process-pin-offset,0px))] min-h-[680px] w-full translate-y-[calc(var(--process-pin-offset,0px)*-1)] flex-col [--process-card-half-height:calc(var(--process-card-height)/2)] [--process-card-height:var(--process-card-max-height)] [--process-card-max-height:504px] [--process-card-width:clamp(280px,91.111vw,328px)] [--process-orbit-shift:-32px] [--process-radius:clamp(480px,147vw,668px)] motion-reduce:h-auto motion-reduce:min-h-0 motion-reduce:translate-y-0 md:min-h-0 md:[--process-card-width:clamp(344px,46vw,374px)] md:[--process-orbit-shift:50px] md:[--process-radius:clamp(580px,82vw,668px)] xl:[--process-card-width:390px] xl:[--process-orbit-shift:100px] xl:[--process-radius:clamp(593px,46.4vw,668px)] 2xl:[--process-card-max-height:clamp(504px,26.25vw,672px)] 2xl:[--process-card-width:clamp(390px,20.3125vw,520px)] 2xl:[--process-orbit-shift:clamp(100px,5.2083vw,133px)] 2xl:[--process-radius:clamp(668px,34.7917vw,890px)]`}
-        >
-          <div className="page-container relative z-10 shrink-0">
+        <div className="stage-padding-start relative flex h-[calc(100lvh+var(--process-pin-offset,0px))] min-h-[680px] w-full translate-y-[calc(var(--process-pin-offset,0px)*-1)] flex-col [--process-card-half-height:calc(var(--process-card-height)/2)] [--process-card-height:var(--process-card-max-height)] [--process-card-max-height:504px] [--process-card-width:clamp(280px,91.111vw,328px)] [--process-orbit-shift:-32px] [--process-radius:clamp(480px,147vw,668px)] motion-reduce:h-auto motion-reduce:min-h-0 motion-reduce:translate-y-0 max-md:[--process-card-max-height:var(--process-mobile-card-height,420px)] max-md:[--process-card-width:var(--process-mobile-card-width,85vw)] max-md:[--process-orbit-shift:0px] max-md:motion-safe:min-h-0 max-md:motion-safe:[padding-block-start:var(--process-mobile-top,var(--layout-stage-start))] md:min-h-0 md:[--process-card-width:clamp(344px,46vw,374px)] md:[--process-orbit-shift:50px] md:[--process-radius:clamp(580px,82vw,668px)] md:motion-safe:[padding-block-start:clamp(111px,_16lvh,_var(--layout-stage-start))]! md:motion-safe:[--process-badge-size:64px]! md:motion-safe:[--process-number-size:28px]! md:motion-safe:[--process-orbit-gap:clamp(20px,_calc(100lvh_-_865px),_45px)]! md:motion-safe:[--process-orbit-shift:clamp(0px,_calc(100lvh_-_800px),_50px)]! xl:[--process-card-width:390px] xl:[--process-orbit-shift:100px] xl:[--process-radius:clamp(593px,46.4vw,668px)] xl:motion-safe:[--process-badge-size:90px]! xl:motion-safe:[--process-number-size:40px]! xl:motion-safe:[--process-orbit-gap:clamp(20px,_calc(100lvh_-_865px),_50px)]! xl:motion-safe:[--process-orbit-shift:clamp(0px,_calc(100lvh_-_850px),_100px)]! 2xl:[--process-card-max-height:clamp(504px,26.25vw,672px)] 2xl:[--process-card-width:clamp(390px,20.3125vw,520px)] 2xl:[--process-orbit-shift:clamp(100px,5.2083vw,133px)] 2xl:[--process-radius:clamp(668px,34.7917vw,890px)] 2xl:motion-safe:[--process-orbit-shift:clamp(_0px,_calc(100lvh_-_850px),_clamp(100px,_5.2083vw,_133px)_)]! [@media(min-width:768px)_and_(max-height:700px)]:[--process-card-half-height:252px] [@media(min-width:768px)_and_(max-height:700px)]:[--process-card-max-height:420px]">
+          <div
+            ref={headingRef}
+            className="page-container relative z-10 shrink-0"
+          >
             <SectionHeading
+              className="max-md:gap-2.5 max-md:[&_h2]:text-[clamp(28px,8.4vw,40px)] max-md:[&>img]:h-[clamp(20px,5.8vw,26px)]"
+              descriptionClassName="max-md:text-[clamp(12px,3.5vw,14px)]"
               title="Как проходит праздник"
               titleId="event-process-title"
               description="Шесть простых шагов от заявки до последней эмоции"
@@ -342,13 +380,9 @@ export function EventProcessOrbit() {
             ))}
           </ol>
 
-          <div
-            ref={orbitViewportRef}
-            className={`${styles.orbitViewport} relative mt-10 min-h-0 flex-1 motion-reduce:hidden md:mt-[45px] xl:mt-[50px]`}
-          >
+          <div className="relative mt-10 min-h-0 flex-1 motion-reduce:hidden max-md:mt-[var(--process-mobile-card-gap,24px)] md:mt-[45px] md:motion-safe:[container-type:size]! md:motion-safe:mt-[var(--process-orbit-gap)]! xl:mt-[50px]">
             <div
-              ref={orbitAnchorRef}
-              className={`${styles.orbitAnchor} pointer-events-none absolute left-1/2 -translate-x-1/2 motion-reduce:hidden`}
+              className="pointer-events-none absolute left-1/2 -translate-x-1/2 motion-reduce:hidden md:motion-safe:[--process-badge-rendered-size:min(_var(--process-badge-size),_clamp(36px,_calc((var(--process-card-height)_-_216px)_*_5_/_16),_90px)_)]! md:motion-safe:[--process-card-half-height:calc(var(--process-card-height)_/_2)]! md:motion-safe:[--process-card-height:min(_var(--process-card-max-height),_calc((100cqh_-_var(--process-orbit-shift)_-_16px)_/_1.13)_)]! md:motion-safe:[--process-orbit-card-width:min(_var(--process-card-width),_calc(var(--process-card-height)_*_390_/_504)_)]! md:motion-safe:[--process-orbit-radius:min(_var(--process-radius),_calc(var(--process-card-height)_*_668_/_504)_)]! md:motion-safe:[&_[data-process-card-badge]]:h-[var(--process-badge-rendered-size)]! md:motion-safe:[&_[data-process-card-badge]]:w-[var(--process-badge-rendered-size)]! md:motion-safe:[&_[data-process-card-badge]]:rounded-[min(14px,_calc(var(--process-badge-rendered-size)_*_7_/_32))]! md:motion-safe:[&_[data-process-card-description]]:[font-size:clamp(12px,_calc(var(--process-card-height)_*_14_/_504),_14px)]! md:motion-safe:[&_[data-process-card-header]]:min-h-[clamp(64px,_calc(var(--process-card-height)_*_98_/_504),_98px)]! md:motion-safe:[&_[data-process-card-header]]:gap-[clamp(12px,_calc(var(--process-card-height)_*_16_/_504),_16px)]! md:motion-safe:[&_[data-process-card-title]]:[font-size:clamp(16px,_calc(var(--process-card-height)_*_20_/_504),_20px)]! md:motion-safe:[&_[data-process-step-number]]:[font-size:clamp(_20px,_calc(var(--process-badge-rendered-size)_*_40_/_90),_var(--process-number-size)_)]!"
               style={{
                 top: 'calc(var(--process-card-half-height) + var(--process-orbit-shift))',
               }}
@@ -393,7 +427,7 @@ export function EventProcessOrbit() {
                 key={step.title}
                 step={step}
                 index={index}
-                className="h-[504px] w-full 2xl:h-[var(--process-card-height)]"
+                className="h-[504px] w-full max-md:h-[clamp(340px,115vw,504px)] 2xl:h-[var(--process-card-height)]"
               />
             ))}
           </ol>

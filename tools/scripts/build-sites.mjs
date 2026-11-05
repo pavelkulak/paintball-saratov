@@ -23,9 +23,9 @@ const nextBinary = resolve(
   'node_modules/.bin',
   process.platform === 'win32' ? 'next.cmd' : 'next',
 )
-const build = spawnSync(nextBinary, ['build'], {
+const build = spawnSync(nextBinary, ['build', '--webpack'], {
   cwd: projectRoot,
-  env: { ...process.env, CONTENT_SOURCE: 'demo' },
+  env: { ...process.env, CONTENT_SOURCE: 'demo', STATIC_EXPORT: '1' },
   stdio: 'inherit',
   shell: process.platform === 'win32',
 })

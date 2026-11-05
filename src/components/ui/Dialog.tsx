@@ -5,8 +5,6 @@ import { createPortal } from 'react-dom'
 
 import { CloseIcon } from '@/components/icons/CloseIcon'
 
-import styles from './Dialog.module.css'
-
 export function Dialog({
   title,
   subtitle,
@@ -74,7 +72,7 @@ export function Dialog({
     <dialog
       ref={dialogRef}
       aria-labelledby={titleId}
-      className={styles.dialog}
+      className="fixed inset-0 m-0 h-full max-h-none w-full max-w-none overflow-hidden overscroll-contain border-0 bg-transparent p-4 opacity-0 [transition:opacity_220ms_ease] motion-reduce:transition-none [&::backdrop]:opacity-0 [&::backdrop]:[background:rgb(0_0_0_/_70%)] [&::backdrop]:[transition:opacity_220ms_ease] motion-reduce:[&::backdrop]:transition-none [&[open]]:grid [&[open]]:place-items-center [&[open]]:opacity-100 starting:[&[open]]:opacity-0 [&[open]_[data-dialog-panel]]:[transform:translateY(0)] starting:[&[open]_[data-dialog-panel]]:[transform:translateY(8px)] [&[open]::backdrop]:opacity-100 starting:[&[open]::backdrop]:opacity-0 [&[open][data-closing]]:opacity-0 [&[open][data-closing]_[data-dialog-panel]]:[transform:translateY(8px)] [&[open][data-closing]::backdrop]:opacity-0"
       data-closing={isClosing || undefined}
       onTransitionEnd={(event) => {
         if (
@@ -95,7 +93,8 @@ export function Dialog({
       <div
         ref={panelRef}
         tabIndex={-1}
-        className={`${styles.panel} bg-primary text-primary-foreground w-full max-w-[820px] rounded-[28px] p-5 shadow-[0_24px_80px_rgb(0_0_0_/_35%)] outline-none sm:p-8`}
+        data-dialog-panel
+        className="bg-primary text-primary-foreground flex max-h-[calc(100dvh_-_32px)] w-full max-w-[820px] [transform:translateY(8px)] flex-col overflow-hidden overscroll-contain rounded-[28px] p-5 shadow-[0_24px_80px_rgb(0_0_0_/_35%)] outline-none [transition:transform_220ms_cubic-bezier(0.22,_1,_0.36,_1)] motion-reduce:transition-none sm:p-8"
       >
         <header className="mb-6 flex shrink-0 items-start justify-between gap-4">
           <div className="min-w-0">

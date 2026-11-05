@@ -88,12 +88,15 @@ export function MobileNavigation() {
       <dialog
         ref={dialogRef}
         id="mobile-navigation"
-        className="mobile-navigation-dialog bg-primary text-primary-foreground fixed inset-0 m-0 h-dvh max-h-none w-full max-w-none overflow-hidden p-0 lg:hidden"
+        className="bg-primary text-primary-foreground fixed inset-0 m-0 h-dvh max-h-none w-full max-w-none overflow-hidden p-0 [--mobile-navigation-origin-x:calc(100%_-_var(--layout-gutter)_-_1.5rem)] [--mobile-navigation-origin-y:2.375rem] [clip-path:circle(_0_at_var(--mobile-navigation-origin-x)_var(--mobile-navigation-origin-y)_)] [transition:clip-path_560ms_cubic-bezier(0.76,_0,_0.24,_1),_overlay_560ms_allow-discrete,_display_560ms_allow-discrete] motion-reduce:transition-none lg:hidden [&::backdrop]:bg-transparent [&[open]]:[clip-path:circle(_150vmax_at_var(--mobile-navigation-origin-x)_var(--mobile-navigation-origin-y)_)] starting:[&[open]]:[clip-path:circle(_0_at_var(--mobile-navigation-origin-x)_var(--mobile-navigation-origin-y)_)] [&[open]_[data-navigation-mobile-navigation-content]]:[transform:translateY(0)] [&[open]_[data-navigation-mobile-navigation-content]]:opacity-100 starting:[&[open]_[data-navigation-mobile-navigation-content]]:[transform:translateY(-0.35rem)] starting:[&[open]_[data-navigation-mobile-navigation-content]]:opacity-0"
         aria-labelledby="mobile-navigation-title"
         onCancel={() => setIsOpen(false)}
         onClose={() => setIsOpen(false)}
       >
-        <div className="mobile-navigation-content relative flex h-full min-h-0 flex-col overflow-hidden">
+        <div
+          data-navigation-mobile-navigation-content
+          className="relative flex h-full min-h-0 [transform:translateY(-0.35rem)] flex-col overflow-hidden opacity-0 [transition:opacity_180ms_ease_100ms,_transform_260ms_ease_100ms] motion-reduce:transition-none"
+        >
           <div
             aria-hidden="true"
             className="pointer-events-none absolute top-10 right-10 size-[125vmax] translate-x-1/2 -translate-y-1/2"

@@ -11,7 +11,6 @@ const eslintConfig = defineConfig([
     'dist/**',
     '.sites-artifacts/**',
     'node_modules/**',
-    '.bitrix-mcp/**',
     'infra/**',
     'cms/bitrix/**',
     'cms/upload/**',

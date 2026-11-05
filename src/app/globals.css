@@ -142,19 +142,6 @@
   [aria-disabled='true'] {
     cursor: not-allowed;
   }
-
-  #smooth-wrapper {
-    min-height: 100vh;
-  }
-
-  html.has-scroll-smoother #smooth-wrapper {
-    overflow: hidden;
-  }
-
-  #smooth-content {
-    min-height: 100vh;
-    overflow: visible;
-  }
 }
 
 @keyframes support-marquee {
@@ -193,88 +180,5 @@
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
-  }
-}
-
-.paintball-map-balloon {
-  display: grid;
-  gap: 8px;
-  min-width: 220px;
-  padding: 4px;
-  color: #12180c;
-  font-family: var(--theme-font-sans);
-  font-size: 14px;
-  line-height: 1.2;
-}
-
-.paintball-map-balloon__title {
-  font-size: 16px;
-}
-
-.paintball-map-balloon__phone,
-.paintball-map-balloon__route {
-  color: #12180c;
-  font-weight: 700;
-  text-decoration: underline;
-  text-underline-offset: 2px;
-}
-
-.paintball-map-balloon__address {
-  color: rgb(18 24 12 / 70%);
-}
-
-.mobile-navigation-dialog {
-  --mobile-navigation-origin-x: calc(100% - var(--layout-gutter) - 1.5rem);
-  --mobile-navigation-origin-y: 2.375rem;
-  clip-path: circle(
-    0 at var(--mobile-navigation-origin-x) var(--mobile-navigation-origin-y)
-  );
-  transition:
-    clip-path 560ms cubic-bezier(0.76, 0, 0.24, 1),
-    overlay 560ms allow-discrete,
-    display 560ms allow-discrete;
-}
-
-.mobile-navigation-dialog[open] {
-  clip-path: circle(
-    150vmax at var(--mobile-navigation-origin-x)
-      var(--mobile-navigation-origin-y)
-  );
-}
-
-.mobile-navigation-dialog::backdrop {
-  background: transparent;
-}
-
-.mobile-navigation-content {
-  opacity: 0;
-  transform: translateY(-0.35rem);
-  transition:
-    opacity 180ms ease 100ms,
-    transform 260ms ease 100ms;
-}
-
-.mobile-navigation-dialog[open] .mobile-navigation-content {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-@starting-style {
-  .mobile-navigation-dialog[open] {
-    clip-path: circle(
-      0 at var(--mobile-navigation-origin-x) var(--mobile-navigation-origin-y)
-    );
-  }
-
-  .mobile-navigation-dialog[open] .mobile-navigation-content {
-    opacity: 0;
-    transform: translateY(-0.35rem);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .mobile-navigation-dialog,
-  .mobile-navigation-content {
-    transition: none;
   }
 }

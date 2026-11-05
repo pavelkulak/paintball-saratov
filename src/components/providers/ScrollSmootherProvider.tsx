@@ -136,8 +136,13 @@ export function ScrollSmootherProvider({
 
   return (
     <SmoothScrollContext.Provider value={scrollTo}>
-      <div id="smooth-wrapper">
-        <div id="smooth-content">{children}</div>
+      <div
+        id="smooth-wrapper"
+        className="min-h-screen [html.has-scroll-smoother_&]:overflow-hidden"
+      >
+        <div id="smooth-content" className="min-h-screen overflow-visible">
+          {children}
+        </div>
       </div>
     </SmoothScrollContext.Provider>
   )

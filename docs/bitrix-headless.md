@@ -1,20 +1,28 @@
 # Bitrix headless CMS
 
-## Целевая схема
+## Runtime architecture
 
 ```text
-OSPanel Bitrix
-      ↓
-GET /api/v1/home
-      ↓
-Next.js build + Zod
-      ↓
-Static Export: out/
+Browser -> Next.js SSR (Node.js) -> GET /api/v1/home -> Bitrix PHP -> Bitrix DB
+                         <- validated JSON (Zod) <-
 ```
 
-Next.js не подключается к базе Bitrix и не выполняет запросы в браузере.
+Next.js fetches public content in a server-only module while rendering a page
+request. The response uses `cache: 'no-store'`, so an edit in Bitrix appears on
+the next request without rebuilding or redeploying Next.js. The browser receives
+rendered HTML and does not request public content from Bitrix.
 
-## Публичный контракт
+`BITRIX_API_URL` is a server-side runtime environment variable. It is not
+required by `next build` and must not use the `NEXT_PUBLIC_` prefix. A missing or
+unavailable endpoint causes the page request to fail; it does not prevent the
+application image from being built.
+
+The Next.js application runs in a Node.js container. Bitrix and its database run
+as a separate PHP application and database service on the host. The same HTTP
+contract is used on the home server and on Beget; only the runtime endpoint URL
+changes.
+
+## Public contract
 
 ```json
 {
@@ -49,34 +57,42 @@ Next.js не подключается к базе Bitrix и не выполня�
 }
 ```
 
-Endpoint читает контент главной страницы, активные элементы квиза и отзывы. Внешний контракт не раскрывает
-`IBLOCK_ID`, `PROPERTY_*`, SQL-структуру или внутренние ошибки Bitrix.
+The endpoint maps Bitrix fields to this stable public shape. It does not expose
+`IBLOCK_ID`, `PROPERTY_*`, SQL details, or internal exceptions. The Next.js
+boundary validates the response with Zod before rendering it.
 
-Вопросы хранятся отдельными элементами Bitrix, поэтому их можно менять в CMS;
-ответы каждого вопроса хранятся в JSON-поле элемента и преобразуются endpoint-ом
-в публичный массив `answers`.
+## Current Bitrix content model
 
-Отзывы хранятся в инфоблоке `landing_reviews`. В элементе используются штатные
-поля `NAME` (имя), `PREVIEW_PICTURE` (аватар), `ACTIVE_FROM` (дата) и
-`DETAIL_TEXT` (полный отзыв), а рейтинг хранится в обязательном числовом поле
-`RATING`. Endpoint принимает только целое значение рейтинга от 1 до 5. Если
-аватар не загружен, `avatarUrl` равен `null`, а frontend показывает инициалы.
+- The `landing_home` information block has the `home` item. Its name and preview
+  text provide the title and description; `PHONE` and `ADDRESS` provide contact
+  details.
+- Each active item in `landing_quiz` is one question. `STEP` controls order and
+  `ANSWERS_JSON` stores its answer array.
+- Reviews are active items in `landing_reviews`. The name, preview image,
+  activity date, detail text, and numeric `RATING` property are mapped to the
+  public review object.
 
-## Контент
+These are CMS records, not separately configured API routes. The PHP endpoint
+builds arrays by reading all active records of a supported type. Once a
+repeatable collection and its public fields are defined, adding another record
+does not require a Next.js code change. Adding a new content type or a new visual
+block requires implementing its mapping, Zod schema, and frontend renderer once.
 
-Ядро устанавливается в `cms/bitrix/` и не редактируется. Проектный PHP-код,
-endpoint и другие интеграции находятся в `cms/local/` и коммитятся.
-Изменения в админке выполняются через D7/public API. Raw SQL write запрещён.
+Tariffs and formats are still stored in frontend data files and are not part of
+the current Bitrix contract. Their CMS model and fields should be added as part
+of the next content migration.
 
-## Сборка
+## Source layout and deployment
 
-```powershell
-$env:BITRIX_API_URL = 'http://paintball-bitrix.local/api/v1/home'
-npm run build
-```
+- `cms/local/api/home.php` is project-owned PHP integration code. Deploy this
+  extension into the `local/` directory of the separately installed Bitrix
+  instance.
+- `cms/bitrix/`, `cms/upload/`, the Bitrix admin site, runtime configuration,
+  and database are not part of the repository.
+- The rewrite in `cms/.htaccess` maps `GET /api/v1/home` to the PHP endpoint.
+- `Dockerfile` and `docker-compose.yml` run Next.js only. Configure
+  `BITRIX_API_URL` in the deployment environment or local `.env` file.
 
-Во время сборки `lib/bitrix/home.ts` загружает JSON и проверяет его схемой Zod.
-При отсутствии URL или недоступном Bitrix сборка завершается ошибкой.
-
-Формы и отдельный lead endpoint будут добавлены следующим этапом; в текущий
-контракт они не входят.
+If the content changes infrequently and request volume requires it, a bounded
+server-side revalidation interval can be considered later. The current contract
+prioritizes showing the latest CMS data on the next page request.

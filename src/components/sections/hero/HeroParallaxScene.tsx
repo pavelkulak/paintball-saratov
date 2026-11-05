@@ -4,7 +4,7 @@ import Image from 'next/image'
 import { useEffect, useRef, type ReactNode } from 'react'
 
 const DESKTOP_EFFECT_QUERY =
-  '(min-width: 1024px) and (hover: hover) and (pointer: fine)'
+  '(min-width: 1280px) and (hover: hover) and (pointer: fine)'
 
 const DOT_COLORS = [
   '#ff2d95',
@@ -300,7 +300,7 @@ export function HeroParallaxScene({ children }: HeroParallaxSceneProps) {
       ref={rootRef}
       id="hero"
       aria-labelledby="hero-title"
-      className="section-anchor relative isolate h-[min(100svh,720px)] min-h-[520px] overflow-hidden md:h-svh lg:overflow-clip"
+      className="section-anchor relative isolate h-svh min-h-[520px] overflow-hidden xl:overflow-clip"
     >
       <div
         ref={backgroundRef}
@@ -328,7 +328,7 @@ export function HeroParallaxScene({ children }: HeroParallaxSceneProps) {
 
       <canvas
         ref={canvasRef}
-        className="pointer-events-none absolute inset-0 z-20 hidden size-full blur-[2px] [@media(min-width:1024px)_and_(hover:hover)_and_(pointer:fine)]:block"
+        className="pointer-events-none absolute inset-0 z-20 hidden size-full blur-[2px] [@media(min-width:1280px)_and_(hover:hover)_and_(pointer:fine)]:block"
         aria-hidden="true"
       />
 

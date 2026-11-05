@@ -14,6 +14,7 @@
 
 # local env files
 .env*
+!.env.example
 
 # local Bitrix installation
 /cms/*
@@ -33,8 +34,6 @@
 /cms/bitrix/.settings.php
 /cms/bitrix/.settings_extra.php
 /backups/
-/.bitrix-mcp/
-/tools/bitrix-mcp/node_modules/
 /tools/scripts/.cache/
 /.codex/config.toml
 /.codebase-memory/

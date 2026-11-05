@@ -1,3 +1,4 @@
+import { connection } from 'next/server'
 import { FacilitiesSection } from '@/components/sections/FacilitiesSection'
 import { Hero } from '@/components/sections/Hero'
 import { EventSupportSection } from '@/components/sections/EventSupportSection'
@@ -11,6 +12,10 @@ import { MediaGallerySection } from '@/components/sections/MediaGallerySection'
 import { getHomeContent } from '@/lib/bitrix/home'
 
 export default async function Home() {
+  if (process.env.STATIC_EXPORT !== '1') {
+    await connection()
+  }
+
   const home = await getHomeContent()
 
   return (

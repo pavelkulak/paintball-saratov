@@ -1,31 +1,23 @@
 # Paintball landing
 
-Одностраничный статический frontend на Next.js App Router, React, TypeScript,
-Tailwind CSS v4 и static export. Bitrix работает как headless CMS в OSPanel.
+Next.js App Router, React, TypeScript и Tailwind CSS v4. Next.js работает как
+Node.js сервер и получает контент из отдельного Bitrix по HTTP во время запроса.
+Bitrix и его база данных не входят в Next.js контейнер.
 
 ## Схема окружения
 
 ```text
-OSPanel Bitrix (cms/) -> GET /api/v1/home -> Zod -> next build -> out/
-                                  ^
-                                  |
-                           Bitrix MCP / D7
+Браузер -> Next.js SSR (Node.js) -> GET Bitrix /api/v1/home -> Zod -> HTML
 ```
 
-В production Node.js не нужен: Bitrix заполняет данные до сборки, а пользователю
-отдаётся папка `out/`.
+Контент запрашивается серверным модулем Next.js при открытии страницы. Запрос
+не выполняется в браузере и не требует доступа Next.js к базе Bitrix. Для
+обновления содержимого достаточно изменить данные в Bitrix; пересборка Next.js
+не нужна.
 
-## Установка
+## Разработка
 
-Требования:
-
-- Node.js `22.23.2`;
-- OSPanel с PHP CLI и MySQL/MariaDB;
-- установленный чистый Bitrix в `cms/`;
-- локальный домен `paintball-bitrix.local`, document root — `cms/`.
-
-Node.js устанавливается системно и проверяется командой `node -v`; проект
-требует `v22.23.2`.
+Требуется Node.js `22.23.2` и npm `10` или новее.
 
 ```powershell
 git clone <repository-url>
@@ -33,56 +25,51 @@ cd Paintball
 npm run setup
 ```
 
-`npm run setup` ставит frontend-зависимости и пакет MCP по lock-файлам. Отдельный
-Node runtime и Docker для работы проекта не используются.
+Скопируйте `.env.example` в `.env.local` и задайте адрес публичного endpoint:
 
-## Bitrix в OSPanel
-
-1. В OSPanel выберите PHP 8.2 или другую версию, совместимую с установленной
-   редакцией Bitrix.
-2. Создайте домен `paintball-bitrix.local` и направьте его document root на
-   `D:\Site-Creative\Paintball\cms`.
-3. Установите чистый Bitrix без демо-сайта. Ядро окажется в `cms/bitrix/`, а
-   проектный код — в `cms/local/`.
-4. Проверьте `http://paintball-bitrix.local/` и `/bitrix/admin`.
-5. Проверьте PHP CLI:
-
-```powershell
-D:\OSPanel\modules\PHP-8.2\php.exe -v
+```text
+BITRIX_API_URL=https://your-bitrix-domain.example/api/v1/home
 ```
 
-Скопируйте `.env.example` в `.env.local` и проверьте пути. `BITRIX_ROOT` должен
-указывать на `cms`, а `BITRIX_MCP_PHP_BIN` — на реальный `php.exe` OSPanel.
-
-## MCP
-
-MCP индексирует живой `BITRIX_ROOT` из OSPanel.
+Переменная нужна запущенному Next.js серверу. `next build` не загружает контент
+из Bitrix и может выполняться без доступного CMS.
 
 ```powershell
-npm run mcp:status
-npm run mcp:config
-npm run mcp:doctor
-npm run mcp:index
+npm run dev
+npm run build
+npm run start
 ```
 
-Project skill находится в [.agents/skills/bitrix-mcp/SKILL.md](.agents/skills/bitrix-mcp/SKILL.md).
-После изменения MCP-конфигурации перезапустите Codex.
+Для Windows dev-сервер запускается через Webpack с polling-наблюдением за
+файлами. Если Hot Reload остановился, выполните `npm run dev:reset`.
 
-После индексации `mcp:doctor` может показать parser-fallback для отдельных
-файлов ядра Bitrix. Такие результаты MCP не считаются полностью надёжными;
-для них используйте прямой исходник `cms/bitrix/` и официальную документацию.
-Проектный код в `cms/local/` должен индексироваться без таких предупреждений.
+## Развёртывание
 
-MCP используется для поиска текущего PHP/D7-кода, событий, ORM, компонентов и
-документации. Raw SQL write запрещён. Для локального OSPanel включён
-`bitrix_tinker`; изменения выполняются только через D7/public API.
+Для домашнего сервера используется Docker Compose только для Next.js. Bitrix и
+его база данных остаются отдельными PHP/MySQL сервисами на сервере. Скопируйте
+`.env.example` в `.env`, укажите доступный из контейнера URL Bitrix и запускайте
+Compose через 1Panel. Внешний reverse proxy должен направлять запросы на порт
+Next.js.
+
+```text
+BITRIX_API_URL=https://your-bitrix-domain.example/api/v1/home
+NEXT_PORT=3000
+```
+
+Для Beget Passenger используется тот же production build и команда запуска
+`npm run start` (`next start`). `BITRIX_API_URL` задаётся в окружении
+запущенного Node.js процесса, а не во время сборки.
 
 ## Публичный endpoint
 
-Публичный endpoint:
+Bitrix публикует JSON endpoint; его PHP-адаптер находится в `cms/local/` и
+разворачивается в установленный отдельно Bitrix. Сам Bitrix, его админка,
+ядро и база данных в репозиторий не входят.
+
+В production Next.js обращается к адресу из серверной переменной `BITRIX_API_URL`:
 
 ```text
-GET http://paintball-bitrix.local/api/v1/home
+GET https://your-bitrix-domain.example/api/v1/home
 ```
 
 Он возвращает только стабильный контракт:
@@ -128,53 +115,26 @@ GET http://paintball-bitrix.local/api/v1/home
 описание, рейтинг — обязательное целое число от 1 до 5. При отсутствии аватара
 frontend автоматически показывает инициалы.
 
-## Static build
-
-`BITRIX_API_URL` используется во время `next build` и в режиме `dev:bitrix`:
-
-```powershell
-$env:BITRIX_API_URL = 'http://paintball-bitrix.local/api/v1/home'
-npm run build
-npm run preview
-```
-
-Ответ проверяется Zod-схемой. Если URL не задан или Bitrix недоступен, сборка
-падает.
-
-Для разработки используется один режим с реальными данными Bitrix:
-
-```powershell
-# Hot Reload исходников Next.js
-npm.cmd run dev
-
-# Если Next перестал обновлять страницу, очистить только его dev-кеш
-npm.cmd run dev:reset
-```
-
-Dev-сервер использует Webpack и polling-наблюдение за файлами, что стабильнее
-для Hot Reload на Windows. После изменения записи в Bitrix страницу нужно
-обновить вручную. Production-сборка по-прежнему требует `BITRIX_API_URL` и
-получает данные из Bitrix.
-
-Основные команды:
+## Основные команды
 
 ```text
 npm run setup          установка зависимостей
-npm run mcp:index      индексация живого Bitrix root
-npm run mcp:doctor     диагностика MCP
 npm run check          format:check + lint + build
-npm run verify         smoke-check окружения и сборки
-npm run preview        preview папки out/
+npm run verify         проверка окружения и сборки
+npm run start          production Node.js сервер
+npm run build:sites    необязательная статическая demo-сборка для Sites
 ```
+
+`npm run build:sites` формирует демонстрационный статический артефакт из
+локальных demo-данных. Он не используется для production сайта.
 
 ## Запись шоукейса
 
-Автоскролл доступен в статической сборке, включая деплой на Vercel. Он включается
-только с параметром `run=1`; при обычном открытии страницы скрипт ничего не делает.
-Для локального просмотра инструмент использует готовую папку `out/`:
+Автоскролл включается только с параметром `run=1`; при обычном открытии страницы
+скрипт ничего не делает. Локальный showcase использует статическую demo-сборку:
 
 ```powershell
-npm run build
+npm run build:sites
 npm run showcase
 ```
 
@@ -189,11 +149,10 @@ npm run showcase
 На опубликованном сайте используйте тот же путь `/?run=1&duration=48`.
 Локальный сервер `showcase` дополнительно показывает этапы прокрутки в терминале.
 
-Если локальный Bitrix недоступен, для демонстрационной сборки можно явно задать
-`CONTENT_SOURCE=demo` в `.env.local`. Сервер слушает только локальный адрес;
-порт можно изменить переменной `SHOWCASE_PORT`.
+Сервер слушает только локальный адрес; порт можно изменить переменной
+`SHOWCASE_PORT`.
 
-## Медиа в статическом экспорте
+## Медиа
 
 `next/image` используется с `unoptimized: true`, поэтому браузер получает
 файлы из `public/` без серверного преобразования. Фотографии и прозрачные
@@ -212,24 +171,23 @@ npm run showcase
 ffmpeg -i input.mp4 -vf scale=1920:-2 -c:v libx264 -preset slow -crf 24 -pix_fmt yuv420p -an -movflags +faststart output.mp4
 ```
 
-Локальные серверы `preview` и `showcase` поддерживают HTTP Range-запросы,
-чтобы браузер мог загружать отдельные части видео.
+Локальные статические demo-серверы `preview` и `showcase` поддерживают HTTP
+Range-запросы, чтобы браузер мог загружать отдельные части видео.
 
 ## Что не коммитится
 
 - `cms/bitrix/`, `cms/upload/`, кеши и конфигурация БД;
 - `.env.local` и другие секреты;
-- `.bitrix-mcp/` — локальный индекс;
 - `node_modules/`, `.next/`, `out/` и резервные копии.
 
 `cms/local/` и endpoint в нём являются проектным кодом и коммитятся.
 
 ## Архитектурные правила
 
-- Next.js — единственный frontend и статический export.
-- Bitrix — headless CMS.
-- Контент читается только во время build.
+- Next.js App Router работает как Node.js сервер с SSR.
+- Bitrix с PHP и БД разворачивается отдельно от Next.js контейнера.
+- Контент запрашивается сервером при запросе страницы через `GET /api/v1/home`.
 - JSON проверяется Zod.
-- Next.js не подключается к БД Bitrix.
+- Контент не запрашивается из браузера и Next.js не подключается к БД Bitrix.
 - Ядро `cms/bitrix/` не редактируется.
 - Сырые SQL-записи запрещены.

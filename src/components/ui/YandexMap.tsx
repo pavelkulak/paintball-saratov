@@ -124,11 +124,11 @@ export function YandexMap() {
 
           const placemark = new ymaps.Placemark(point, {
             balloonContent: `
-            <div class="paintball-map-balloon">
-              <strong class="paintball-map-balloon__title">Пейнтбол для всех</strong>
-              <a href="${siteContact.phone.href}" class="paintball-map-balloon__phone">${siteContact.phone.label}</a>
-              <div class="paintball-map-balloon__address">${siteContact.address}</div>
-              <a href="${routeUrl}" target="_blank" rel="noopener noreferrer" class="paintball-map-balloon__route">Построить маршрут</a>
+            <div class="grid gap-2 min-w-[220px] p-1 text-background font-sans text-sm leading-[1.2]">
+              <strong class="text-base">Пейнтбол для всех</strong>
+              <a href="${siteContact.phone.href}" class="text-background font-bold underline underline-offset-2">${siteContact.phone.label}</a>
+              <div class="text-background/70">${siteContact.address}</div>
+              <a href="${routeUrl}" target="_blank" rel="noopener noreferrer" class="text-background font-bold underline underline-offset-2">Построить маршрут</a>
             </div>
           `,
             hintContent: siteContact.address,
