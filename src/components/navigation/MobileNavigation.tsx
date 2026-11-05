@@ -72,23 +72,23 @@ export function MobileNavigation() {
     <>
       <button
         type="button"
-        className="bg-primary text-primary-foreground border-line focus-visible:outline-primary inline-flex size-12 items-center justify-center self-center rounded-full border transition-transform duration-200 hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-2 active:scale-95 lg:hidden"
+        className="bg-primary text-primary-foreground border-line focus-visible:outline-primary inline-flex size-11 shrink-0 items-center justify-center self-center rounded-full border transition-transform duration-200 hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-2 active:scale-95 lg:hidden"
         aria-controls="mobile-navigation"
         aria-expanded={isOpen}
         aria-label="Открыть меню"
         onClick={() => setIsOpen(true)}
       >
-        <span aria-hidden="true" className="flex flex-col gap-1.5">
-          <span className="h-0.5 w-5 bg-current" />
-          <span className="h-0.5 w-5 bg-current" />
-          <span className="h-0.5 w-5 bg-current" />
+        <span aria-hidden="true" className="flex flex-col gap-1">
+          <span className="h-0.5 w-4 bg-current" />
+          <span className="h-0.5 w-4 bg-current" />
+          <span className="h-0.5 w-4 bg-current" />
         </span>
       </button>
 
       <dialog
         ref={dialogRef}
         id="mobile-navigation"
-        className="bg-primary text-primary-foreground fixed inset-0 m-0 h-dvh max-h-none w-full max-w-none overflow-hidden p-0 [--mobile-navigation-origin-x:calc(100%_-_var(--layout-gutter)_-_1.5rem)] [--mobile-navigation-origin-y:2.375rem] [clip-path:circle(_0_at_var(--mobile-navigation-origin-x)_var(--mobile-navigation-origin-y)_)] [transition:clip-path_560ms_cubic-bezier(0.76,_0,_0.24,_1),_overlay_560ms_allow-discrete,_display_560ms_allow-discrete] motion-reduce:transition-none lg:hidden [&::backdrop]:bg-transparent [&[open]]:[clip-path:circle(_150vmax_at_var(--mobile-navigation-origin-x)_var(--mobile-navigation-origin-y)_)] starting:[&[open]]:[clip-path:circle(_0_at_var(--mobile-navigation-origin-x)_var(--mobile-navigation-origin-y)_)] [&[open]_[data-navigation-mobile-navigation-content]]:[transform:translateY(0)] [&[open]_[data-navigation-mobile-navigation-content]]:opacity-100 starting:[&[open]_[data-navigation-mobile-navigation-content]]:[transform:translateY(-0.35rem)] starting:[&[open]_[data-navigation-mobile-navigation-content]]:opacity-0"
+        className="bg-primary text-primary-foreground fixed inset-0 m-0 h-dvh max-h-none w-full max-w-none overflow-hidden p-0 [--mobile-navigation-origin-x:calc(100%_-_var(--layout-gutter)_-_1.375rem)] [--mobile-navigation-origin-y:calc(14px_+_max(22px,calc(var(--mobile-header-logo-width)*65/214)))] [clip-path:circle(_0_at_var(--mobile-navigation-origin-x)_var(--mobile-navigation-origin-y)_)] [transition:clip-path_560ms_cubic-bezier(0.76,_0,_0.24,_1),_overlay_560ms_allow-discrete,_display_560ms_allow-discrete] motion-reduce:transition-none lg:hidden [&::backdrop]:bg-transparent [&[open]]:[clip-path:circle(_150vmax_at_var(--mobile-navigation-origin-x)_var(--mobile-navigation-origin-y)_)] starting:[&[open]]:[clip-path:circle(_0_at_var(--mobile-navigation-origin-x)_var(--mobile-navigation-origin-y)_)] [&[open]_[data-navigation-mobile-navigation-content]]:[transform:translateY(0)] [&[open]_[data-navigation-mobile-navigation-content]]:opacity-100 starting:[&[open]_[data-navigation-mobile-navigation-content]]:[transform:translateY(-0.35rem)] starting:[&[open]_[data-navigation-mobile-navigation-content]]:opacity-0"
         aria-labelledby="mobile-navigation-title"
         onCancel={() => setIsOpen(false)}
         onClose={() => setIsOpen(false)}

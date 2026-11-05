@@ -3,14 +3,19 @@ import { SectionHeading } from '@/components/ui/SectionHeading'
 import { DesktopScenariosGrid } from './scenarios/DesktopScenariosGrid'
 import { MobileScenariosSlider } from './scenarios/MobileScenariosSlider'
 
-import { scenarios } from './scenarios/scenarios.data'
+import type { ScenarioCardData } from './scenarios/scenarios.types'
+import splatters from './section-splatters.module.css'
 
-export function ScenariosSection() {
+type ScenariosSectionProps = {
+  scenarios: readonly ScenarioCardData[]
+}
+
+export function ScenariosSection({ scenarios }: ScenariosSectionProps) {
   return (
     <section
       id="scenarios"
       aria-labelledby="scenarios-title"
-      className="section-anchor page-section-gap bg-background text-foreground w-full overflow-hidden"
+      className={`section-anchor page-section-gap bg-background text-foreground w-full overflow-hidden ${splatters.scenarios}`}
     >
       <div className="page-container">
         <SectionHeading

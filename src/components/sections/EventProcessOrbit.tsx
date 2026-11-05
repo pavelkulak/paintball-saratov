@@ -51,7 +51,7 @@ const PROCESS_MEDIA_CONDITIONS = {
   reduceMotion: '(prefers-reduced-motion: reduce)',
 } as const
 
-const PROCESS_SCROLL_DISTANCE = 700
+const PROCESS_SCROLL_DISTANCE = 1000
 const PROCESS_TOUCH_SCRUB = 0.6
 const PROCESS_POINTER_SCRUB = 2
 
@@ -343,7 +343,12 @@ export function EventProcessOrbit() {
       ref={sceneRef}
       data-scroll-trigger-id="event-process-orbit"
       aria-labelledby="event-process-title"
-      className="section-anchor relative mt-[50px] min-h-[calc(100lvh+700px)] w-full motion-reduce:min-h-0 md:mt-[55px] xl:mt-32"
+      className="section-anchor relative mt-[50px] min-h-[calc(100lvh+var(--process-scroll-distance))] w-full motion-reduce:min-h-0 md:mt-[55px] xl:mt-32"
+      style={
+        {
+          '--process-scroll-distance': `${PROCESS_SCROLL_DISTANCE}px`,
+        } as CSSProperties
+      }
     >
       {/* Measure the visible area without changing the pin spacer as browser chrome moves. */}
       <span

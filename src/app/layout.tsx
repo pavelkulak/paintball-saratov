@@ -11,6 +11,10 @@ import { Footer } from '@/components/layout/Footer'
 import { ScrollSmootherProvider } from '@/components/providers/ScrollSmootherProvider'
 import { SiteLoader } from '@/components/ui/SiteLoader'
 export const metadata: Metadata = {
+  robots: {
+    index: false,
+    follow: false,
+  },
   metadataBase: new URL(
     'https://paintball-saratov-demo.kulakpavel9396083.chatgpt.site',
   ),
@@ -45,8 +49,7 @@ export default function RootLayout({
     <html lang="ru">
       <body>
         <SiteLoader />
-        <Header />
-        <ScrollSmootherProvider>
+        <ScrollSmootherProvider outsideContent={<Header />}>
           {children}
           <Footer />
         </ScrollSmootherProvider>

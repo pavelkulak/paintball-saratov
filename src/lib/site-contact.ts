@@ -4,6 +4,7 @@ export const siteContact = {
     label: '+7 (495) 104-36-86',
   },
   address: 'г. Домодедово, Каширское шоссе д. 107-А',
+  shortAddress: 'Домодедово, Каширское ш. 107-А',
 } as const
 
 // TODO: replace the section anchors when the public social profile URLs are approved.

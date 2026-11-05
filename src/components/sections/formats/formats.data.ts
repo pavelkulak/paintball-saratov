@@ -1,4 +1,5 @@
 import type { FormatCardData } from './formats.types'
+import type { AudienceId } from '@/lib/audience'
 
 export const formats: readonly FormatCardData[] = [
   {
@@ -236,3 +237,20 @@ export const formats: readonly FormatCardData[] = [
     backgroundImage: '/images/formats/format-camouflage.svg',
   },
 ]
+
+const formatIdsByAudience: Record<
+  Exclude<AudienceId, 'all'>,
+  readonly string[]
+> = {
+  children: ['laser-tag-kids', 'orbizball', 'kids-paintball', 'mixed-format'],
+  adults: ['paintball', 'laser-tag-adults', 'mixed-format'],
+}
+
+export function getFormatsForAudience(audience: AudienceId) {
+  if (audience === 'all') {
+    return formats
+  }
+
+  const allowedIds = new Set(formatIdsByAudience[audience])
+  return formats.filter((format) => allowedIds.has(format.id))
+}

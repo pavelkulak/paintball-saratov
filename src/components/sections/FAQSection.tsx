@@ -5,6 +5,8 @@ import { useState } from 'react'
 import { AccordionIcon } from '@/components/icons/AccordionIcon'
 import { SectionHeading } from '@/components/ui/SectionHeading'
 
+import splatters from './section-splatters.module.css'
+
 const faqItems = [
   {
     question: 'С какого возраста подходит формат?',
@@ -120,7 +122,7 @@ export function FAQSection() {
     <section
       id="faq"
       aria-labelledby="faq-title"
-      className="section-anchor page-section-gap bg-background text-foreground w-full overflow-hidden"
+      className={`section-anchor page-section-gap bg-background text-foreground w-full overflow-hidden ${splatters.faq}`}
     >
       <div className="page-container">
         <SectionHeading

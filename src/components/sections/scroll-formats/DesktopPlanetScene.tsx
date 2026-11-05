@@ -15,6 +15,7 @@ import { useSmoothScroll } from '@/components/providers/ScrollSmootherProvider'
 import { MediaCardCaption, MediaCardFrame } from '@/components/ui/MediaCard'
 import { SectionHeading } from '@/components/ui/SectionHeading'
 
+import splatters from '../section-splatters.module.css'
 import { planets } from './formats.data'
 
 const SCENE_ID = 'planet-scene'
@@ -316,7 +317,7 @@ export function DesktopPlanetScene() {
     >
       <div
         ref={stageRef}
-        className="stage-padding flex min-h-svh w-full flex-col"
+        className={`stage-padding flex min-h-svh w-full flex-col ${splatters.additions}`}
       >
         <div className="page-container flex min-h-0 flex-1 flex-col">
           <SectionHeading

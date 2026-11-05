@@ -1,5 +1,6 @@
 'use client'
 
+import { usePathname } from 'next/navigation'
 import {
   createContext,
   useCallback,
@@ -13,18 +14,30 @@ const SMOOTHER_QUERY =
   '(min-width: 1280px) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)'
 
 type ScrollSmootherProviderProps = {
+  outsideContent?: ReactNode
   children: ReactNode
 }
 
 type ScrollSmootherInstance = {
   kill: () => void
+  offset: (target: Element, position: string) => number
   scrollTo: (target: number, smooth?: boolean) => void
 }
 
+type ScrollTarget = number | HTMLElement
+
 const SmoothScrollContext = createContext<
-  (target: number, smooth?: boolean) => void
+  (target: ScrollTarget, smooth?: boolean) => void
 >((target, smooth = true) => {
-  window.scrollTo({ top: target, behavior: smooth ? 'smooth' : 'auto' })
+  if (typeof target === 'number') {
+    window.scrollTo({ top: target, behavior: smooth ? 'smooth' : 'auto' })
+    return
+  }
+
+  target.scrollIntoView({
+    behavior: smooth ? 'smooth' : 'auto',
+    block: 'start',
+  })
 })
 
 export function useSmoothScroll() {
@@ -33,16 +46,70 @@ export function useSmoothScroll() {
 
 export function ScrollSmootherProvider({
   children,
+  outsideContent,
 }: ScrollSmootherProviderProps) {
+  const pathname = usePathname()
+  const previousPathnameRef = useRef(pathname)
   const smootherRef = useRef<ScrollSmootherInstance | null>(null)
-  const scrollTo = useCallback((target: number, smooth = true) => {
-    if (smootherRef.current) {
-      smootherRef.current.scrollTo(target, smooth)
+  const scrollTo = useCallback((target: ScrollTarget, smooth = true) => {
+    const smoother = smootherRef.current
+
+    if (smoother && typeof target === 'number') {
+      smoother.scrollTo(target, smooth)
       return
     }
 
-    window.scrollTo({ top: target, behavior: smooth ? 'smooth' : 'auto' })
+    if (smoother && target instanceof HTMLElement) {
+      const offset = smoother.offset(target, 'top top')
+      const anchorOffset =
+        Number.parseFloat(getComputedStyle(target).scrollMarginBlockStart) || 0
+
+      smoother.scrollTo(Math.max(0, offset - anchorOffset), smooth)
+      return
+    }
+
+    if (typeof target === 'number') {
+      window.scrollTo({ top: target, behavior: smooth ? 'smooth' : 'auto' })
+      return
+    }
+
+    target.scrollIntoView({
+      behavior: smooth ? 'smooth' : 'auto',
+      block: 'start',
+    })
   }, [])
+
+  useEffect(() => {
+    if (previousPathnameRef.current === pathname) {
+      return
+    }
+
+    previousPathnameRef.current = pathname
+
+    let disposed = false
+    let firstFrame = 0
+    let secondFrame = 0
+
+    void import('gsap/ScrollTrigger').then(({ ScrollTrigger }) => {
+      if (disposed) {
+        return
+      }
+
+      firstFrame = window.requestAnimationFrame(() => {
+        secondFrame = window.requestAnimationFrame(() => {
+          if (!disposed) {
+            ScrollTrigger.refresh(true)
+          }
+        })
+      })
+    })
+
+    return () => {
+      disposed = true
+      window.cancelAnimationFrame(firstFrame)
+      window.cancelAnimationFrame(secondFrame)
+    }
+  }, [pathname])
 
   useEffect(() => {
     const media = window.matchMedia(SMOOTHER_QUERY)
@@ -136,6 +203,7 @@ export function ScrollSmootherProvider({
 
   return (
     <SmoothScrollContext.Provider value={scrollTo}>
+      {outsideContent}
       <div
         id="smooth-wrapper"
         className="min-h-screen [html.has-scroll-smoother_&]:overflow-hidden"

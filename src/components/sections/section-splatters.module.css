@@ -1,0 +1,38 @@
+@media (width >= 80rem) {
+  .scenarios,
+  .formats,
+  .additions,
+  .facilities,
+  .faq {
+    background-repeat: no-repeat;
+  }
+
+  .scenarios {
+    background-image:
+      url('/images/section-splatters/scenarios-right.webp'),
+      url('/images/section-splatters/scenarios-left.webp');
+    background-position:
+      right top,
+      left bottom -170px;
+  }
+
+  .formats {
+    background-image: url('/images/section-splatters/formats-right.webp');
+    background-position: 100% 43%;
+  }
+
+  .additions {
+    background-image: url('/images/section-splatters/additions-left.webp');
+    background-position: left top -135px;
+  }
+
+  .facilities {
+    background-image: url('/images/section-splatters/facilities-left.webp');
+    background-position: left top -134px;
+  }
+
+  .faq {
+    background-image: url('/images/section-splatters/faq-right.webp');
+    background-position: right top;
+  }
+}

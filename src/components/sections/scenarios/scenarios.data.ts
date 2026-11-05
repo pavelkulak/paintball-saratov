@@ -1,4 +1,5 @@
 import type { ScenarioCardData } from './scenarios.types'
+import type { AudienceId } from '@/lib/audience'
 
 export const scenarios: readonly ScenarioCardData[] = [
   {
@@ -219,3 +220,25 @@ export const scenarios: readonly ScenarioCardData[] = [
     tags: ['Командные форматы', 'Разделение на отряды', 'Гибкий тайминг'],
   },
 ]
+
+const scenarioIdsByAudience: Record<
+  Exclude<AudienceId, 'all'>,
+  readonly string[]
+> = {
+  children: ['kids-birthday', 'kids-day-out', 'family-paintball'],
+  adults: [
+    'friends-paintball',
+    'adult-birthday',
+    'corporate-paintball',
+    'family-paintball',
+  ],
+}
+
+export function getScenariosForAudience(audience: AudienceId) {
+  if (audience === 'all') {
+    return scenarios
+  }
+
+  const allowedIds = new Set(scenarioIdsByAudience[audience])
+  return scenarios.filter((scenario) => allowedIds.has(scenario.id))
+}

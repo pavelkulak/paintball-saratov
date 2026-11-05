@@ -3,14 +3,19 @@ import { SectionHeading } from '@/components/ui/SectionHeading'
 import { DesktopFormatsGrid } from './formats/DesktopFormatsGrid'
 import { MobileFormatsSlider } from './formats/MobileFormatsSlider'
 
-import { formats } from './formats/formats.data'
+import type { FormatCardData } from './formats/formats.types'
+import splatters from './section-splatters.module.css'
 
-export function FormatsSection() {
+type FormatsSectionProps = {
+  formats: readonly FormatCardData[]
+}
+
+export function FormatsSection({ formats }: FormatsSectionProps) {
   return (
     <section
       id="formats"
       aria-labelledby="formats-title"
-      className="section-anchor page-section-gap bg-background text-foreground w-full overflow-hidden"
+      className={`section-anchor page-section-gap bg-background text-foreground w-full overflow-hidden ${splatters.formats}`}
     >
       <div className="page-container">
         <SectionHeading

@@ -4,6 +4,7 @@ import { useEffect, useRef, type CSSProperties } from 'react'
 
 import { SectionHeading } from '@/components/ui/SectionHeading'
 
+import splatters from '../section-splatters.module.css'
 import { facilities, facilitiesSectionContent } from './facilities.data'
 import { FACILITY_CARD_HEIGHT, FacilityCard } from './FacilityCard'
 
@@ -111,7 +112,7 @@ export function DesktopFacilitiesScene() {
     >
       <div
         ref={stageRef}
-        className="stage-padding bg-background text-foreground flex h-svh w-full motion-reduce:h-auto motion-reduce:min-h-svh"
+        className={`stage-padding bg-background text-foreground flex h-svh w-full motion-reduce:h-auto motion-reduce:min-h-svh ${splatters.facilities}`}
       >
         <div className="page-container grid min-h-0 grid-cols-[525px_592px] justify-between gap-16">
           <div className="self-start">
