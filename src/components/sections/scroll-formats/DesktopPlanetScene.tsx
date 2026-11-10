@@ -18,7 +18,6 @@ import { SectionHeading } from '@/components/ui/SectionHeading'
 import splatters from '../section-splatters.module.css'
 import { planets } from './formats.data'
 
-const SCENE_ID = 'planet-scene'
 const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)'
 const TITLE_ITEM_HEIGHT = 61
 const TITLE_OFFSET = 45
@@ -67,7 +66,7 @@ function getTitleOpacity(activeIndex: number, titleIndex: number) {
   return Math.abs(activeIndex - titleIndex) === 1 ? 0.6 : 0.2
 }
 
-export function DesktopPlanetScene() {
+export function DesktopPlanetScene({ sceneId }: { sceneId: string }) {
   const smoothScrollTo = useSmoothScroll()
   const [reducedIndex, setReducedIndex] = useState(0)
   const prefersReducedMotion = useSyncExternalStore(
@@ -205,7 +204,7 @@ export function DesktopPlanetScene() {
           const timeline = gsap.timeline({
             defaults: { ease: 'none' },
             scrollTrigger: {
-              id: SCENE_ID,
+              id: sceneId,
               trigger: sceneRef.current,
               pin: stageRef.current,
               pinType: 'fixed',
@@ -243,7 +242,7 @@ export function DesktopPlanetScene() {
           syncAccessibleState(0)
 
           scrollToIndexRef.current = (index) => {
-            const trigger = ScrollTrigger.getById(SCENE_ID)
+            const trigger = ScrollTrigger.getById(sceneId)
 
             if (!trigger) {
               const sceneTop =
@@ -269,7 +268,13 @@ export function DesktopPlanetScene() {
       scrollToIndexRef.current = null
       revertScene?.()
     }
-  }, [prefersReducedMotion, reducedIndex, smoothScrollTo, syncAccessibleState])
+  }, [
+    prefersReducedMotion,
+    reducedIndex,
+    sceneId,
+    smoothScrollTo,
+    syncAccessibleState,
+  ])
 
   const goToPlanet = useCallback(
     (index: number) => {
@@ -306,7 +311,6 @@ export function DesktopPlanetScene() {
   return (
     <div
       ref={sceneRef}
-      data-scroll-trigger-id={SCENE_ID}
       style={{ '--scene-slides': planets.length + 1 } as CSSProperties}
       className={clsx(
         'bg-background text-foreground relative hidden w-full xl:block',

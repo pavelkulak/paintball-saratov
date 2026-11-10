@@ -1,5 +1,6 @@
 import Image from 'next/image'
 
+import type { AudienceId } from '@/lib/audience'
 import type { HomeResponse } from '@/lib/bitrix/home-schema'
 
 import { QuizCard } from '../ui/QuizCard'
@@ -7,11 +8,33 @@ import { Button } from '../ui/Button'
 import { AudienceTabs } from '../navigation/AudienceTabs'
 import { HeroParallaxScene } from './hero/HeroParallaxScene'
 
+const heroPlayers: Record<
+  AudienceId,
+  { mobileSrc: string; desktopSrc: string }
+> = {
+  all: {
+    mobileSrc: '/images/hero-players-family-mobile.png',
+    desktopSrc: '/images/hero-players-family.webp',
+  },
+  children: {
+    mobileSrc: '/images/hero-players-children-mobile.webp',
+    desktopSrc: '/images/hero-players-children.webp',
+  },
+  adults: {
+    mobileSrc: '/images/hero-players-adults-mobile.webp',
+    desktopSrc: '/images/hero-players-adults.webp',
+  },
+}
+
 export function Hero({
+  audience,
   content,
 }: {
+  audience: AudienceId
   content: Pick<HomeResponse, 'description' | 'quiz'>
 }) {
+  const { mobileSrc, desktopSrc } = heroPlayers[audience]
+
   return (
     <>
       <HeroParallaxScene>
@@ -39,16 +62,14 @@ export function Hero({
                 className="absolute inset-0 will-change-transform motion-reduce:transform-none"
               >
                 <picture>
-                  <source
-                    media="(min-width: 1280px)"
-                    srcSet="/images/hero-players-family.webp"
-                  />
+                  <source media="(min-width: 1280px)" srcSet={desktopSrc} />
                   <Image
-                    src="/images/hero-players-family-mobile.png"
+                    src={mobileSrc}
                     alt=""
                     width={1207}
                     height={1303}
-                    preload
+                    loading="eager"
+                    fetchPriority="high"
                     sizes="(min-width: 1280px) min(100vw - 64px, 124svh), 100vw"
                     draggable={false}
                     className="block h-full w-full object-contain object-bottom"

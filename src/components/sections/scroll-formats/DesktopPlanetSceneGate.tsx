@@ -4,6 +4,7 @@ import dynamic from 'next/dynamic'
 import { useSyncExternalStore, type CSSProperties } from 'react'
 
 const DESKTOP_QUERY = '(min-width: 1280px)'
+const SCENE_ID = 'planet-scene'
 
 const DesktopPlanetScene = dynamic(
   () =>
@@ -33,15 +34,13 @@ export function DesktopPlanetSceneGate({ slideCount }: { slideCount: number }) {
     getServerDesktopSnapshot,
   )
 
-  if (!isDesktop) {
-    return (
-      <div
-        aria-hidden="true"
-        style={{ '--scene-slides': slideCount } as CSSProperties}
-        className="bg-background relative hidden h-[calc(100svh*var(--scene-slides))] w-full motion-reduce:h-svh xl:block"
-      />
-    )
-  }
-
-  return <DesktopPlanetScene />
+  return (
+    <div
+      data-scroll-trigger-id={SCENE_ID}
+      style={{ '--scene-slides': slideCount } as CSSProperties}
+      className="bg-background relative hidden min-h-[calc(100svh*var(--scene-slides))] w-full motion-reduce:min-h-svh xl:block"
+    >
+      {isDesktop && <DesktopPlanetScene sceneId={SCENE_ID} />}
+    </div>
+  )
 }

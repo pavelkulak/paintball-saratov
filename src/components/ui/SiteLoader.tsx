@@ -4,10 +4,15 @@ import clsx from 'clsx'
 import { useEffect, useRef, useState } from 'react'
 
 import { Logo } from '@/components/icons/Logo'
+import {
+  loadScrollTrigger,
+  nextFrame,
+  refreshScrollTriggers,
+  scrollScenesAreReady,
+  waitForCondition,
+} from '@/lib/scroll-scenes'
 
 type LoaderPhase = 'assets' | 'motion' | 'geometry' | 'ready'
-type ScrollTriggerStatic =
-  (typeof import('gsap/ScrollTrigger'))['ScrollTrigger']
 
 const MIN_VISIBLE_TIME = 900
 const MAX_PREPARE_TIME = 7000
@@ -30,12 +35,6 @@ function wait(milliseconds: number) {
   })
 }
 
-function nextFrame() {
-  return new Promise<void>((resolve) => {
-    window.requestAnimationFrame(() => resolve())
-  })
-}
-
 function waitForHeroImages() {
   const images = Array.from(
     document.querySelectorAll<HTMLImageElement>('#hero img'),
@@ -43,48 +42,6 @@ function waitForHeroImages() {
   return Promise.all(
     images.map((image) => image.decode().catch(() => undefined)),
   )
-}
-
-function getVisibleTriggerIds() {
-  return Array.from(
-    document.querySelectorAll<HTMLElement>('[data-scroll-trigger-id]'),
-  )
-    .filter((element) => window.getComputedStyle(element).display !== 'none')
-    .map((element) => element.dataset.scrollTriggerId)
-    .filter((id): id is string => Boolean(id))
-}
-
-async function waitForCondition(
-  condition: () => boolean,
-  timeout: number,
-  shouldStop: () => boolean,
-) {
-  const deadline = window.performance.now() + timeout
-
-  while (!condition() && !shouldStop() && window.performance.now() < deadline) {
-    await nextFrame()
-  }
-}
-
-function refreshScrollTriggers(ScrollTrigger: ScrollTriggerStatic) {
-  return new Promise<void>((resolve) => {
-    let finished = false
-
-    const finish = () => {
-      if (finished) {
-        return
-      }
-
-      finished = true
-      window.clearTimeout(fallback)
-      ScrollTrigger.removeEventListener('refresh', finish)
-      resolve()
-    }
-
-    const fallback = window.setTimeout(finish, 700)
-    ScrollTrigger.addEventListener('refresh', finish)
-    ScrollTrigger.refresh(true)
-  })
 }
 
 export function SiteLoader() {
@@ -160,24 +117,18 @@ export function SiteLoader() {
 
       setPhase('motion')
 
-      const [{ default: gsap }, { ScrollTrigger }] = await Promise.all([
-        import('gsap'),
-        import('gsap/ScrollTrigger'),
-      ])
+      const ScrollTrigger = await loadScrollTrigger()
 
       if (cancelled || readinessSettled) {
         return
       }
 
-      gsap.registerPlugin(ScrollTrigger)
-
       if (!prefersReducedMotion) {
-        const triggerIds = getVisibleTriggerIds()
         const smootherExpected = window.matchMedia(SMOOTHER_QUERY).matches
 
         await waitForCondition(
           () =>
-            triggerIds.every((id) => Boolean(ScrollTrigger.getById(id))) &&
+            scrollScenesAreReady(ScrollTrigger, document) &&
             (!smootherExpected ||
               document.documentElement.classList.contains(
                 'has-scroll-smoother',

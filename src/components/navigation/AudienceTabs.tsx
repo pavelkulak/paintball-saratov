@@ -59,6 +59,7 @@ function AudienceTabContent({ label, pending }: AudienceTabContentProps) {
 export function AudienceTabs({ className }: AudienceTabsProps) {
   const pathname = normalizePathname(usePathname())
   const navigation = useAudienceNavigation()
+  const isBusy = Boolean(navigation?.pendingHref)
   const activeOption =
     audienceOptions.find(
       (option) => normalizePathname(option.href) === pathname,
@@ -101,6 +102,7 @@ export function AudienceTabs({ className }: AudienceTabsProps) {
       ref={rootRef}
       role="group"
       aria-label="Выбор аудитории"
+      aria-busy={isBusy || undefined}
       className={twMerge(
         clsx(
           'border-ink relative isolate flex items-stretch rounded-[20px] border bg-white p-1 shadow-sm backdrop-blur-md',
@@ -127,12 +129,17 @@ export function AudienceTabs({ className }: AudienceTabsProps) {
             key={option.id}
             href={option.href}
             prefetch={false}
+            scroll={false}
             aria-current={isActive ? 'page' : undefined}
-            aria-busy={pending || undefined}
+            aria-disabled={isBusy || undefined}
+            onClick={(event) => {
+              if (isBusy) event.preventDefault()
+            }}
             onNavigate={(event) => {
               if (!navigation) return
               event.preventDefault()
-              if (!isActive) navigation.navigate(option.href)
+              if (!isActive && !isBusy)
+                navigation.navigate(option.href, option.id)
             }}
             className={clsx(
               tabBaseClass,

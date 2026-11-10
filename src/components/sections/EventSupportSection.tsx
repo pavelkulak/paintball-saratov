@@ -4,6 +4,7 @@ import Image from 'next/image'
 import { EventProcessOrbit } from '@/components/sections/EventProcessOrbit'
 import { SectionHeading } from '@/components/ui/SectionHeading'
 import { SafetyShowcase } from '@/components/sections/SafetyShowcase'
+import type { AudienceId } from '@/lib/audience'
 
 const supportCards = [
   {
@@ -61,7 +62,13 @@ function SupportCard({ imageSrc, imageAlt, text }: SupportCardProps) {
   )
 }
 
-export function EventSupportSection({ className }: { className?: string }) {
+export function EventSupportSection({
+  audience,
+  className,
+}: {
+  audience: AudienceId
+  className?: string
+}) {
   return (
     <div
       className={twMerge(
@@ -114,7 +121,7 @@ export function EventSupportSection({ className }: { className?: string }) {
           />
         </div>
 
-        <SafetyShowcase />
+        <SafetyShowcase audience={audience} />
       </section>
       <EventProcessOrbit />
     </div>

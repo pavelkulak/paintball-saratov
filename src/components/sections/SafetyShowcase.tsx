@@ -3,7 +3,13 @@
 import Image from 'next/image'
 import { useState, type CSSProperties } from 'react'
 
-const SAFETY_ARTWORK_SRC = '/images/safety-players-family.webp'
+import type { AudienceId } from '@/lib/audience'
+
+const safetyArtwork: Record<AudienceId, string> = {
+  all: '/images/safety-players-all.webp',
+  children: '/images/safety-players-family.webp',
+  adults: '/images/safety-players-adults.webp',
+}
 
 const rings = [
   { diameter: 592, opacity: 0.3 },
@@ -195,8 +201,9 @@ function SafetyAccordionItem({
   )
 }
 
-export function SafetyShowcase() {
+export function SafetyShowcase({ audience }: { audience: AudienceId }) {
   const [activeId, setActiveId] = useState('rules')
+  const artworkSrc = safetyArtwork[audience]
 
   return (
     <>
@@ -206,7 +213,7 @@ export function SafetyShowcase() {
 
           <div className="pointer-events-none absolute top-[7%] left-1/2 z-[1] aspect-[1440/1053] w-[160%] max-w-none -translate-x-1/2 sm:top-[8.5%] sm:w-[112%] md:top-[11%] md:w-[96%]">
             <Image
-              src={SAFETY_ARTWORK_SRC}
+              src={artworkSrc}
               alt=""
               fill
               sizes="(min-width: 768px) 738px, (min-width: 640px) 112vw, 160vw"
@@ -251,7 +258,7 @@ export function SafetyShowcase() {
 
           <div className="pointer-events-none absolute inset-0 z-[1]">
             <Image
-              src={SAFETY_ARTWORK_SRC}
+              src={artworkSrc}
               alt=""
               fill
               sizes="(min-width: 1280px) min(100vw, 1200px)"

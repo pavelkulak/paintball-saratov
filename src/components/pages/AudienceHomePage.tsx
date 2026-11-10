@@ -27,8 +27,8 @@ export async function AudienceHomePage({ audience }: AudienceHomePageProps) {
   const home = await getHomeContent()
 
   return (
-    <main>
-      <Hero content={home} />
+    <main data-audience-page={audience}>
+      <Hero audience={audience} content={home} />
       <ScenariosSection
         key={`scenarios-${audience}`}
         scenarios={getScenariosForAudience(audience)}
@@ -38,7 +38,7 @@ export async function AudienceHomePage({ audience }: AudienceHomePageProps) {
         formats={getFormatsForAudience(audience)}
       />
       <ScrollFormatsSection />
-      <EventSupportSection />
+      <EventSupportSection audience={audience} />
       <FacilitiesSection />
       <MediaGallerySection />
       <ReviewsSection reviews={home.reviews} />

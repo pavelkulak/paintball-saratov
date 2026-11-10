@@ -8,13 +8,28 @@ import {
   useEffect,
   useRef,
   useState,
-  useTransition,
   type ReactNode,
 } from 'react'
 
+import { normalizePathname, type AudienceId } from '@/lib/audience'
+import {
+  captureScrollScene,
+  captureScrollSection,
+  getRestoredSectionScroll,
+  loadScrollTrigger,
+  nextFrame,
+  refreshScrollTriggers,
+  restoreScrollScene,
+  scrollScenesAreReady,
+  waitForCondition,
+  type ScrollScenePosition,
+  type ScrollSectionPosition,
+} from '@/lib/scroll-scenes'
+
 const SMOOTHER_QUERY =
   '(min-width: 1280px) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)'
-const SCENARIOS_SCROLL_TIMEOUT = 1400
+const SCENE_READY_TIMEOUT = 3500
+const NAVIGATION_TIMEOUT = 12000
 
 type ScrollSmootherProviderProps = {
   outsideContent?: ReactNode
@@ -24,14 +39,23 @@ type ScrollSmootherProviderProps = {
 type ScrollSmootherInstance = {
   kill: () => void
   offset: (target: Element, position: string) => number
+  scrollTop: () => number
   scrollTo: (target: number, smooth?: boolean) => void
 }
 
 type ScrollTarget = number | HTMLElement
 
+type AudienceNavigation = {
+  href: string
+  audience: AudienceId
+  timeout: number
+  scene: ScrollScenePosition | null
+  section: ScrollSectionPosition | null
+}
+
 const AudienceNavigationContext = createContext<{
   pendingHref: string | null
-  navigate: (href: string) => void
+  navigate: (href: string, audience: AudienceId) => void
 } | null>(null)
 
 export function useAudienceNavigation() {
@@ -68,9 +92,9 @@ export function ScrollSmootherProvider({
   const router = useRouter()
   const previousPathnameRef = useRef(pathname)
   const smootherRef = useRef<ScrollSmootherInstance | null>(null)
-  const audienceScrollFrameRef = useRef(0)
-  const [requestedHref, setRequestedHref] = useState<string | null>(null)
-  const [isNavigating, startNavigation] = useTransition()
+  const contentRef = useRef<HTMLDivElement>(null)
+  const navigationRef = useRef<AudienceNavigation | null>(null)
+  const [pendingHref, setPendingHref] = useState<string | null>(null)
   const scrollTo = useCallback((target: ScrollTarget, smooth = true) => {
     const smoother = smootherRef.current
 
@@ -96,56 +120,69 @@ export function ScrollSmootherProvider({
     })
   }, [])
 
+  const finishNavigation = useCallback((navigation: AudienceNavigation) => {
+    if (navigationRef.current !== navigation) return
+    window.clearTimeout(navigation.timeout)
+    navigationRef.current = null
+    setPendingHref(null)
+  }, [])
+
   const navigateToAudience = useCallback(
-    (href: string) => {
-      if (isNavigating) return
-      window.cancelAnimationFrame(audienceScrollFrameRef.current)
+    (href: string, audience: AudienceId) => {
+      if (navigationRef.current) return
 
-      const section = document.getElementById('scenarios')
-      const changeRoute = () => {
-        setRequestedHref(href)
-        startNavigation(() => router.push(href, { scroll: !section }))
+      const content = contentRef.current
+      const navigation: AudienceNavigation = {
+        href,
+        audience,
+        timeout: 0,
+        scene: null,
+        section: content && captureScrollSection(content),
       }
+      navigationRef.current = navigation
+      navigation.timeout = window.setTimeout(
+        () => finishNavigation(navigation),
+        NAVIGATION_TIMEOUT,
+      )
+      setPendingHref(href)
 
-      if (!section) {
-        changeRoute()
-        return
-      }
-
-      const isAtSection = () =>
-        Math.abs(
-          section.getBoundingClientRect().top - getAnchorOffset(section),
-        ) <= 4
-      const prefersReducedMotion = window.matchMedia(
-        '(prefers-reduced-motion: reduce)',
-      ).matches
-      const deadline = performance.now() + SCENARIOS_SCROLL_TIMEOUT
-
-      const waitForSection = () => {
-        if (
-          prefersReducedMotion ||
-          isAtSection() ||
-          performance.now() >= deadline
-        ) {
-          scrollTo(section, false)
-          audienceScrollFrameRef.current =
-            window.requestAnimationFrame(changeRoute)
-          return
+      const source = document.querySelector<HTMLElement>('[data-audience-page]')
+      void (async () => {
+        if (source) {
+          try {
+            const ScrollTrigger = await loadScrollTrigger()
+            navigation.scene = captureScrollScene(ScrollTrigger, source)
+          } catch {
+            // Navigation can still proceed if the optional animation module fails.
+          }
         }
 
-        audienceScrollFrameRef.current =
-          window.requestAnimationFrame(waitForSection)
-      }
-
-      if (!prefersReducedMotion && !isAtSection()) scrollTo(section)
-      waitForSection()
+        if (navigationRef.current === navigation) {
+          router.push(href, { scroll: false })
+        }
+      })()
     },
-    [isNavigating, router, scrollTo],
+    [finishNavigation, router],
   )
 
   useEffect(() => {
-    return () => window.cancelAnimationFrame(audienceScrollFrameRef.current)
-  }, [pathname])
+    return () => {
+      const navigation = navigationRef.current
+      if (navigation) window.clearTimeout(navigation.timeout)
+      navigationRef.current = null
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!pendingHref) return
+    const preventScroll = (event: Event) => event.preventDefault()
+    window.addEventListener('wheel', preventScroll, { passive: false })
+    window.addEventListener('touchmove', preventScroll, { passive: false })
+    return () => {
+      window.removeEventListener('wheel', preventScroll)
+      window.removeEventListener('touchmove', preventScroll)
+    }
+  }, [pendingHref])
 
   useEffect(() => {
     if (previousPathnameRef.current === pathname) {
@@ -155,6 +192,71 @@ export function ScrollSmootherProvider({
     previousPathnameRef.current = pathname
 
     let disposed = false
+    const navigation = navigationRef.current
+    if (
+      navigation &&
+      normalizePathname(pathname) === normalizePathname(navigation.href)
+    ) {
+      const shouldStop = () => disposed || navigationRef.current !== navigation
+      const findPage = () =>
+        document.querySelector<HTMLElement>(
+          `[data-audience-page="${navigation.audience}"]`,
+        )
+
+      void (async () => {
+        try {
+          const ScrollTrigger = await loadScrollTrigger()
+          await waitForCondition(
+            () => {
+              const page = findPage()
+              return Boolean(page && scrollScenesAreReady(ScrollTrigger, page))
+            },
+            SCENE_READY_TIMEOUT,
+            shouldStop,
+          )
+
+          await nextFrame()
+          if (shouldStop()) return
+
+          await refreshScrollTriggers(ScrollTrigger, false)
+          if (shouldStop()) return
+
+          const page = findPage()
+          const restoredScene =
+            page &&
+            navigation.scene &&
+            restoreScrollScene(ScrollTrigger, page, navigation.scene, (top) =>
+              scrollTo(top, false),
+            )
+
+          const content = contentRef.current
+          if (page && !restoredScene && content && navigation.section) {
+            const top = getRestoredSectionScroll(
+              content,
+              navigation.section,
+              smootherRef.current?.scrollTop() ?? window.scrollY,
+            )
+            if (top !== null) {
+              scrollTo(top, false)
+              ScrollTrigger.update()
+            }
+          }
+
+          await nextFrame()
+        } catch {
+          // Release the interface even when an animation cannot initialize.
+        } finally {
+          if (!disposed) finishNavigation(navigation)
+        }
+      })()
+
+      return () => {
+        disposed = true
+      }
+    }
+
+    if (navigation) queueMicrotask(() => finishNavigation(navigation))
+
     let firstFrame = 0
     let secondFrame = 0
 
@@ -177,7 +279,7 @@ export function ScrollSmootherProvider({
       window.cancelAnimationFrame(firstFrame)
       window.cancelAnimationFrame(secondFrame)
     }
-  }, [pathname])
+  }, [finishNavigation, pathname, scrollTo])
 
   useEffect(() => {
     const media = window.matchMedia(SMOOTHER_QUERY)
@@ -272,20 +374,32 @@ export function ScrollSmootherProvider({
   return (
     <SmoothScrollContext.Provider value={scrollTo}>
       <AudienceNavigationContext.Provider
-        value={{
-          pendingHref: isNavigating ? requestedHref : null,
-          navigate: navigateToAudience,
-        }}
+        value={{ pendingHref, navigate: navigateToAudience }}
       >
-        {outsideContent}
+        <div className="contents" inert={Boolean(pendingHref)}>
+          {outsideContent}
+        </div>
         <div
           id="smooth-wrapper"
+          inert={Boolean(pendingHref)}
           className="min-h-screen [html.has-scroll-smoother_&]:overflow-hidden"
         >
-          <div id="smooth-content" className="min-h-screen overflow-visible">
+          <div
+            ref={contentRef}
+            id="smooth-content"
+            className="min-h-screen overflow-visible"
+          >
             {children}
           </div>
         </div>
+        {pendingHref && (
+          <div
+            role="status"
+            className="fixed inset-0 z-[90] touch-none bg-black/45"
+          >
+            <span className="sr-only">Загружаем выбранную вкладку</span>
+          </div>
+        )}
       </AudienceNavigationContext.Provider>
     </SmoothScrollContext.Provider>
   )

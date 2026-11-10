@@ -253,7 +253,7 @@ export function EventProcessOrbit() {
           let cleanupMobileLayout: (() => void) | undefined
           if (window.matchMedia(PROCESS_MEDIA_CONDITIONS.mobile).matches) {
             const siteHeader =
-              document.querySelector<HTMLElement>('body > header')
+              document.querySelector<HTMLElement>('[data-site-header]')
             const description = heading.querySelector('p')
             let layoutProperties: string[] = []
             const syncMobileLayout = () => {
