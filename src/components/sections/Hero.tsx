@@ -4,8 +4,8 @@ import type { AudienceId } from '@/lib/audience'
 import type { HomeResponse } from '@/lib/bitrix/home-schema'
 
 import { QuizCard } from '../ui/QuizCard'
+import { AudienceArtwork } from '../ui/AudienceArtwork'
 import { Button } from '../ui/Button'
-import { AudienceTabs } from '../navigation/AudienceTabs'
 import { HeroParallaxScene } from './hero/HeroParallaxScene'
 
 const heroPlayers: Record<
@@ -33,8 +33,6 @@ export function Hero({
   audience: AudienceId
   content: Pick<HomeResponse, 'description' | 'quiz'>
 }) {
-  const { mobileSrc, desktopSrc } = heroPlayers[audience]
-
   return (
     <>
       <HeroParallaxScene>
@@ -61,20 +59,39 @@ export function Hero({
                 data-hero-players
                 className="absolute inset-0 will-change-transform motion-reduce:transform-none"
               >
-                <picture>
-                  <source media="(min-width: 1280px)" srcSet={desktopSrc} />
-                  <Image
-                    src={mobileSrc}
-                    alt=""
-                    width={1207}
-                    height={1303}
-                    loading="eager"
-                    fetchPriority="high"
-                    sizes="(min-width: 1280px) min(100vw - 64px, 124svh), 100vw"
-                    draggable={false}
-                    className="block h-full w-full object-contain object-bottom"
-                  />
-                </picture>
+                <AudienceArtwork
+                  audience={audience}
+                  variants={Object.entries(heroPlayers).map(
+                    ([id, { mobileSrc, desktopSrc }]) => ({
+                      id: id as AudienceId,
+                      content: (
+                        <picture
+                          className={
+                            id === 'children'
+                              ? 'absolute inset-0 max-xl:translate-x-[9%]'
+                              : 'absolute inset-0'
+                          }
+                        >
+                          <source
+                            media="(min-width: 1280px)"
+                            srcSet={desktopSrc}
+                          />
+                          <Image
+                            src={mobileSrc}
+                            alt=""
+                            width={1207}
+                            height={1303}
+                            loading="eager"
+                            fetchPriority={id === audience ? 'high' : 'low'}
+                            sizes="(min-width: 1280px) min(100vw - 64px, 124svh), 100vw"
+                            draggable={false}
+                            className="block h-full w-full object-contain object-bottom"
+                          />
+                        </picture>
+                      ),
+                    }),
+                  )}
+                />
               </div>
             </div>
 
@@ -87,9 +104,6 @@ export function Hero({
               variant="hero"
               className="relative z-20 hidden w-full max-w-none xl:col-span-4 xl:col-start-9 xl:flex xl:self-end"
             />
-            <div className="absolute inset-x-0 bottom-4 z-20 flex justify-center xl:hidden">
-              <AudienceTabs className="w-full max-w-[480px]" />
-            </div>
           </div>
         </div>
       </HeroParallaxScene>

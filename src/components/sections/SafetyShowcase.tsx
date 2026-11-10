@@ -4,6 +4,7 @@ import Image from 'next/image'
 import { useState, type CSSProperties } from 'react'
 
 import type { AudienceId } from '@/lib/audience'
+import { AudienceArtwork } from '@/components/ui/AudienceArtwork'
 
 const safetyArtwork: Record<AudienceId, string> = {
   all: '/images/safety-players-all.webp',
@@ -203,7 +204,6 @@ function SafetyAccordionItem({
 
 export function SafetyShowcase({ audience }: { audience: AudienceId }) {
   const [activeId, setActiveId] = useState('rules')
-  const artworkSrc = safetyArtwork[audience]
 
   return (
     <>
@@ -212,15 +212,23 @@ export function SafetyShowcase({ audience }: { audience: AudienceId }) {
           <SafetyRings compact />
 
           <div className="pointer-events-none absolute top-[7%] left-1/2 z-[1] aspect-[1440/1053] w-[160%] max-w-none -translate-x-1/2 sm:top-[8.5%] sm:w-[112%] md:top-[11%] md:w-[96%]">
-            <Image
-              src={artworkSrc}
-              alt=""
-              fill
-              sizes="(min-width: 768px) 738px, (min-width: 640px) 112vw, 160vw"
-              className="object-contain object-center"
-              onError={(event) => {
-                event.currentTarget.style.display = 'none'
-              }}
+            <AudienceArtwork
+              audience={audience}
+              variants={Object.entries(safetyArtwork).map(([id, src]) => ({
+                id: id as AudienceId,
+                content: (
+                  <Image
+                    src={src}
+                    alt=""
+                    fill
+                    sizes="(min-width: 768px) 738px, (min-width: 640px) 112vw, 160vw"
+                    className="object-contain object-center"
+                    onError={(event) => {
+                      event.currentTarget.style.display = 'none'
+                    }}
+                  />
+                ),
+              }))}
             />
           </div>
 
@@ -257,15 +265,23 @@ export function SafetyShowcase({ audience }: { audience: AudienceId }) {
           <SafetyRings />
 
           <div className="pointer-events-none absolute inset-0 z-[1]">
-            <Image
-              src={artworkSrc}
-              alt=""
-              fill
-              sizes="(min-width: 1280px) min(100vw, 1200px)"
-              className="object-contain object-center"
-              onError={(event) => {
-                event.currentTarget.style.display = 'none'
-              }}
+            <AudienceArtwork
+              audience={audience}
+              variants={Object.entries(safetyArtwork).map(([id, src]) => ({
+                id: id as AudienceId,
+                content: (
+                  <Image
+                    src={src}
+                    alt=""
+                    fill
+                    sizes="(min-width: 1280px) min(100vw, 1200px)"
+                    className="object-contain object-center"
+                    onError={(event) => {
+                      event.currentTarget.style.display = 'none'
+                    }}
+                  />
+                ),
+              }))}
             />
           </div>
 

@@ -12,6 +12,7 @@ import {
 } from 'react'
 
 import { normalizePathname, type AudienceId } from '@/lib/audience'
+import { prepareAudienceArtwork } from '@/lib/audience-artwork'
 import {
   captureScrollScene,
   captureScrollSection,
@@ -30,6 +31,7 @@ const SMOOTHER_QUERY =
   '(min-width: 1280px) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)'
 const SCENE_READY_TIMEOUT = 3500
 const NAVIGATION_TIMEOUT = 12000
+const REVEAL_DURATION = 540
 
 type ScrollSmootherProviderProps = {
   outsideContent?: ReactNode
@@ -51,10 +53,14 @@ type AudienceNavigation = {
   timeout: number
   scene: ScrollScenePosition | null
   section: ScrollSectionPosition | null
+  previousAudience: AudienceId
+  startedAt: number
+  revealing: boolean
 }
 
 const AudienceNavigationContext = createContext<{
   pendingHref: string | null
+  artworkAudience: AudienceId | null
   navigate: (href: string, audience: AudienceId) => void
 } | null>(null)
 
@@ -95,6 +101,10 @@ export function ScrollSmootherProvider({
   const contentRef = useRef<HTMLDivElement>(null)
   const navigationRef = useRef<AudienceNavigation | null>(null)
   const [pendingHref, setPendingHref] = useState<string | null>(null)
+  const [artworkAudience, setArtworkAudience] = useState<AudienceId | null>(
+    null,
+  )
+  const [isRevealing, setIsRevealing] = useState(false)
   const scrollTo = useCallback((target: ScrollTarget, smooth = true) => {
     const smoother = smootherRef.current
 
@@ -121,10 +131,26 @@ export function ScrollSmootherProvider({
   }, [])
 
   const finishNavigation = useCallback((navigation: AudienceNavigation) => {
-    if (navigationRef.current !== navigation) return
+    if (navigationRef.current !== navigation || navigation.revealing) return
+    navigation.revealing = true
     window.clearTimeout(navigation.timeout)
-    navigationRef.current = null
-    setPendingHref(null)
+    const page = document.querySelector<HTMLElement>('[data-audience-page]')
+    setArtworkAudience(
+      (page?.dataset.audiencePage as AudienceId) ?? navigation.previousAudience,
+    )
+    setIsRevealing(true)
+    navigation.timeout = window.setTimeout(
+      () => {
+        if (navigationRef.current !== navigation) return
+        navigationRef.current = null
+        setPendingHref(null)
+        setArtworkAudience(null)
+        setIsRevealing(false)
+      },
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        ? 0
+        : REVEAL_DURATION,
+    )
   }, [])
 
   const navigateToAudience = useCallback(
@@ -132,12 +158,18 @@ export function ScrollSmootherProvider({
       if (navigationRef.current) return
 
       const content = contentRef.current
+      const source = document.querySelector<HTMLElement>('[data-audience-page]')
+      const previousAudience =
+        (source?.dataset.audiencePage as AudienceId) ?? audience
       const navigation: AudienceNavigation = {
         href,
         audience,
         timeout: 0,
         scene: null,
         section: content && captureScrollSection(content),
+        previousAudience,
+        startedAt: performance.now(),
+        revealing: false,
       }
       navigationRef.current = navigation
       navigation.timeout = window.setTimeout(
@@ -145,8 +177,9 @@ export function ScrollSmootherProvider({
         NAVIGATION_TIMEOUT,
       )
       setPendingHref(href)
+      setArtworkAudience(previousAudience)
+      setIsRevealing(false)
 
-      const source = document.querySelector<HTMLElement>('[data-audience-page]')
       void (async () => {
         if (source) {
           try {
@@ -243,6 +276,19 @@ export function ScrollSmootherProvider({
           }
 
           await nextFrame()
+          if (page) {
+            await prepareAudienceArtwork(
+              page,
+              navigation.audience,
+              navigation.previousAudience,
+            )
+          }
+          // Let the dimmer enter even when a cached route resolves immediately.
+          await waitForCondition(
+            () => performance.now() - navigation.startedAt >= 220,
+            220,
+            shouldStop,
+          )
         } catch {
           // Release the interface even when an animation cannot initialize.
         } finally {
@@ -374,7 +420,7 @@ export function ScrollSmootherProvider({
   return (
     <SmoothScrollContext.Provider value={scrollTo}>
       <AudienceNavigationContext.Provider
-        value={{ pendingHref, navigate: navigateToAudience }}
+        value={{ pendingHref, artworkAudience, navigate: navigateToAudience }}
       >
         <div className="contents" inert={Boolean(pendingHref)}>
           {outsideContent}
@@ -392,14 +438,21 @@ export function ScrollSmootherProvider({
             {children}
           </div>
         </div>
-        {pendingHref && (
-          <div
-            role="status"
-            className="fixed inset-0 z-[90] touch-none bg-black/45"
-          >
+        <div
+          aria-hidden={!pendingHref}
+          role="status"
+          data-audience-dimmer
+          style={{
+            opacity: pendingHref && !isRevealing ? 1 : 0,
+            transitionDuration: isRevealing ? '420ms' : '220ms',
+            pointerEvents: pendingHref ? 'auto' : 'none',
+          }}
+          className="fixed inset-0 z-[90] touch-none bg-black/45 transition-opacity ease-in-out motion-reduce:transition-none"
+        >
+          {pendingHref && (
             <span className="sr-only">Загружаем выбранную вкладку</span>
-          </div>
-        )}
+          )}
+        </div>
       </AudienceNavigationContext.Provider>
     </SmoothScrollContext.Provider>
   )
