@@ -416,6 +416,11 @@ export function EventProcessOrbit() {
                       index={stepIndex}
                       className="absolute top-1/2 left-1/2 h-[var(--process-card-height)]"
                       style={{
+                        // The visible sequence starts with the last orbit slot.
+                        // Keep earlier cards above the next ones across that seam.
+                        zIndex:
+                          orbitAngles.length -
+                          ((orbitIndex + 1) % orbitAngles.length),
                         width:
                           'var(--process-orbit-card-width, var(--process-card-width))',
                         transform: `translate(-50%, -50%) rotate(${angle}deg) translateY(calc(var(--process-orbit-radius, var(--process-radius)) * -1))`,
