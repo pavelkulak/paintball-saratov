@@ -36,6 +36,14 @@ export function getRestoredSectionScroll(
   currentScroll: number,
 ) {
   const section = root.querySelector<HTMLElement>(`#${CSS.escape(position.id)}`)
+  // Adults skip safety; continue at the following process section when switching
+  // audiences from safety instead of retaining an offset into unrelated content.
+  if (!section && position.id === 'event-safety') {
+    const process = root.querySelector<HTMLElement>('#event-process')
+    if (process) {
+      return Math.max(0, currentScroll + process.getBoundingClientRect().top)
+    }
+  }
   if (!section) return null
 
   const bounds = section.getBoundingClientRect()

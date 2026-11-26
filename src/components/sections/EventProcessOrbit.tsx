@@ -51,7 +51,10 @@ const PROCESS_MEDIA_CONDITIONS = {
   reduceMotion: '(prefers-reduced-motion: reduce)',
 } as const
 
-const PROCESS_SCROLL_DISTANCE = 1000
+const PROCESS_HOLD_DISTANCE = 550
+const PROCESS_ROTATION_DISTANCE = 3000
+const PROCESS_SCROLL_DISTANCE =
+  PROCESS_HOLD_DISTANCE + PROCESS_ROTATION_DISTANCE
 const PROCESS_TOUCH_SCRUB = 0.6
 const PROCESS_POINTER_SCRUB = 2
 
@@ -294,34 +297,44 @@ export function EventProcessOrbit() {
             }
           }
 
-          gsap.fromTo(
-            orbit,
-            {
-              rotation: 30,
-              transformOrigin: '50% 50%',
+          const timeline = gsap.timeline({
+            scrollTrigger: {
+              id: 'event-process-orbit',
+              trigger: scene,
+              pin: pinViewport,
+              // ScrollSmoother transforms its content on desktop. Reparenting
+              // gives text one fixed coordinate system instead of two competing
+              // transforms. Mobile stays nested inside its clipping viewport.
+              ...(usesFixedDesktopPin
+                ? { pinType: 'fixed' as const, pinReparent: true }
+                : {}),
+              start: 'top top',
+              end: `+=${PROCESS_SCROLL_DISTANCE}`,
+              scrub,
+              // Pin at the actual boundary; velocity-based anticipation can
+              // snap this viewport upward before smooth scrolling reaches it.
+              anticipatePin: 0,
+              invalidateOnRefresh: true,
             },
-            {
-              rotation: -150,
-              transformOrigin: '50% 50%',
-              ease: 'none',
-              scrollTrigger: {
-                id: 'event-process-orbit',
-                trigger: scene,
-                pin: pinViewport,
-                // ScrollSmoother transforms its content on desktop. Reparenting
-                // gives text one fixed coordinate system instead of two competing
-                // transforms. Mobile stays nested inside its clipping viewport.
-                ...(usesFixedDesktopPin
-                  ? { pinType: 'fixed' as const, pinReparent: true }
-                  : {}),
-                start: 'top top',
-                end: `+=${PROCESS_SCROLL_DISTANCE}`,
-                scrub,
-                anticipatePin: 1,
-                invalidateOnRefresh: true,
+          })
+
+          // Scrub maps timeline durations to scroll distance: hold first,
+          // then keep the full rotation on its own, longer stretch of scroll.
+          timeline
+            .to(
+              {},
+              { duration: PROCESS_HOLD_DISTANCE / PROCESS_ROTATION_DISTANCE },
+            )
+            .fromTo(
+              orbit,
+              { rotation: 30, transformOrigin: '50% 50%' },
+              {
+                rotation: -150,
+                transformOrigin: '50% 50%',
+                duration: 1,
+                ease: 'none',
               },
-            },
-          )
+            )
 
           scheduleRefresh()
 

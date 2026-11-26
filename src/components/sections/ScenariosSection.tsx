@@ -4,19 +4,22 @@ import { DesktopScenariosGrid } from './scenarios/DesktopScenariosGrid'
 import { MobileScenariosSlider } from './scenarios/MobileScenariosSlider'
 
 import type { ScenarioCardData } from './scenarios/scenarios.types'
-import splatters from './section-splatters.module.css'
+import type { SiteTheme } from '@/lib/site-theme'
+import { SectionSplatters } from '@/components/sections/SectionSplatters'
 
 type ScenariosSectionProps = {
   scenarios: readonly ScenarioCardData[]
+  theme: SiteTheme
 }
 
-export function ScenariosSection({ scenarios }: ScenariosSectionProps) {
+export function ScenariosSection({ scenarios, theme }: ScenariosSectionProps) {
   return (
     <section
       id="scenarios"
       aria-labelledby="scenarios-title"
-      className={`section-anchor page-section-gap bg-background text-foreground w-full overflow-hidden ${splatters.scenarios}`}
+      className={`section-anchor bg-background text-foreground relative isolate w-full ${theme === 'new-year' ? 'overflow-x-clip pt-[var(--layout-section-gap)]' : 'page-section-gap overflow-hidden'}`}
     >
+      <SectionSplatters section="scenarios" />
       <div className="page-container">
         <SectionHeading
           className="mx-auto max-w-[327px] xl:max-w-[633px] xl:gap-7"

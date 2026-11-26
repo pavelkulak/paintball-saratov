@@ -1,4 +1,4 @@
-export const planets = [
+export const eventAdditions = [
   {
     title: 'Зона отдыха',
     navLabel: 'Зона отдыха',
@@ -47,4 +47,4 @@ export const planets = [
   },
 ] as const
 
-export type Planet = (typeof planets)[number]
+export type EventAddition = (typeof eventAdditions)[number]

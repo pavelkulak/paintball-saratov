@@ -4,8 +4,9 @@ import { useState } from 'react'
 
 import { AccordionIcon } from '@/components/icons/AccordionIcon'
 import { SectionHeading } from '@/components/ui/SectionHeading'
+import { useSiteTheme } from '@/components/providers/SiteThemeProvider'
 
-import splatters from './section-splatters.module.css'
+import { SectionSplatters } from '@/components/sections/SectionSplatters'
 
 const faqItems = [
   {
@@ -117,13 +118,15 @@ function FAQItem({
 
 export function FAQSection() {
   const [openIndex, setOpenIndex] = useState<number | null>(null)
+  const theme = useSiteTheme()
 
   return (
     <section
       id="faq"
       aria-labelledby="faq-title"
-      className={`section-anchor page-section-gap bg-background text-foreground w-full overflow-hidden ${splatters.faq}`}
+      className={`section-anchor page-section-gap text-foreground relative isolate w-full overflow-hidden ${theme === 'new-year' ? 'bg-transparent' : 'bg-background'}`}
     >
+      <SectionSplatters section="faq" />
       <div className="page-container">
         <SectionHeading
           className="gap-7"

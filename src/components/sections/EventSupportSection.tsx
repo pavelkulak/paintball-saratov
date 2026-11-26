@@ -5,6 +5,7 @@ import { EventProcessOrbit } from '@/components/sections/EventProcessOrbit'
 import { SectionHeading } from '@/components/ui/SectionHeading'
 import { SafetyShowcase } from '@/components/sections/SafetyShowcase'
 import type { AudienceId } from '@/lib/audience'
+import type { SiteTheme } from '@/lib/site-theme'
 
 const supportCards = [
   {
@@ -64,9 +65,11 @@ function SupportCard({ imageSrc, imageAlt, text }: SupportCardProps) {
 
 export function EventSupportSection({
   audience,
+  theme,
   className,
 }: {
   audience: AudienceId
+  theme: SiteTheme
   className?: string
 }) {
   return (
@@ -107,22 +110,24 @@ export function EventSupportSection({
         </div>
       </section>
 
-      <section
-        id="event-safety"
-        aria-labelledby="event-safety-title"
-        className="section-anchor"
-      >
-        <div className="page-container flex flex-col items-center text-center">
-          <SectionHeading
-            title="Безопасность и сопровождение"
-            titleId="event-safety-title"
-            description="До и во время мероприятия — всё под контролем наших инструкторов"
-            decor="safety"
-          />
-        </div>
+      {audience !== 'adults' && (
+        <section
+          id="event-safety"
+          aria-labelledby="event-safety-title"
+          className="section-anchor"
+        >
+          <div className="page-container flex flex-col items-center text-center">
+            <SectionHeading
+              title="Безопасность и сопровождение"
+              titleId="event-safety-title"
+              description="До и во время мероприятия — всё под контролем наших инструкторов"
+              decor="safety"
+            />
+          </div>
 
-        <SafetyShowcase audience={audience} />
-      </section>
+          <SafetyShowcase audience={audience} theme={theme} />
+        </section>
+      )}
       <EventProcessOrbit />
     </div>
   )

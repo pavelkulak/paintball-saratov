@@ -3,6 +3,8 @@
 import Image from 'next/image'
 import { useEffect, useRef, type ReactNode } from 'react'
 
+import { HeroCrosshair } from './HeroCrosshair'
+
 const DESKTOP_EFFECT_QUERY =
   '(min-width: 1280px) and (hover: hover) and (pointer: fine)'
 
@@ -30,6 +32,8 @@ type Dot = {
 
 type HeroParallaxSceneProps = {
   children: ReactNode
+  backgroundSrc: string
+  backgroundIsDimmed?: boolean
 }
 
 function createDots(width: number, height: number): Dot[] {
@@ -59,7 +63,11 @@ function toRgba(hex: string, alpha: number) {
   return `rgba(${red}, ${green}, ${blue}, ${alpha})`
 }
 
-export function HeroParallaxScene({ children }: HeroParallaxSceneProps) {
+export function HeroParallaxScene({
+  children,
+  backgroundSrc,
+  backgroundIsDimmed = false,
+}: HeroParallaxSceneProps) {
   const rootRef = useRef<HTMLElement>(null)
   const backgroundRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -308,7 +316,7 @@ export function HeroParallaxScene({ children }: HeroParallaxSceneProps) {
         aria-hidden="true"
       >
         <Image
-          src="/images/hero-background.webp"
+          src={backgroundSrc}
           alt=""
           fill
           preload
@@ -320,8 +328,9 @@ export function HeroParallaxScene({ children }: HeroParallaxSceneProps) {
       <div
         className="pointer-events-none absolute inset-0 z-10"
         style={{
-          background:
-            'radial-gradient(ellipse at center, transparent 0%, rgb(0 0 0 / 50%) 39%, rgb(0 0 0 / 50%) 100%)',
+          background: backgroundIsDimmed
+            ? undefined
+            : 'radial-gradient(ellipse at center, transparent 0%, rgb(0 0 0 / 50%) 39%, rgb(0 0 0 / 50%) 100%)',
         }}
         aria-hidden="true"
       />
@@ -333,6 +342,7 @@ export function HeroParallaxScene({ children }: HeroParallaxSceneProps) {
       />
 
       {children}
+      <HeroCrosshair targetRef={rootRef} />
     </section>
   )
 }

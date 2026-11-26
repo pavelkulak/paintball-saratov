@@ -4,11 +4,13 @@ import dynamic from 'next/dynamic'
 import { useSyncExternalStore, type CSSProperties } from 'react'
 
 const DESKTOP_QUERY = '(min-width: 1280px)'
-const SCENE_ID = 'planet-scene'
+const SCENE_ID = 'event-additions-scene'
 
-const DesktopPlanetScene = dynamic(
+const DesktopAdditionsScene = dynamic(
   () =>
-    import('./DesktopPlanetScene').then((module) => module.DesktopPlanetScene),
+    import('./DesktopAdditionsScene').then(
+      (module) => module.DesktopAdditionsScene,
+    ),
   { ssr: false },
 )
 
@@ -27,7 +29,11 @@ function getServerDesktopSnapshot() {
   return false
 }
 
-export function DesktopPlanetSceneGate({ slideCount }: { slideCount: number }) {
+export function DesktopAdditionsSceneGate({
+  scrollScreens,
+}: {
+  scrollScreens: number
+}) {
   const isDesktop = useSyncExternalStore(
     subscribeToDesktop,
     getDesktopSnapshot,
@@ -37,10 +43,10 @@ export function DesktopPlanetSceneGate({ slideCount }: { slideCount: number }) {
   return (
     <div
       data-scroll-trigger-id={SCENE_ID}
-      style={{ '--scene-slides': slideCount } as CSSProperties}
-      className="bg-background relative hidden min-h-[calc(100svh*var(--scene-slides))] w-full motion-reduce:min-h-svh xl:block"
+      style={{ '--scene-screens': scrollScreens } as CSSProperties}
+      className="bg-background relative hidden min-h-[calc(100svh*var(--scene-screens))] w-full motion-reduce:min-h-svh xl:block"
     >
-      {isDesktop && <DesktopPlanetScene sceneId={SCENE_ID} />}
+      {isDesktop && <DesktopAdditionsScene sceneId={SCENE_ID} />}
     </div>
   )
 }

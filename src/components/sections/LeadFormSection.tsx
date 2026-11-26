@@ -6,6 +6,7 @@ import { ArrowRightIcon } from '@/components/icons/ArrowRightIcon'
 import { DateTimePicker } from '@/components/ui/DateTimePicker'
 import { RussianPhoneInput } from '@/components/ui/RussianPhoneInput'
 import { BookingSubmission } from '@/components/booking/BookingSubmission'
+import { SectionSplatters } from '@/components/sections/SectionSplatters'
 
 const fieldLabelClassName =
   'text-background/60 flex min-w-0 flex-col gap-2 text-base leading-[19px]'
@@ -208,110 +209,113 @@ function DemoSelect({
 
 export function LeadFormSection() {
   return (
-    <section
-      id="lead-form"
-      aria-labelledby="lead-form-title"
-      className="section-anchor page-container page-section-gap bg-primary text-primary-foreground rounded-[50px] px-4 py-[60px] md:p-12 xl:grid xl:grid-cols-[minmax(0,1fr)_540px] xl:gap-[52px] xl:px-[52px] xl:py-[25px]"
-    >
-      <header className="mx-auto flex max-w-[451px] flex-col items-center gap-4 text-center xl:mx-0 xl:items-start xl:pt-[27px] xl:text-left">
-        <h2
-          id="lead-form-title"
-          className="font-display max-w-[389px] text-[40px] leading-[0.98] font-bold tracking-[0.03em] uppercase"
-        >
-          Активный праздник, который запомнится
-        </h2>
-        <p className="text-background/60 text-base leading-[1.2]">
-          Оставьте заявку — поможем подобрать формат, обсудим детали и соберём
-          праздник без стресса
-        </p>
-      </header>
-
-      <form
-        className="mx-auto mt-[52px] flex w-full max-w-[540px] flex-col xl:mx-0 xl:mt-0"
-        onSubmit={(event) => event.preventDefault()}
+    <div className="page-section-gap relative">
+      <SectionSplatters section="lead" />
+      <section
+        id="lead-form"
+        aria-labelledby="lead-form-title"
+        className="section-anchor page-container bg-primary text-primary-foreground rounded-[50px] px-4 py-[60px] md:p-12 xl:grid xl:grid-cols-[minmax(0,1fr)_540px] xl:gap-[52px] xl:px-[52px] xl:py-[25px]"
       >
-        <div className="grid grid-cols-1 gap-x-4 gap-y-5 sm:grid-cols-2">
-          <label className={fieldLabelClassName}>
-            <span>Имя</span>
-            <input
-              required
-              autoComplete="name"
-              className={fieldInputClassName}
-              name="name"
-              type="text"
-            />
-          </label>
+        <header className="mx-auto flex max-w-[451px] flex-col items-center gap-4 text-center xl:mx-0 xl:items-start xl:pt-[27px] xl:text-left">
+          <h2
+            id="lead-form-title"
+            className="font-display max-w-[389px] text-[40px] leading-[0.98] font-bold tracking-[0.03em] uppercase"
+          >
+            Активный праздник, который запомнится
+          </h2>
+          <p className="text-background/60 text-base leading-[1.2]">
+            Оставьте заявку — поможем подобрать формат, обсудим детали и соберём
+            праздник без стресса
+          </p>
+        </header>
 
-          <RussianPhoneInput
-            labelClassName={fieldLabelClassName}
-            inputClassName={fieldInputClassName}
-          />
-
-          <DemoSelect
-            label="Тариф"
-            name="tariff"
-            options={demoTariffs}
-            defaultValue={demoTariffs[0]}
-          />
-          <DemoSelect
-            label="Сценарий"
-            name="scenario"
-            options={demoScenarios}
-          />
-
-          <label className={fieldLabelClassName}>
-            <span>Количество участников</span>
-            <input
-              className={fieldInputClassName}
-              name="participants"
-              type="number"
-              inputMode="numeric"
-              min={1}
-              step={1}
-            />
-          </label>
-
-          <DateTimePicker
-            labelClassName={fieldLabelClassName}
-            inputClassName={fieldInputClassName}
-          />
-        </div>
-
-        <label className="text-background/60 mt-5 flex min-h-[57px] max-w-[530px] items-start gap-2 text-sm leading-[17px]">
-          <span className="relative size-6 shrink-0">
-            <input
-              required
-              className="peer focus-visible:outline-background size-6 appearance-none rounded-[4px] border border-[#334a38] bg-white focus-visible:outline-2 focus-visible:outline-offset-2"
-              name="consent"
-              type="checkbox"
-            />
-            <svg
-              aria-hidden="true"
-              viewBox="0 0 24 24"
-              fill="none"
-              className="pointer-events-none absolute inset-0 hidden size-6 text-[#334a38] peer-checked:block"
-            >
-              <path
-                d="m3 12 5 5L21 6"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
+        <form
+          className="mx-auto mt-[52px] flex w-full max-w-[540px] flex-col xl:mx-0 xl:mt-0"
+          onSubmit={(event) => event.preventDefault()}
+        >
+          <div className="grid grid-cols-1 gap-x-4 gap-y-5 sm:grid-cols-2">
+            <label className={fieldLabelClassName}>
+              <span>Имя</span>
+              <input
+                required
+                autoComplete="name"
+                className={fieldInputClassName}
+                name="name"
+                type="text"
               />
-            </svg>
-          </span>
-          <span>
-            Нажимая на кнопку «Оставить заявку», вы подтверждаете, что
-            ознакомлены с политикой конфиденциальности и согласны с обработкой
-            персональных данных
-          </span>
-        </label>
+            </label>
 
-        <BookingSubmission
-          className="mt-10"
-          buttonClassName="min-h-[68px] rounded-[20px] px-8 py-4 xl:justify-start"
-        />
-      </form>
-    </section>
+            <RussianPhoneInput
+              labelClassName={fieldLabelClassName}
+              inputClassName={fieldInputClassName}
+            />
+
+            <DemoSelect
+              label="Тариф"
+              name="tariff"
+              options={demoTariffs}
+              defaultValue={demoTariffs[0]}
+            />
+            <DemoSelect
+              label="Сценарий"
+              name="scenario"
+              options={demoScenarios}
+            />
+
+            <label className={fieldLabelClassName}>
+              <span>Количество участников</span>
+              <input
+                className={fieldInputClassName}
+                name="participants"
+                type="number"
+                inputMode="numeric"
+                min={1}
+                step={1}
+              />
+            </label>
+
+            <DateTimePicker
+              labelClassName={fieldLabelClassName}
+              inputClassName={fieldInputClassName}
+            />
+          </div>
+
+          <label className="text-background/60 mt-5 flex min-h-[57px] max-w-[530px] items-start gap-2 text-sm leading-[17px]">
+            <span className="relative size-6 shrink-0">
+              <input
+                required
+                className="peer focus-visible:outline-background size-6 appearance-none rounded-[4px] border border-[#334a38] bg-white focus-visible:outline-2 focus-visible:outline-offset-2"
+                name="consent"
+                type="checkbox"
+              />
+              <svg
+                aria-hidden="true"
+                viewBox="0 0 24 24"
+                fill="none"
+                className="pointer-events-none absolute inset-0 hidden size-6 text-[#334a38] peer-checked:block"
+              >
+                <path
+                  d="m3 12 5 5L21 6"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </span>
+            <span>
+              Нажимая на кнопку «Оставить заявку», вы подтверждаете, что
+              ознакомлены с политикой конфиденциальности и согласны с обработкой
+              персональных данных
+            </span>
+          </label>
+
+          <BookingSubmission
+            className="mt-10"
+            buttonClassName="min-h-[68px] rounded-[20px] px-8 py-4 xl:justify-start"
+          />
+        </form>
+      </section>
+    </div>
   )
 }

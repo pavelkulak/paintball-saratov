@@ -1,9 +1,12 @@
 'use client'
 
 import Image from 'next/image'
-import { useEffect, useRef, useState } from 'react'
+import { usePathname } from 'next/navigation'
+import { normalizePathname } from '@/lib/audience'
+import { useEffect, useRef, useState, type MouseEvent } from 'react'
 
 import { Logo } from '@/components/icons/Logo'
+import { useSmoothScroll } from '@/components/providers/ScrollSmootherProvider'
 import { siteContact, siteSocialLinks } from '@/lib/site-contact'
 
 const navigationItems = [
@@ -20,6 +23,8 @@ const navigationItems = [
 const mobileSocialLinks = [siteSocialLinks[1], siteSocialLinks[0]]
 
 export function MobileNavigation() {
+  const scrollTo = useSmoothScroll()
+  const isAdults = normalizePathname(usePathname()) === '/adults'
   const dialogRef = useRef<HTMLDialogElement>(null)
   const [isOpen, setIsOpen] = useState(false)
 
@@ -35,28 +40,16 @@ export function MobileNavigation() {
     }
 
     dialog.showModal()
+    const previousOverflow = document.documentElement.style.overflow
+    document.documentElement.style.overflow = 'hidden'
 
     return () => {
+      document.documentElement.style.overflow = previousOverflow
       if (dialog.open) {
         dialog.close()
       }
     }
   }, [isOpen])
-
-  useEffect(() => {
-    const desktopViewport = window.matchMedia('(min-width: 1024px)')
-    const closeAtDesktop = (event: MediaQueryListEvent) => {
-      if (event.matches) {
-        setIsOpen(false)
-      }
-    }
-
-    desktopViewport.addEventListener('change', closeAtDesktop)
-
-    return () => {
-      desktopViewport.removeEventListener('change', closeAtDesktop)
-    }
-  }, [])
 
   const closeMenu = () => {
     const dialog = dialogRef.current
@@ -68,11 +61,20 @@ export function MobileNavigation() {
     setIsOpen(false)
   }
 
+  const navigateToSection = (event: MouseEvent<HTMLAnchorElement>) => {
+    const target = document.getElementById(event.currentTarget.hash.slice(1))
+    closeMenu()
+    if (!target) return
+    event.preventDefault()
+    window.history.pushState(null, '', event.currentTarget.hash)
+    window.requestAnimationFrame(() => scrollTo(target))
+  }
+
   return (
     <>
       <button
         type="button"
-        className="bg-primary text-primary-foreground border-line focus-visible:outline-primary inline-flex size-11 shrink-0 items-center justify-center self-center rounded-full border transition-transform duration-200 hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-2 active:scale-95 lg:hidden"
+        className="bg-primary text-primary-foreground border-line focus-visible:outline-primary inline-flex size-11 shrink-0 items-center justify-center self-center rounded-full border transition-transform duration-200 hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-2 active:scale-95"
         aria-controls="mobile-navigation"
         aria-expanded={isOpen}
         aria-label="Открыть меню"
@@ -88,14 +90,25 @@ export function MobileNavigation() {
       <dialog
         ref={dialogRef}
         id="mobile-navigation"
-        className="bg-primary text-primary-foreground fixed inset-0 m-0 h-dvh max-h-none w-full max-w-none overflow-hidden p-0 [--mobile-navigation-origin-x:calc(100%_-_var(--layout-gutter)_-_1.375rem)] [--mobile-navigation-origin-y:calc(14px_+_max(22px,calc(var(--mobile-header-logo-width)*65/214)))] [clip-path:circle(_0_at_var(--mobile-navigation-origin-x)_var(--mobile-navigation-origin-y)_)] [transition:clip-path_560ms_cubic-bezier(0.76,_0,_0.24,_1),_overlay_560ms_allow-discrete,_display_560ms_allow-discrete] motion-reduce:transition-none lg:hidden [&::backdrop]:bg-transparent [&[open]]:[clip-path:circle(_150vmax_at_var(--mobile-navigation-origin-x)_var(--mobile-navigation-origin-y)_)] starting:[&[open]]:[clip-path:circle(_0_at_var(--mobile-navigation-origin-x)_var(--mobile-navigation-origin-y)_)] [&[open]_[data-navigation-mobile-navigation-content]]:[transform:translateY(0)] [&[open]_[data-navigation-mobile-navigation-content]]:opacity-100 starting:[&[open]_[data-navigation-mobile-navigation-content]]:[transform:translateY(-0.35rem)] starting:[&[open]_[data-navigation-mobile-navigation-content]]:opacity-0"
+        className="bg-primary text-primary-foreground fixed inset-0 m-0 h-dvh max-h-none w-full max-w-none overflow-hidden p-0 [--mobile-navigation-origin-x:calc(100%_-_var(--layout-gutter)_-_1.375rem)] [--mobile-navigation-origin-y:calc(14px_+_max(22px,calc(var(--mobile-header-logo-width)*65/214)))] [clip-path:circle(_0_at_var(--mobile-navigation-origin-x)_var(--mobile-navigation-origin-y)_)] [transition:clip-path_560ms_cubic-bezier(0.76,_0,_0.24,_1),_overlay_560ms_allow-discrete,_display_560ms_allow-discrete] motion-reduce:transition-none md:inset-auto md:top-4 md:right-[max(var(--layout-gutter),calc((100vw_-_var(--container-content))/2))] md:h-auto md:max-h-[calc(100dvh-2rem)] md:w-[440px] md:rounded-[28px] md:shadow-2xl md:[--mobile-navigation-origin-x:calc(100%_-_3rem)] md:[--mobile-navigation-origin-y:3rem] lg:w-[480px] [&::backdrop]:bg-transparent md:[&::backdrop]:bg-black/45 md:[&::backdrop]:backdrop-blur-sm [&[open]]:[clip-path:circle(_150vmax_at_var(--mobile-navigation-origin-x)_var(--mobile-navigation-origin-y)_)] starting:[&[open]]:[clip-path:circle(_0_at_var(--mobile-navigation-origin-x)_var(--mobile-navigation-origin-y)_)] [&[open]_[data-navigation-mobile-navigation-content]]:[transform:translateY(0)] [&[open]_[data-navigation-mobile-navigation-content]]:opacity-100 starting:[&[open]_[data-navigation-mobile-navigation-content]]:[transform:translateY(-0.35rem)] starting:[&[open]_[data-navigation-mobile-navigation-content]]:opacity-0"
         aria-labelledby="mobile-navigation-title"
         onCancel={() => setIsOpen(false)}
         onClose={() => setIsOpen(false)}
+        onClick={(event) => {
+          if (event.target !== event.currentTarget) return
+          const bounds = event.currentTarget.getBoundingClientRect()
+          if (
+            event.clientX < bounds.left ||
+            event.clientX > bounds.right ||
+            event.clientY < bounds.top ||
+            event.clientY > bounds.bottom
+          )
+            closeMenu()
+        }}
       >
         <div
           data-navigation-mobile-navigation-content
-          className="relative flex h-full min-h-0 [transform:translateY(-0.35rem)] flex-col overflow-hidden opacity-0 [transition:opacity_180ms_ease_100ms,_transform_260ms_ease_100ms] motion-reduce:transition-none"
+          className="relative flex h-full min-h-0 [transform:translateY(-0.35rem)] flex-col overflow-hidden opacity-0 [transition:opacity_180ms_ease_100ms,_transform_260ms_ease_100ms] motion-reduce:transition-none md:h-auto md:max-h-[calc(100dvh-2rem)] md:[&_.page-container]:w-[calc(100%-4rem)]"
         >
           <div
             aria-hidden="true"
@@ -118,7 +131,7 @@ export function MobileNavigation() {
               href="#hero"
               aria-label="К началу страницы"
               className="focus-visible:outline-ink w-fit focus-visible:outline-2 focus-visible:outline-offset-4"
-              onClick={closeMenu}
+              onClick={navigateToSection}
             >
               <Logo
                 aria-hidden="true"
@@ -130,7 +143,7 @@ export function MobileNavigation() {
             <button
               type="button"
               autoFocus
-              className="bg-background text-surface focus-visible:outline-background relative inline-flex size-[60px] items-center justify-center rounded-full transition-transform duration-200 hover:scale-105 hover:rotate-6 focus-visible:outline-2 focus-visible:outline-offset-2 active:scale-95"
+              className="bg-background text-surface focus-visible:outline-background relative inline-flex size-[60px] items-center justify-center rounded-full transition-transform duration-200 hover:scale-105 hover:rotate-6 focus-visible:outline-2 focus-visible:outline-offset-2 active:scale-95 md:size-11"
               aria-label="Закрыть меню"
               onClick={closeMenu}
             >
@@ -149,28 +162,30 @@ export function MobileNavigation() {
             Навигация по сайту
           </h2>
 
-          <div className="relative z-10 flex min-h-0 flex-1 flex-col overflow-y-auto pt-11">
+          <div className="relative z-10 flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain pt-11 md:pt-5">
             <nav
               aria-label="Навигация по разделам страницы"
               className="page-container shrink-0"
             >
-              <ol className="flex flex-col gap-4">
-                {navigationItems.map((item) => (
-                  <li key={item.href}>
-                    <a
-                      href={item.href}
-                      className="text-background focus-visible:outline-background block w-fit text-xl leading-6 font-medium no-underline transition-transform duration-200 hover:translate-x-1 focus-visible:outline-2 focus-visible:outline-offset-4"
-                      onClick={closeMenu}
-                    >
-                      {item.label}
-                    </a>
-                  </li>
-                ))}
+              <ol className="flex flex-col gap-4 md:gap-3">
+                {navigationItems
+                  .filter((item) => !isAdults || item.href !== '#event-safety')
+                  .map((item) => (
+                    <li key={item.href}>
+                      <a
+                        href={item.href}
+                        className="text-background focus-visible:outline-background block w-fit text-xl leading-6 font-medium no-underline transition-transform duration-200 hover:translate-x-1 focus-visible:outline-2 focus-visible:outline-offset-4"
+                        onClick={navigateToSection}
+                      >
+                        {item.label}
+                      </a>
+                    </li>
+                  ))}
               </ol>
             </nav>
 
             <div
-              className="page-container mt-auto flex shrink-0 gap-4 pt-[70px]"
+              className="page-container mt-auto flex shrink-0 gap-4 pt-[70px] md:pt-6"
               aria-label="Социальные сети"
             >
               {mobileSocialLinks.map((social) => (
@@ -191,9 +206,9 @@ export function MobileNavigation() {
               ))}
             </div>
 
-            <div className="border-background/20 mt-8 shrink-0 border-t pt-8 pb-4">
+            <div className="border-background/20 mt-8 shrink-0 border-t pt-8 pb-4 md:mt-5 md:pt-5 md:pb-6">
               <div className="page-container">
-                <address className="text-background flex max-w-[279px] flex-col gap-4 text-xl leading-6 font-medium not-italic">
+                <address className="text-background flex max-w-[279px] flex-col gap-4 text-xl leading-6 font-medium not-italic md:max-w-none md:gap-2 md:text-base">
                   <a
                     href={siteContact.phone.href}
                     className="focus-visible:outline-background w-fit whitespace-nowrap focus-visible:outline-2 focus-visible:outline-offset-4"
@@ -205,8 +220,8 @@ export function MobileNavigation() {
 
                 <a
                   href="#scenarios"
-                  className="bg-background text-primary focus-visible:outline-background mt-8 inline-flex min-h-[68px] w-full items-center justify-center rounded-[24px] px-8 py-4 text-base leading-[19px] font-bold transition-opacity hover:opacity-85 focus-visible:outline-2 focus-visible:outline-offset-2"
-                  onClick={closeMenu}
+                  className="bg-background text-primary focus-visible:outline-background mt-8 inline-flex min-h-[68px] w-full items-center justify-center rounded-[24px] px-8 py-4 text-base leading-[19px] font-bold transition-opacity hover:opacity-85 focus-visible:outline-2 focus-visible:outline-offset-2 md:mt-5 md:min-h-14 md:rounded-2xl"
+                  onClick={navigateToSection}
                 >
                   Смотреть вариант
                 </a>

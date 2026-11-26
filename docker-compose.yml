@@ -8,6 +8,8 @@ services:
       NODE_ENV: production
       HOSTNAME: 0.0.0.0
       PORT: 3000
+      SITE_THEME: ${SITE_THEME:-default}
+      THEME_PREVIEW: ${THEME_PREVIEW:-0}
       CONTENT_SOURCE: ${CONTENT_SOURCE:-demo}
       BITRIX_API_URL: ${BITRIX_API_URL:-}
     ports:

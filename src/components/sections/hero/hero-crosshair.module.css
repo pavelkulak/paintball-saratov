@@ -1,0 +1,41 @@
+@media (min-width: 1280px) and (hover: hover) and (pointer: fine) {
+  .host {
+    cursor: url('/images/cursors/hero-crosshair.svg') 24 24, crosshair;
+  }
+}
+
+.guides {
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.guides[data-visible] {
+  opacity: 1;
+}
+
+.horizontal,
+.vertical {
+  position: absolute;
+  background: #daf200;
+  opacity: 0.2;
+}
+
+.horizontal {
+  top: var(--hero-crosshair-y);
+  right: 0;
+  left: 0;
+  height: 1px;
+  transform: translateY(-50%);
+}
+
+.vertical {
+  top: 0;
+  bottom: 0;
+  left: var(--hero-crosshair-x);
+  width: 1px;
+  transform: translateX(-50%);
+}

@@ -4,13 +4,9 @@ import Image from 'next/image'
 import { useState, type CSSProperties } from 'react'
 
 import type { AudienceId } from '@/lib/audience'
+import { getSafetyArtwork, type SafetyAudience } from '@/lib/site-artwork'
+import type { SiteTheme } from '@/lib/site-theme'
 import { AudienceArtwork } from '@/components/ui/AudienceArtwork'
-
-const safetyArtwork: Record<AudienceId, string> = {
-  all: '/images/safety-players-all.webp',
-  children: '/images/safety-players-family.webp',
-  adults: '/images/safety-players-adults.webp',
-}
 
 const rings = [
   { diameter: 592, opacity: 0.3 },
@@ -202,7 +198,14 @@ function SafetyAccordionItem({
   )
 }
 
-export function SafetyShowcase({ audience }: { audience: AudienceId }) {
+export function SafetyShowcase({
+  audience,
+  theme,
+}: {
+  audience: SafetyAudience
+  theme: SiteTheme
+}) {
+  const safetyArtwork = getSafetyArtwork(theme)
   const [activeId, setActiveId] = useState('rules')
 
   return (

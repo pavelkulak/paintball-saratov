@@ -1,4 +1,8 @@
+import clsx from 'clsx'
 import Image from 'next/image'
+
+import { getHeroArtwork } from '@/lib/site-artwork'
+import type { SiteTheme } from '@/lib/site-theme'
 
 import type { AudienceId } from '@/lib/audience'
 import type { HomeResponse } from '@/lib/bitrix/home-schema'
@@ -8,34 +12,26 @@ import { AudienceArtwork } from '../ui/AudienceArtwork'
 import { Button } from '../ui/Button'
 import { HeroParallaxScene } from './hero/HeroParallaxScene'
 
-const heroPlayers: Record<
-  AudienceId,
-  { mobileSrc: string; desktopSrc: string }
-> = {
-  all: {
-    mobileSrc: '/images/hero-players-family-mobile.png',
-    desktopSrc: '/images/hero-players-family.webp',
-  },
-  children: {
-    mobileSrc: '/images/hero-players-children-mobile.webp',
-    desktopSrc: '/images/hero-players-children.webp',
-  },
-  adults: {
-    mobileSrc: '/images/hero-players-adults-mobile.webp',
-    desktopSrc: '/images/hero-players-adults.webp',
-  },
-}
-
 export function Hero({
   audience,
   content,
+  theme,
 }: {
   audience: AudienceId
+  theme: SiteTheme
   content: Pick<HomeResponse, 'description' | 'quiz'>
 }) {
+  const heroPlayers = getHeroArtwork(theme)
   return (
     <>
-      <HeroParallaxScene>
+      <HeroParallaxScene
+        backgroundSrc={
+          theme === 'new-year'
+            ? '/images/new-year/hero-background.webp'
+            : '/images/hero-background.webp'
+        }
+        backgroundIsDimmed={theme === 'new-year'}
+      >
         <div className="page-container relative z-30 flex h-full min-h-0 flex-col pt-[115px] xl:pt-[max(96px,12svh)] xl:pb-4">
           <div className="relative z-20 mx-auto flex w-full flex-col items-center gap-[19px]">
             <h1
@@ -66,11 +62,15 @@ export function Hero({
                       id: id as AudienceId,
                       content: (
                         <picture
-                          className={
-                            id === 'children'
-                              ? 'absolute inset-0 max-xl:translate-x-[9%]'
-                              : 'absolute inset-0'
-                          }
+                          className={clsx(
+                            'absolute inset-0',
+                            id === 'children' && 'max-xl:translate-x-[9%]',
+                            theme === 'new-year' &&
+                              (id === 'all' || id === 'adults') &&
+                              'max-xl:translate-x-[6%]',
+                            theme === 'new-year' &&
+                              'max-xl:[@media(max-height:700px)]:-translate-y-6',
+                          )}
                         >
                           <source
                             media="(min-width: 1280px)"

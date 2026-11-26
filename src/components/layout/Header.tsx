@@ -38,7 +38,7 @@ export function Header() {
             'border-line/40 bg-background/75 border-b backdrop-blur-md',
         )}
       >
-        <div className="page-container flex items-center justify-between py-[14px] max-lg:gap-[calc(var(--mobile-header-unit)*7)] max-lg:[--mobile-header-logo-width:calc(var(--mobile-header-unit)*64)] max-lg:[--mobile-header-unit:clamp(1px,0.31vw,1.4px)]">
+        <div className="page-container flex items-center justify-between py-[14px] max-lg:gap-[calc(var(--mobile-header-unit)*7)] max-lg:[--mobile-header-logo-width:calc(var(--mobile-header-unit)*64)] max-lg:[--mobile-header-unit:clamp(1px,0.31vw,1.4px)] lg:gap-4">
           <Link
             href="/"
             aria-label="На главную"
@@ -47,7 +47,7 @@ export function Header() {
             <Logo className="h-auto w-[107px] max-lg:w-(--mobile-header-logo-width)" />
           </Link>
           <AudienceTabs className="hidden lg:flex" />
-          <div className="flex min-w-0 flex-1 flex-col items-start justify-center gap-0.5 text-left lg:flex-none lg:gap-0 lg:text-[14px]">
+          <div className="flex min-w-0 flex-1 flex-col items-start justify-center gap-0.5 text-left lg:max-w-[200px] lg:flex-none lg:gap-0 lg:text-[14px] xl:max-w-none">
             <a
               href={siteContact.phone.href}
               className="max-lg:text-[length:calc(var(--mobile-header-unit)*14)] max-lg:leading-tight max-lg:font-semibold max-lg:whitespace-nowrap"
@@ -62,7 +62,7 @@ export function Header() {
           <Button
             type="button"
             variant="light"
-            className="hidden lg:flex"
+            className="hidden lg:flex lg:max-w-[160px] lg:shrink-0 lg:px-4 xl:max-w-[200px] xl:px-8"
             onClick={() => {
               const leadForm = document.getElementById('lead-form')
               if (leadForm) scrollTo(leadForm)
